@@ -19,16 +19,14 @@ _headers           no-store nas páginas (usado pelo Cloudflare Pages / ignorado
 ```
 > Não tem a pasta `functions/`, `login.html` nem `login/` de propósito — era o sistema de login do BR02.
 
-## ⚠️ FALTA 1 COISA PRA FUNCIONAR: a URL do Apps Script do BR05
-Hoje o `index.html` **e** o `admin/index.html` apontam para um **placeholder**:
-```
-var API = 'https://script.google.com/macros/s/COLE_A_URL_EXEC_DO_APPS_SCRIPT_DO_BR05/exec';
-```
-Passos:
-1. Criar a **planilha Google do BR05** (pode partir de uma cópia da planilha do BR02).
-2. No editor **Apps Script** dela, publicar como **App da Web** (Implantar → Nova implantação →
-   Tipo "App da Web" → acesso "Qualquer pessoa") e copiar a URL que termina em `/exec`.
-3. Substituir o placeholder nos **dois** arquivos (`index.html` e `admin/index.html`), na linha `var API = ...`.
+## ✅ Backend já ligado (Apps Script do BR05)
+A planilha, o Apps Script e a **implantação como App da Web** já estão prontos e **a URL `/exec`
+já está colada** no `index.html` e no `admin/index.html` (linha `var API = ...`). Acesso
+"Qualquer pessoa", testado e respondendo JSON. **Não precisa mexer em nada disso.**
+
+Se um dia precisar **re-publicar** o script (nova versão de código): Apps Script → Implantar →
+Gerenciar implantações → editar a existente → **Nova versão** (a URL `/exec` continua a mesma).
+Só gere uma implantação *nova* se realmente quiser uma URL diferente — aí troque nos dois arquivos.
 
 ## Hospedagem (bem mais simples que o BR02, por ser estático)
 Como não há login, pode ir em **GitHub Pages** direto (ou Cloudflare Pages, tanto faz):
