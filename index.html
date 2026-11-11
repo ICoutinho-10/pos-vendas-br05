@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pós-Vendas BR05 · Inventário</title>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Oxanium:wght@600;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F4F5FA; --card: #FFFFFF; --ink: #0F172A; --dim: #64748B; --line: #E6E8F0; --line2: #D5D9E5;
+    --red: #E11D48; --red2: #BE123C; --grad: linear-gradient(135deg, #6366F1 0%, #22D3EE 55%, #06B6D4 100%);
+    --green: linear-gradient(135deg, #34D399 0%, #10B981 45%, #047857 100%);
+    --indigo: #6366F1; --ok: #047857; --okbg: #ECFDF5; --warn: #B45309; --warnbg: #FFFBEB; --err: #BE123C; --errbg: #FFF1F2;
+    --font: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: radial-gradient(1100px 650px at 82% -14%, #0C3358 0%, transparent 60%), radial-gradient(800px 600px at -10% 110%, rgba(99,102,241,.20) 0%, transparent 55%), #03101F;
+         background-attachment: fixed; color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+
+  /* App flutuando sobre o fundo, com cantos arredondados */
+  .app { max-width: 560px; margin: 24px auto; height: calc(100vh - 48px); height: calc(100dvh - 48px); display: flex; flex-direction: column;
+         background: var(--bg); border-radius: 28px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); }
+
+  /* Cabeçalho com degradê */
+  .top { background: linear-gradient(135deg, #1E1B4B 0%, #6366F1 55%, #06B6D4 125%); color: #fff; flex: 0 0 auto; }
+  .topin { padding: 18px 22px; display: flex; align-items: center; gap: 14px; }
+  .logo { height: 38px; width: 86px; flex: 0 0 auto; display: flex; align-items: center; }
+  .logo img { width: 100%; height: 100%; object-fit: contain; display: block; filter: brightness(0) invert(1); }
+  .tt b { display: block; font-family: "Oxanium", var(--font); font-weight: 800; font-size: 20px; letter-spacing: .3px; line-height: 1.1; }
+  .tt small { color: rgba(255,255,255,.72); font-size: 12.5px; font-weight: 600; }
+  .wrap { flex: 1; overflow-y: auto; padding: 18px 20px 20px; }
+
+  /* Conferente + Endereço */
+  .sess { position: relative; display: flex; gap: 10px; }
+  .box { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 10px 14px 6px;
+         transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+  .box:focus-within { border-color: var(--indigo); box-shadow: 0 0 0 4px rgba(79,70,229,.12); }
+  .box .k { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: var(--dim); letter-spacing: .6px; text-transform: uppercase; }
+  .box .k svg { color: var(--indigo); }
+  .box input { height: 34px; padding: 0; border: 0; border-radius: 0; box-shadow: none; font-size: 17px; background: transparent; }
+  .box input:focus { box-shadow: none; }
+  .box input::placeholder { font-size: 14px; }
+  .box select { width: 100%; height: 34px; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; font-size: 17px; font-weight: 600; color: inherit; cursor: pointer; }
+  .box select:focus { outline: none; box-shadow: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+  .chips:empty { display: none; }
+  .chip { display: inline-flex; align-items: center; gap: 2px; border-radius: 999px; padding: 3px 5px 3px 10px; font-size: 13px; font-weight: 800; background: #EEF2FF; color: #3730A3; }
+  .chip .nm { cursor: pointer; }
+  .chip .x { border: 0; background: transparent; color: inherit; font-size: 15px; line-height: 1; cursor: pointer; padding: 0 3px; opacity: .55; }
+  .chip .x:hover { opacity: 1; }
+  .ktool .chips { margin: 0 0 6px; }
+  .ktool .chip { background: #E8ECFF; color: #172554; border: 1px solid #C7D2FE; }
+  .ktool .chip .nm, .ktool .chip .x { color: #172554; }
+  .nmbox { position: relative; }
+  .ktool .fr { position: relative; }
+  .nmdd { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 40; max-height: 46vh; overflow-y: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 34px rgba(15,23,42,.16); }
+  .nmdd.on { display: block; }
+  .nmdd .o { display: flex; align-items: center; gap: 9px; padding: 11px 13px; font-weight: 700; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--line); color: inherit; }
+  .nmdd .o:last-child { border-bottom: 0; }
+  .nmdd .o .ck { width: 19px; height: 19px; border: 2px solid var(--dim); border-radius: 6px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; line-height: 1; }
+  .nmdd .o.sel .ck { background: var(--indigo); border-color: var(--indigo); }
+  .nmdd .o.add { color: var(--indigo); }
+  .ktool .nmdd { background: #0e1330; border-color: rgba(120,130,240,.4); }
+  .ktool .nmdd .o { color: #EEF1FF; border-color: rgba(120,130,240,.18); }
+  .ktool .nmdd .o .ck { border-color: rgba(200,205,255,.5); }
+  .ktool .nmdd .o.sel .ck { background: #22D3EE; border-color: #22D3EE; color: #06283b; }
+  .ktool .nmdd .o.add { color: #7CF3FF; }
+  .box .seta { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--dim); pointer-events: none; }
+  .box .in { position: relative; }
+  .box .in input { padding-right: 22px; }
+
+  .opts { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 20; max-height: 50vh; overflow-y: auto;
+          background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 12px 28px rgba(17,24,39,.16); }
+  .opts.on { display: block; }
+  .opt { padding: 13px 14px; font-weight: 700; font-size: 16px; cursor: pointer; border-bottom: 1px solid var(--line);
+         display: flex; justify-content: space-between; align-items: center; }
+  .opt:last-child { border-bottom: 0; }
+  .opt:hover, .opt.ativo { background: #EEF2FF; }
+  .opt.sel { color: var(--red); }
+  .opt.sel::after { content: "✓"; font-weight: 800; }
+  .opt mark { background: none; color: var(--red); }
+  .opt .cdesc { display: block; color: var(--dim); font-weight: 600; font-size: 12px; margin-top: 1px; }
+  .opt.novo { color: var(--warn); font-weight: 600; font-size: 14px; }
+  .opts .info { padding: 9px 14px; font-size: 12px; color: var(--dim); }
+
+  .card { margin-top: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px 18px; box-shadow: 0 4px 16px rgba(15,23,42,.05); }
+  .lab { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 800; color: var(--dim); letter-spacing: .6px; text-transform: uppercase; margin-bottom: 8px; }
+  .lab svg { color: var(--indigo); }
+  .field { position: relative; }
+  input { width: 100%; font-family: var(--font); font-weight: 800; color: var(--ink); background: #F8F9FC; border: 1px solid var(--line2);
+          border-radius: 14px; padding: 0 14px; height: 58px; font-size: 21px; text-transform: uppercase; transition: .15s; }
+  input::placeholder { color: #A0A8BA; font-weight: 600; text-transform: none; font-size: 16px; }
+  input:focus { outline: none; background: #fff; border-color: var(--indigo); box-shadow: 0 0 0 4px rgba(79,70,229,.12); }
+  #cod { padding-left: 52px; }
+  .scan { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 7px; border-radius: 10px;
+          color: #fff; background: var(--green); pointer-events: none; }
+  #qtd { height: 74px; font-size: 34px; text-align: center; letter-spacing: 1px; }
+  .desc { min-height: 20px; margin: 8px 2px 16px; font-size: 13px; font-weight: 700; color: var(--dim); }
+  .desc.ok { color: var(--ok); } .desc.warn { color: var(--warn); }
+  .sw { margin-top: 14px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px;
+        border: 1px dashed var(--line2); background: #F8F9FC; cursor: pointer; user-select: none; transition: .15s; }
+  .sw input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .sw .tg { width: 44px; height: 26px; border-radius: 13px; background: #CBD2E0; position: relative; flex: 0 0 auto; transition: .15s; }
+  .sw .tg::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff;
+                   box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: .15s; }
+  .sw .tx b { display: block; font-size: 14px; }
+  .sw .tx small { color: var(--dim); font-size: 12px; }
+  .sw.on { border: 1px solid #F59E0B; background: #FFFBEB; }
+  .sw.on .tg { background: linear-gradient(135deg, #FBBF24, #F59E0B); }
+  .sw.on .tg::after { left: 21px; }
+  li.seg { box-shadow: inset 3px 0 0 #F59E0B; }
+  li .tag2 { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 800; }
+  .msg { margin-top: 14px; padding: 12px 14px; border-radius: 14px; font-size: 14.5px; font-weight: 700; display: none; }
+  .msg.ok { display: block; background: var(--okbg); color: var(--ok); }
+  .msg.warn { display: block; background: var(--warnbg); color: var(--warn); }
+  .msg.err { display: block; background: var(--errbg); color: var(--err); }
+
+  .sect { margin: 22px 2px 10px; font-size: 11.5px; font-weight: 800; color: var(--dim); letter-spacing: .6px; text-transform: uppercase; }
+  .sect svg { color: var(--indigo); }
+  .sect .n { color: var(--indigo); }
+  ul { list-style: none; margin: 0; padding: 0 0 8px; }
+  li { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 10px 14px 10px 10px; margin-bottom: 8px; }
+  li .q { font-weight: 800; font-size: 16px; color: var(--red2); min-width: 46px; height: 40px; padding: 0 6px; border-radius: 12px; background: #FFF1F2;
+          display: grid; place-items: center; text-align: center; }
+  li .t { flex: 1; min-width: 0; }
+  li .t b { display: block; font-size: 14px; }
+  li .t > span { display: block; font-size: 12px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  li .h { font-size: 12px; color: var(--ink); font-weight: 800; text-align: right; line-height: 1.35; }
+  li .h i { display: block; font-style: normal; font-weight: 600; color: var(--dim); max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  li.anulada { opacity: .5; } li.anulada .q { text-decoration: line-through; }
+  li.meu { border-color: #C7D2FE; }
+  .sect { display: flex; align-items: center; gap: 8px; }
+  .sect .live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--dim); text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .sect .dot { width: 8px; height: 8px; border-radius: 50%; background: #10B981; animation: pulso 2s infinite; }
+  .sect .dot.off { background: #9CA3AF; animation: none; }
+  @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.55); } 70% { box-shadow: 0 0 0 8px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
+  /* Menu lateral (parte escura) */
+  .side { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; z-index: 6; padding: 22px 14px; color: #EEF1FF;
+          background: rgba(10,12,40,.55); border-right: 1px solid rgba(120,130,240,.22); }
+  .side .mt { font-family: "Oxanium", var(--font); font-weight: 800; font-size: 12px; letter-spacing: 1.2px; color: #A6B0E8; margin: 0 10px 12px; }
+  .side button { width: 100%; height: 46px; margin-bottom: 6px; border: 0; border-radius: 12px; background: transparent; color: #C7CEF5;
+                 font-family: var(--font); font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 0 12px; text-align: left; }
+  .side button:hover { background: rgba(120,130,240,.14); }
+  .side button.on { background: var(--green); color: #fff; box-shadow: 0 8px 20px rgba(16,185,129,.35); }
+  body { padding-left: 220px; }
+
+  /* Aba KARDEX: visualização real da ficha */
+  .kview { display: none; padding: 22px 26px 40px; color: #EEF1FF; }
+  body.v-k .app { display: none; }
+  body.v-k .kview { display: block; }
+  .ktool { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; background: rgba(60,64,150,.28); border: 1px solid rgba(120,130,240,.28);
+           border-radius: 16px; padding: 14px 16px; margin-bottom: 18px; }
+  .ktool .kf { flex: 1 1 220px; min-width: 200px; }
+  .ktool label.kl { display: block; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #A6B0E8; margin: 0 0 6px; }
+  .ktool input.ki, .ktool select.ki { height: 42px; font-size: 16px; background: rgba(10,12,40,.6); color: #EEF1FF; border: 1.5px solid rgba(120,130,240,.35); border-radius: 10px; }
+  .ktool input.ki:focus, .ktool select.ki:focus { border-color: #22D3EE; box-shadow: 0 0 0 3px rgba(34,211,238,.18); }
+  .kseg { display: flex; background: rgba(10,12,40,.6); border: 1px solid rgba(120,130,240,.35); border-radius: 10px; padding: 3px; gap: 3px; min-width: 230px; }
+  .kseg button { flex: 1; height: 34px; border: 0; border-radius: 8px; background: transparent; color: #A6B0E8; font-family: var(--font); font-weight: 800; font-size: 13px; cursor: pointer; padding: 0 12px; }
+  .kseg button.on { background: #EEF1FF; color: #111827; }
+  .ktool .sw { margin: 0; padding: 7px 12px; background: rgba(10,12,40,.6); border: 1.5px dashed rgba(120,130,240,.35); color: #EEF1FF; }
+  .ktool .sw .tx small { color: #A6B0E8; }
+  .ktool .sw.on { border: 1.5px solid #F59E0B; background: rgba(245,158,11,.14); }
+  .kgo { height: 44px; border: 0; border-radius: 12px; background: var(--green); box-shadow: 0 8px 20px rgba(16,185,129,.35); color: #fff; font-family: var(--font); padding: 0 18px;
+         font-weight: 800; font-size: 14px; letter-spacing: .3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .kgo:hover { filter: brightness(1.06); }
+  .kgo:disabled { opacity: .6; cursor: wait; }
+  .kmsg { font-size: 13px; color: #C7CEF5; margin: -6px 2px 14px; min-height: 18px; }
+  .kmsg.err { color: #FCA5A5; }
+  .kprev { overflow-x: auto; }
+  .kpg { background: #fff; width: 1123px; min-height: 794px; padding: 38px; box-sizing: border-box; margin: 0 auto 22px; box-shadow: 0 10px 40px rgba(0,0,0,.45); border-radius: 4px; }
+  .kvazio { max-width: 520px; margin: 60px auto; text-align: center; color: #A6B0E8; font-size: 15px; line-height: 1.5; }
+  @media (max-width: 900px) {
+    body { padding-left: 0; }
+    .app { margin: 12px; height: calc(100vh - 80px); height: calc(100dvh - 80px); border-radius: 24px; }
+    .side { position: sticky; top: 0; bottom: auto; width: auto; display: flex; gap: 6px; padding: 8px 10px; border-right: 0; border-bottom: 1px solid rgba(120,130,240,.22); background: #0f1030; }
+    .side .mt { display: none; }
+    .side button { margin: 0; height: 40px; justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    .topin { padding: 14px 16px; gap: 12px; }
+    .logo { width: 74px; height: 38px; border-radius: 10px; }
+    .tt b { font-size: 17px; }
+    .tt small .pv { display: inline; }
+    .wrap { padding: 14px 14px 16px; }
+    .sect { flex-wrap: wrap; }
+    .sect .live { font-size: 10.5px; }
+    .kview { padding: 14px 12px 40px; }
+  }
+
+
+  /* Aba CONFERÊNCIA KARDEX */
+  .fview { display: none; padding: 22px 26px 40px; color: #EEF1FF; }
+  body.v-f .app { display: none; }
+  body.v-f .fview { display: block; }
+  .ktool .fr { flex: 0 1 220px; min-width: 170px; }
+  .fcard { background: #fff; color: var(--ink); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .fscroll { overflow-x: auto; }
+  table.ft { width: 100%; border-collapse: collapse; min-width: 760px; font-size: 14px; }
+  .ft th { background: linear-gradient(135deg, #1E1B4B, #3730A3); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+           padding: 12px 10px; text-align: left; white-space: nowrap; }
+  .ft th.c, .ft td.c { text-align: center; }
+  .ft td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .ft tbody tr:nth-child(even) td { background: #FAFBFE; }
+  .ft td.seq { width: 52px; color: var(--dim); font-weight: 800; text-align: center; }
+  .ft td.sku { font-weight: 800; white-space: nowrap; }
+  .ft td.dsc { color: #334155; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ft td.loc { white-space: nowrap; font-weight: 700; color: #3730A3; }
+  .ft td.sbf { width: 110px; text-align: center; font-weight: 800; font-size: 16px; color: #475569; }
+  .ft td.fis { width: 150px; text-align: center; }
+  .ft input.fq { width: 110px; height: 42px; font-size: 18px; text-align: center; padding: 0 8px; border-radius: 12px; background: #ECFDF5; border: 1.5px solid #A7F3D0; color: #065F46; }
+  .ft input.fq:focus { border-color: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,.18); background: #fff; }
+  .ft input.fc { width: 150px; height: 38px; font-size: 14px; padding: 0 10px; border-radius: 10px; }
+  .ft td.st { width: 120px; text-align: center; white-space: nowrap; }
+  .chip { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+  .chip.ok { background: #ECFDF5; color: #047857; }
+  .chip.bx { background: #FFF1F2; color: #BE123C; }
+  .chip.al { background: #EEF2FF; color: #4338CA; }
+  .chip.feito { background: #10B981; color: #fff; }
+  .chip.erro { background: #BE123C; color: #fff; }
+  .ft tr.div td { background: #FFFBEB !important; }
+  .ft tr.div input.fq { background: #FEF3C7; border-color: #F59E0B; color: #92400E; }
+  .ft tr.lan td { opacity: .55; }
+  .ft tr.lan td.st { opacity: 1; }
+  .fvazio { padding: 50px 20px; text-align: center; color: var(--dim); font-size: 15px; }
+  .fadd { margin: 12px 14px; height: 40px; padding: 0 14px; border: 1.5px dashed var(--line2); border-radius: 12px; background: #fff; color: #3730A3;
+          font-family: var(--font); font-weight: 800; font-size: 13px; cursor: pointer; }
+  .fadd:hover { border-color: #6366F1; background: #EEF2FF; }
+  .fbar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 16px; border-top: 1px solid var(--line); background: #F8F9FC; }
+  .fres { flex: 1; min-width: 200px; font-size: 14px; color: var(--dim); font-weight: 700; }
+  .fres b { color: var(--ink); }
+  .fbar .go { margin: 0; width: auto; min-width: 260px; padding: 0 24px; }
+  .fbar .go.conf { background: linear-gradient(135deg, #FBBF24, #D97706); box-shadow: 0 10px 24px rgba(217,119,6,.35); }
+  @media (max-width: 900px) { .fview { padding: 14px 10px 40px; } .fbar .go { width: 100%; } }
+  @media (max-width: 700px) {
+    table.ft { min-width: 0; }
+    .ft thead { display: none; }
+    .ft tbody tr { display: grid; grid-template-columns: 34px 1fr 1fr; column-gap: 8px; padding: 10px 10px 12px; border-bottom: 1px solid var(--line); }
+    .ft tbody tr td { border: 0; padding: 2px 0; background: transparent !important; }
+    .ft tbody tr:nth-child(even) { background: #FAFBFE; }
+    .ft tr.div { background: #FFFBEB !important; }
+    .ft td.seq { grid-row: 1 / span 5; width: auto; padding-top: 4px; }
+    .ft td.sku, .ft td.dsc, .ft td.loc, .ft td.st { grid-column: 2 / span 2; text-align: left; max-width: none; white-space: normal; }
+    .ft td.sbf, .ft td.fis { width: auto; text-align: left; padding-top: 6px; }
+    .ft td.sbf::before { content: "SBF "; font-size: 11px; color: var(--dim); font-weight: 700; }
+    .ft td.fis input.fq { width: 100%; }
+    .ft td.fvazio { grid-column: 1 / -1; }
+    .side button { font-size: 12px; padding: 0 6px; gap: 6px; }
+  }
+
+
+  .ft td.sbf.esf { background: repeating-linear-gradient(135deg, #E9ECF2 0 6px, #F3F5F9 6px 12px); opacity: .55; filter: blur(.4px); }
+  .ft th.esf { opacity: .45; }
+  .ft td.sbf.esf::before { content: none !important; }
+  /* Conferência com cara de Kardex */
+  .fview .ktool, .fview .kmsg, .fview .fcard { max-width: 1080px; margin-left: auto; margin-right: auto; }
+  .fview { padding: 18px 14px 40px; }
+  .fcard { border-radius: 14px; padding: 16px 16px 0; }
+  .ftit { text-align: center; font-family: Calibri, Carlito, Arial, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1; margin: 2px 0 12px; color: #000; min-height: 33px; }
+  .fhead { display: grid; grid-template-columns: 150px 1fr 1fr 170px; border: 1.5px solid #000; border-bottom: 0; font-family: Calibri, Carlito, Arial, sans-serif; color: #000; }
+  .fhead > div { display: flex; align-items: center; justify-content: center; min-height: 52px; border-right: 1px solid #000; font-weight: 700; font-size: 15px; text-align: center; padding: 4px 8px; }
+  .fhead > div:last-child { border-right: 0; }
+  .fhead img { width: 76px; height: 38px; object-fit: contain; }
+  table.ft { border: 1.5px solid #000; min-width: 720px; }
+  .ft th { background: #fff; color: #000; font-family: Calibri, Carlito, Arial, sans-serif; font-size: 13px; letter-spacing: .2px; padding: 7px 8px; text-align: center;
+           border: 1px solid #000; }
+  .ft td { border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px dotted #6B7280; padding: 4px 8px; font-size: 14.5px; color: #000; }
+  .ft tbody tr:nth-child(even) td { background: #fff; }
+  .ft td.seq { width: 46px; color: #000; }
+  .ft td.sku { width: 130px; text-align: center; }
+  .ft td.dsc { color: #000; max-width: 340px; }
+  .ft td.loc { width: 130px; text-align: center; color: #000; }
+  .ft td.sbf { width: 96px; color: #000; font-size: 17px; }
+  .ft td.fis { width: 130px; }
+  .ft td.st { width: 110px; }
+  .ft input.fq { width: 96px; height: 36px; font-size: 17px; border-radius: 8px; border: 1.5px solid #10B981; background: #F0FDF4; }
+  .ft tr.div td { background: #FFF7D6 !important; }
+  .fadd { margin: 12px 0; }
+  .fbar { margin: 0 -16px; }
+  @media (max-width: 700px) { .fhead { grid-template-columns: 90px 1fr; } .fhead > div:nth-child(n+3) { display: none; } .fhead img { width: 64px; } table.ft { border: 0; } }
+
+
+  /* Histórico de posições lançadas (balão ao lado) */
+  body.v-f .fview { display: grid; grid-template-columns: minmax(0, 1080px) 280px; gap: 20px; justify-content: center; align-items: start; }
+  .fhist { position: sticky; top: 18px; background: rgba(60,64,150,.28); border: 1px solid rgba(120,130,240,.28); border-radius: 18px; padding: 14px; max-height: calc(100vh - 36px); overflow-y: auto; }
+  .fhh { display: flex; align-items: center; gap: 8px; font-family: "Oxanium", var(--font); font-weight: 800; font-size: 14px; letter-spacing: .4px; margin: 2px 4px 12px; color: #EEF1FF; }
+  #fhl { padding: 0; }
+  #fhl li { display: flex; gap: 10px; align-items: flex-start; background: rgba(10,12,40,.55); border: 1px solid rgba(16,185,129,.35); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; color: #EEF1FF; }
+  #fhl li .ck { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: var(--green); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(16,185,129,.4); }
+  #fhl li .tx { flex: 1; min-width: 0; }
+  #fhl li b { display: block; font-size: 15px; letter-spacing: .2px; }
+  #fhl li small { display: block; font-size: 12px; color: #A6B0E8; margin-top: 2px; }
+  #fhl li .dv { color: #FCD34D; }
+  #fhl li.vz { border-style: dashed; border-color: rgba(120,130,240,.35); color: #A6B0E8; font-size: 13px; display: block; }
+  @media (max-width: 1300px) { body.v-f .fview { grid-template-columns: minmax(0, 1fr); } .fhist { position: static; max-height: none; } }
+
+  /* Ficha KARDEX impressa (FO.SC.A.026) */
+  .kpg { font-family: Calibri, Carlito, Arial, sans-serif; color: #000; page-break-after: always; }
+  .kpg:last-child { page-break-after: auto; }
+  .ktit { width: 1039px; text-align: center; font-weight: 700; font-size: 30pt; line-height: 1; margin: 0 0 14px; padding-right: 111px; box-sizing: border-box; }
+  .kwrap { display: flex; align-items: flex-start; }
+  .kx { border-collapse: collapse; table-layout: fixed; width: 928px; font-size: 9.5pt; }
+  .kx td, .kx th { height: 16.5px; padding: 0 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .kx .r1 td { height: 46px; font-size: 12pt; font-weight: 700; text-align: center; border: 1px solid #000; white-space: normal; }
+  .kx .r1 .klogo img { width: 68px; height: 33px; display: block; margin: 0 auto; }
+  .kx .r2 th { height: 21px; font-size: 10pt; font-weight: 700; text-align: center; border: 1px solid #000; }
+  .kx .b td { border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px dotted #555; text-align: center; }
+  .kx .b td.l { text-align: center; }
+  .kx .b td.q { border-left: 1px dotted #555; border-right: 1px dotted #555; }
+  .kx .b td.q1 { border-left: 1px solid #000; text-align: left; padding-left: 30px; }
+  .kx .b td.q6 { border-right: 1px solid #000; }
+  .kx .b.ult td { border-bottom: 1px solid #000; }
+  .kfo { width: 111px; height: 46px; border: 1px solid #000; border-left: 0; box-sizing: border-box; display: flex; flex-direction: column;
+         align-items: center; justify-content: center; font-size: 9pt; line-height: 1.35; }
+  .kfo b { font-size: 9.5pt; }
+  .kx .r1 td.kcp { font-size: 10.5pt; white-space: nowrap; letter-spacing: -.1px; }
+  .ked { display: inline-block; min-width: 46px; padding: 0 3px; border-radius: 3px; outline: 1px dashed #93C5FD; background: #EFF6FF; cursor: text; }
+  .ked:focus { outline: 2px solid #2563EB; background: #DBEAFE; }
+  @media print {
+    @page { size: A4 landscape; margin: 0; }
+    html, body { background: #fff !important; padding: 0 !important; }
+    .app, .side, .ktool, .kmsg, .bar, .fview { display: none !important; }
+    .kview { display: block !important; padding: 0 !important; }
+    .kprev { overflow: visible; }
+    #kardex { zoom: 1 !important; }
+    .kpg { width: auto; min-height: 0; padding: 10mm; margin: 0; box-shadow: none; border-radius: 0; }
+    .ked { outline: none !important; background: none !important; }
+  }
+  li.vazio { color: var(--dim); font-size: 13px; background: transparent; padding: 4px 2px; }
+
+  .go { margin-top: 16px; width: 100%; height: 58px; border: 0; border-radius: 16px; background: var(--green); color: #fff; font-family: var(--font);
+        font-size: 16px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 10px 24px rgba(16,185,129,.35); transition: transform .1s, box-shadow .15s, filter .15s; }
+  .go:hover { filter: brightness(1.06); box-shadow: 0 12px 28px rgba(16,185,129,.45); }
+  .go:active { transform: translateY(1px); }
+  .go:disabled { opacity: .6; cursor: wait; }
+
+  /* ===== Temas (fundo escuro) ===== */
+  :root, body[data-tema="roxo"] { --g1: #3B2A8C; --g2: #7A1236; --b0: #0B0D2A; --t1: #1E1B4B; --t2: #3730A3; --t3: #9F1239;
+                                   --pan: rgba(60,64,150,.28); --pbr: rgba(120,130,240,.28); --sideb: rgba(10,12,40,.55); --tx2: #A6B0E8; }
+  .lido-fundo { position: fixed; inset: 0; z-index: 100; background: rgba(6,12,30,.55); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .lido { background: #fff; color: #111827; width: 100%; max-width: 440px; border-radius: 18px; padding: 22px 22px 18px; box-shadow: 0 24px 60px rgba(0,0,0,.35); font-family: var(--font); }
+  .lido-ic { width: 42px; height: 42px; border-radius: 50%; background: #FEF3C7; color: #B45309; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .lido h3 { margin: 0 0 10px; font-size: 18px; }
+  .lido ul { margin: 0 0 12px; padding-left: 18px; font-size: 13.5px; line-height: 1.5; max-height: 180px; overflow: auto; }
+  .lido ul li { display: list-item !important; grid-template-columns: none !important; border: 0 !important; background: none !important; padding: 0 !important; margin: 0 0 4px !important; box-shadow: none !important; }
+  .lido p { margin: 0 0 16px; font-size: 13.5px; color: #374151; }
+  .lido-bt { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lido-bt button { height: 44px; border-radius: 12px; border: 0; font-family: var(--font); font-weight: 800; font-size: 14px; cursor: pointer; }
+  .lido-bt .sub { background: #B45309; color: #fff; grid-column: 1 / -1; }
+  .lido-bt .can { background: #F3F4F6; color: #374151; grid-column: 1 / -1; }
+  body[data-tema="marinho"] { --g1: #1D4ED8; --g2: #0E7490; --b0: #06122A; --t1: #0B1E3F; --t2: #1D4ED8; --t3: #0E7490;
+                              --pan: rgba(37,99,235,.18); --pbr: rgba(96,165,250,.28); --sideb: rgba(4,12,30,.6); --tx2: #93C5FD; }
+  body[data-tema="grafite"] { --g1: #374151; --g2: #1F2937; --b0: #0B0F14; --t1: #111827; --t2: #374151; --t3: #4B5563;
+                              --pan: rgba(148,163,184,.12); --pbr: rgba(148,163,184,.25); --sideb: rgba(0,0,0,.35); --tx2: #CBD5E1; }
+  body[data-tema="petroleo"] { --g1: #0F766E; --g2: #155E75; --b0: #031A1C; --t1: #042F2E; --t2: #0F766E; --t3: #155E75;
+                               --pan: rgba(20,184,166,.14); --pbr: rgba(94,234,212,.25); --sideb: rgba(0,20,20,.5); --tx2: #99F6E4; }
+  body { background: radial-gradient(900px 600px at 85% -10%, var(--g1) 0%, transparent 60%), radial-gradient(800px 600px at -10% 110%, var(--g2) 0%, transparent 55%), var(--b0);
+         background-attachment: fixed; }
+  .top { background: linear-gradient(135deg, var(--t1) 0%, var(--t2) 55%, var(--t3) 130%); }
+  .side { background: var(--sideb); border-right-color: var(--pbr); }
+  .side .mt, .kvazio, #fhl li small, #fhl li.vz { color: var(--tx2); }
+  .side button:hover { background: var(--pan); }
+  .fhist { background: var(--pan); border-color: var(--pbr); }
+  .tema { margin: 22px 10px 0; }
+  .tema .mt { margin: 0 0 10px; }
+  .tema .sws { display: flex; gap: 10px; }
+  .tema button.tw { width: 28px; height: 28px; min-width: 0; padding: 0; margin: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); cursor: pointer; }
+  .tema button.tw.on { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.18); background-clip: padding-box; }
+  .tema .tw[data-t="roxo"] { background: linear-gradient(135deg, #3730A3, #9F1239) !important; }
+  .tema .tw[data-t="marinho"] { background: linear-gradient(135deg, #0B1E3F, #1D4ED8) !important; }
+  .tema .tw[data-t="grafite"] { background: linear-gradient(135deg, #111827, #4B5563) !important; }
+  .tema .tw[data-t="petroleo"] { background: linear-gradient(135deg, #042F2E, #0F766E) !important; }
+  @media (max-width: 900px) { .tema { margin: 0 0 0 auto; display: flex; align-items: center; } .tema .mt { display: none; } .tema .sws { gap: 6px; } .tema button.tw { width: 22px; height: 22px; } }
+
+  /* ===== Barra de filtros em modo claro ===== */
+  .ktool { background: #fff; border: 1px solid #E6E8F0; box-shadow: 0 10px 30px rgba(0,0,0,.25); color: var(--ink); }
+  .ktool label.kl { color: #64748B; }
+  .ktool input.ki, .ktool select.ki { background: #F8F9FC; color: #0F172A; border: 1.5px solid #D5D9E5; }
+  .ktool input.ki:focus, .ktool select.ki:focus { border-color: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,.15); background: #fff; }
+  .ktool .sw { background: #F8F9FC; border: 1.5px dashed #D5D9E5; color: var(--ink); }
+  .ktool .sw .tx small { color: #64748B; }
+  .ktool .sw.on { border: 1.5px solid #F59E0B; background: #FFFBEB; }
+  .kseg { background: #F1F5F9; border: 1px solid #E2E8F0; }
+  .kseg button { color: #64748B; }
+  .kseg button.on { background: #0F172A; color: #fff; }
+
+  /* ===== Linha selecionada na conferência ===== */
+  .ft tbody tr { cursor: pointer; }
+  .ft tbody tr.sel td { background: #DBEAFE !important; border-top: 2px solid #2563EB; border-bottom: 2px solid #2563EB; }
+  .ft tbody tr.sel td:first-child { box-shadow: inset 5px 0 0 #2563EB; color: #1D4ED8; }
+  .ft tbody tr.sel td.sku, .ft tbody tr.sel td.dsc { color: #1E3A8A; }
+  @media (max-width: 700px) { .ft tbody tr.sel { background: #DBEAFE !important; box-shadow: inset 5px 0 0 #2563EB; } }
+</style>
+</head>
+<body>
+<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div></nav>
+<div class="app">
+<div class="top"><div class="topin">
+  <div class="logo"><img alt="BYD" src="img/byd.png"></div>
+  <div class="tt"><b>Inventário AUTO · BR05</b><small>Contagem de estoque<span class="pv"> · Pós-Vendas</span></small></div>
+</div></div>
+
+<form class="wrap" id="f" autocomplete="off">
+  <div class="sess">
+    <div class="box nmbox">
+      <span class="k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Conferente</span>
+      <div class="chips" id="names"></div>
+      <input id="resp" placeholder="Toque para escolher ou digite" autocomplete="off">
+      <div class="nmdd" id="namesdd"></div>
+    </div>
+    <label class="box" for="turno">
+      <span class="k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Turno</span>
+      <select id="turno">
+        <option value="">—</option>
+        <option value="1º turno">1º turno</option>
+        <option value="2º turno">2º turno</option>
+        <option value="3º turno">3º turno</option>
+      </select>
+    </label>
+  </div>
+  <div class="sess">
+    <label class="box" for="loc">
+      <span class="k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Endereço</span>
+      <span class="in">
+        <input id="loc" placeholder="Buscar endereço" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="opts">
+        <svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </label>
+    <div class="opts" id="opts" role="listbox"></div>
+  </div>
+
+  <div class="card">
+    <label class="lab" for="cod"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>Código do material</label>
+    <div class="field">
+      <svg class="scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 7v10M12 7v10M16 7v10"/></svg>
+      <input id="cod" placeholder="Bipe ou digite o código" inputmode="text" autocapitalize="characters">
+      <div class="opts" id="codopts" role="listbox"></div>
+    </div>
+    <div class="desc" id="desc"></div>
+
+    <label class="lab" for="qtd"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg>Quantidade encontrada</label>
+    <input id="qtd" inputmode="decimal" placeholder="0">
+
+    <label class="sw" id="sw">
+      <input type="checkbox" id="seg">
+      <span class="tg" aria-hidden="true"></span>
+      <span class="tx"><b>2ª contagem</b><small>Ative apenas ao recontar um item divergente</small></span>
+    </label>
+    <button class="go" id="btn" type="submit"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span id="btnTx">Lançar contagem</span></button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="sect"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Últimos lançamentos <span class="n" id="nHist"></span>
+    <span class="live"><span class="dot" id="dot"></span><span id="upd">Conectando…</span></span></div>
+  <ul id="hist"></ul>
+
+</form>
+</div>
+<div class="fview" id="fview">
+<div class="fmain">
+  <div class="ktool">
+    <div class="fr">
+      <label class="kl" for="fresp">Conferente</label>
+      <div class="chips" id="fnames"></div>
+      <input class="ki" id="fresp" placeholder="Toque para escolher ou digite" autocomplete="off">
+      <div class="nmdd" id="fnamesdd"></div>
+    </div>
+    <div class="fr">
+      <label class="kl" for="fturno">Turno</label>
+      <select class="ki" id="fturno">
+        <option value="">—</option>
+        <option value="1º turno">1º turno</option>
+        <option value="2º turno">2º turno</option>
+        <option value="3º turno">3º turno</option>
+      </select>
+    </div>
+    <div class="kf">
+      <label class="kl" for="ff">Endereço</label>
+      <input class="ki" id="ff" list="kfl" placeholder="Ex.: T02 R33 B" autocomplete="off" autocapitalize="characters">
+    </div>
+    <label class="sw" id="fsw">
+      <input type="checkbox" id="fseg">
+      <span class="tg" aria-hidden="true"></span>
+      <span class="tx"><b>2ª contagem</b><small>Recontagem de divergência</small></span>
+    </label>
+  </div>
+  <div class="kmsg" id="fmsg"></div>
+  <div class="fcard">
+    <div class="ftit" id="ftit"></div>
+    <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;AUTO</div></div>
+    <div class="fscroll"><table class="ft">
+      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="esf">QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
+      <tbody id="fbody"><tr><td colspan="7" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
+    </table></div>
+    <button type="button" class="fadd" id="fadd">+ Adicionar item encontrado fora da lista</button>
+    <div class="fbar">
+      <div class="fres" id="fres">Nenhum item carregado.</div>
+      <button type="button" class="go" id="fgo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span id="fgoTx">Lançar conferência</span></button>
+    </div>
+  </div>
+</div>
+<aside class="fhist">
+  <div class="fhh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>Posições lançadas</div>
+  <ul id="fhl"></ul>
+</aside>
+</div>
+<div class="kview" id="kview">
+  <div class="ktool">
+    <div class="kf">
+      <label class="kl" for="kf">Endereço do Kardex</label>
+      <input class="ki" id="kf" list="kfl" placeholder="Ex.: T02 R33 B" autocomplete="off" autocapitalize="characters">
+      <datalist id="kfl"></datalist>
+    </div>
+    <div class="fr">
+      <label class="kl" for="kconf">Conferido por</label>
+      <input class="ki" id="kconf" placeholder="Nome" autocomplete="off">
+    </div>
+    <div class="fr">
+      <label class="kl" for="kcria">Criado por</label>
+      <input class="ki" id="kcria" placeholder="Nome" autocomplete="off">
+    </div>
+    <div>
+      <label class="kl">Fonte</label>
+      <div class="kseg"><button type="button" data-f="inv">Inventariados</button><button type="button" class="on" data-f="sbf">SBF</button></div>
+    </div>
+    <label class="sw" id="ksw">
+      <input type="checkbox" id="kseg2">
+      <span class="tg" aria-hidden="true"></span>
+      <span class="tx"><b>2ª contagem</b><small>Só os itens recontados</small></span>
+    </label>
+    <button type="button" class="kgo" id="kgo" title="Imprimir na Expedição Auto (10.42.11.189)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>IMPRIMIR · EXPEDIÇÃO AUTO</button>
+  </div>
+  <div class="kmsg" id="kmsg"></div>
+  <div class="kprev" id="kprev"><div id="kardex"><div class="kvazio">Digite um endereço (ex.: <b>T02 R33 B</b>) para ver o Kardex como ele sai na impressão.</div></div></div>
+</div>
+
+<style>
+  .robo-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 18px; background: rgba(5,8,20,.68); backdrop-filter: blur(4px); }
+  .robo-modal[hidden] { display: none; }
+  .robo-card { position: relative; width: min(440px, 100%); background: #fff; color: #0F172A; border-radius: 22px; padding: 26px 24px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.55); font-family: var(--font, "Manrope", system-ui, sans-serif); animation: roboIn .25s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes roboIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  .robo-x { position: absolute; right: 14px; top: 12px; width: 32px; height: 32px; border: 0; border-radius: 9px; background: #F1F5F9; color: #475569; font-size: 15px; cursor: pointer; }
+  .robo-x:hover { background: #E2E8F0; }
+  .robo-ic { width: 54px; height: 54px; border-radius: 15px; display: grid; place-items: center; font-size: 28px; background: linear-gradient(135deg, #10B981, #059669); margin-bottom: 13px; box-shadow: 0 8px 20px rgba(16,185,129,.35); }
+  .robo-card h2 { margin: 0 0 4px; font-size: 21px; font-weight: 800; }
+  .robo-sub { margin: 0 0 16px; color: #475569; font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .robo-passos { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; color: #334155; line-height: 1.5; }
+  .robo-passos b { color: #0F172A; }
+  .robo-nota { margin: 0 0 18px; font-size: 12.5px; color: #64748B; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 11px 13px; line-height: 1.55; }
+  .robo-go { display: block; text-align: center; text-decoration: none; background: linear-gradient(135deg, #10B981, #059669); color: #fff; font-weight: 800; font-size: 15px; padding: 14px; border-radius: 13px; }
+  .robo-go:hover { filter: brightness(1.06); }
+</style>
+<div class="robo-modal" id="roboModal" hidden>
+  <div class="robo-card" role="dialog" aria-modal="true" aria-labelledby="roboTit">
+    <button type="button" class="robo-x" id="roboX" aria-label="Fechar">✕</button>
+    <div class="robo-ic">🤖</div>
+    <h2 id="roboTit">Robô do Inventário</h2>
+    <p class="robo-sub">Ele lança sozinho no TOTVS as diferenças da contagem — sem precisar digitar à mão.</p>
+    <ol class="robo-passos">
+      <li><b>Você conta e lança</b> as posições normalmente aqui no app.</li>
+      <li>As diferenças viram <b>Baixa (602)</b> e <b>Alta (202)</b> nas abas da planilha.</li>
+      <li>O Robô <b>lê essas abas e faz os movimentos no TOTVS</b> automaticamente.</li>
+    </ol>
+    <p class="robo-nota">Precisa ter o Robô instalado neste computador (rodar o <b>INSTALAR</b> uma vez). Ao abrir, confira os itens e clique em iniciar no próprio Robô.</p>
+    <a class="robo-go" href="roboinventario://abrir">Abrir o Robô</a>
+  </div>
+</div>
+
+<script>
+  // Ponte GitHub Pages -> planilha (API do Apps Script). Mantém a mesma interface do google.script.run.
+  var API = 'https://script.google.com/macros/s/COLE_A_URL_EXEC_DO_APPS_SCRIPT_DO_BR05/exec';
+  (function () {
+    function get(acao, p) {
+      var q = Object.keys(p || {}).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(p[k] == null ? '' : p[k]); }).join('&');
+      return fetch(API + '?api=' + acao + (q ? '&' + q : ''), { redirect: 'follow' });
+    }
+    function post(corpo) { return fetch(API, { method: 'POST', body: JSON.stringify(corpo), redirect: 'follow' }); }
+    var ROTAS = {
+      listarEnderecos: function () { return get('base'); },
+      listarSkus: function () { return get('skus'); },
+      listarConferentes: function () { return get('conferentes'); },
+      buscarProduto: function (codigo, locacao) { return get('buscar', { codigo: codigo, locacao: locacao }); },
+      ultimosLancamentos: function (qtd) { return get('ultimos', { qtd: qtd }); },
+      salvarContagem: function (d) { var c = { acao: 'salvar' }; for (var k in d) c[k] = d[k]; return post(c); },
+      recalcular: function () { return post({ acao: 'recalcular' }); },
+      salvarLote: function (d) { var c = { acao: 'salvarLote' }; for (var k in d) c[k] = d[k]; return post(c); },
+      kardex: function (filtro, fonte) { return get('kardex', { filtro: filtro, fonte: fonte }); },
+      jaLido: function (itens) { return get('jalido', { itens: JSON.stringify(itens) }); },
+      statusTurnos: function () { return get('status_turnos'); }
+    };
+    function runner(ok, falha) {
+      var r = {
+        withSuccessHandler: function (f) { return runner(f, falha); },
+        withFailureHandler: function (f) { return runner(ok, f); }
+      };
+      Object.keys(ROTAS).forEach(function (nome) {
+        r[nome] = function () {
+          ROTAS[nome].apply(null, arguments)
+            .then(function (resp) { return resp.json(); })
+            .then(function (j) { if (j && j.ok) { if (ok) ok(j.dados); } else if (falha) falha(new Error((j && j.erro) || 'Erro na planilha')); })
+            .catch(function (e) { if (falha) falha(e); });
+        };
+      });
+      return r;
+    }
+    window.google = { script: { run: runner(null, null) } };
+  })();
+</script>
+<script>
+  var ENDERECOS = [];
+  var SKUS = [], SKU_IDX = [];
+  var CONFERENTES = [];
+  var BASE_T = '';
+  var $ = function (id) { return document.getElementById(id); };
+  var estado = { resp: '', loc: '', turno: '', nomes: [] };
+
+  // Quantidade localizada: 10.520/10,520 = 10520; 1,2 = 1.2 (ex.: KG).
+  // Evita que ponto de milhar vire fração sem bloquear medidas decimais reais.
+  function numeroQuantidade(valor) {
+    var s = String(valor == null ? '' : valor).trim().replace(/\s+/g, '');
+    if (/^\d+$/.test(s)) return Number(s);
+    if (/^\d{1,3}([.,]\d{3})+$/.test(s)) return Number(s.replace(/[.,]/g, ''));
+    if (/^\d+[.,]\d{1,2}$/.test(s)) return Number(s.replace(',', '.'));
+    return null;
+  }
+
+  // ---- memória do aparelho (mantém último conferente e endereço) ----
+  function ler(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function gravar(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function limpa(v) { return String(v || '').trim().toUpperCase().replace(/\s+/g, ' '); }
+  estado.resp = ler('inv_resp');
+  estado.loc = ler('inv_loc');
+  estado.turno = ler('inv_turno') || '';
+  estado.nomes = estado.resp ? estado.resp.split(' / ').map(function (s) { return s.trim(); }).filter(Boolean) : [];
+  renderNomes();
+  $('loc').value = estado.loc;
+  if ($('turno')) $('turno').value = estado.turno;
+  if ($('fturno')) $('fturno').value = estado.turno;
+  $('seg').checked = ler('inv_seg') === '1';
+  function pintarSeg() { $('sw').classList.toggle('on', $('seg').checked); $('btnTx').textContent = $('seg').checked ? 'Lançar 2ª contagem' : 'Lançar contagem'; }
+  $('seg').addEventListener('change', function () { gravar('inv_seg', this.checked ? '1' : ''); pintarSeg(); $('cod').focus(); });
+
+  // ---- conferente: nomes (chips, 1+ pessoas, editável/removível) ----
+  function syncNomes() { estado.resp = estado.nomes.join(' / '); gravar('inv_resp', estado.resp); renderNomes(); try { if (typeof fCab === 'function' && document.body.classList.contains('v-f')) fCab(); } catch (e) {} }
+  function addNome(v) { v = limpa(v); if (!v) return; if (estado.nomes.indexOf(v) < 0) estado.nomes.push(v); syncNomes(); }
+  function commitNome(inp) { if (!inp) return; addNome(inp.value); inp.value = ''; }
+  function renderNomes() {
+    [['names', 'resp'], ['fnames', 'fresp']].forEach(function (p) {
+      var box = $(p[0]); if (!box) return;
+      box.innerHTML = estado.nomes.map(function (n, i) {
+        return '<span class="chip"><span class="nm" data-i="' + i + '" title="Editar">' + esc(n) + '</span><button type="button" class="x" data-i="' + i + '" aria-label="Remover">×</button></span>';
+      }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.x'), function (b) {
+        b.addEventListener('click', function () { estado.nomes.splice(+b.getAttribute('data-i'), 1); syncNomes(); });
+      });
+      Array.prototype.forEach.call(box.querySelectorAll('.nm'), function (s) {
+        s.addEventListener('click', function () { var i = +s.getAttribute('data-i'), n = estado.nomes[i]; estado.nomes.splice(i, 1); syncNomes(); var inp = $(p[1]); if (inp) { inp.value = n; inp.focus(); } });
+      });
+    });
+  }
+  function salvarResp() { commitNome($('resp')); }
+  function toggleNome(n) { n = limpa(n); if (!n) return; var i = estado.nomes.indexOf(n); if (i >= 0) estado.nomes.splice(i, 1); else estado.nomes.push(n); syncNomes(); }
+  function nmHide(id) { var dd = $(id); if (dd) dd.classList.remove('on'); }
+  function nmRender(inputId, ddId) {
+    var inp = $(inputId), dd = $(ddId); if (!dd || !inp) return;
+    var termo = limpa(inp.value);
+    var lista = CONFERENTES.slice();
+    estado.nomes.forEach(function (n) { if (lista.indexOf(n) < 0) lista.push(n); });
+    lista.sort();
+    var filt = termo ? lista.filter(function (n) { return n.indexOf(termo) >= 0; }) : lista;
+    var html = filt.slice(0, 60).map(function (n) {
+      var sel = estado.nomes.indexOf(n) >= 0;
+      return '<div class="o' + (sel ? ' sel' : '') + '" data-n="' + esc(n) + '"><span class="ck">' + (sel ? '✓' : '') + '</span>' + esc(n) + '</div>';
+    }).join('');
+    if (termo && lista.indexOf(termo) < 0) html += '<div class="o add" data-add="' + esc(termo) + '"><span class="ck">+</span>Adicionar "' + esc(termo) + '"</div>';
+    if (!html) html = '<div class="o" style="color:var(--dim);cursor:default">Digite um nome para adicionar</div>';
+    dd.innerHTML = html;
+    Array.prototype.forEach.call(dd.querySelectorAll('.o[data-n]'), function (o) {
+      o.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      o.addEventListener('click', function () { toggleNome(o.getAttribute('data-n')); nmRender(inputId, ddId); });
+    });
+    Array.prototype.forEach.call(dd.querySelectorAll('.o[data-add]'), function (o) {
+      o.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      o.addEventListener('click', function () { addNome(o.getAttribute('data-add')); inp.value = ''; nmRender(inputId, ddId); });
+    });
+    dd.classList.add('on');
+  }
+  $('resp').addEventListener('change', salvarResp);
+  $('resp').addEventListener('focus', function () { nmRender('resp', 'namesdd'); });
+  $('resp').addEventListener('input', function () { nmRender('resp', 'namesdd'); });
+  $('resp').addEventListener('blur', function () { setTimeout(function () { nmHide('namesdd'); }, 160); });
+  function salvarTurno(v) { estado.turno = v || ''; gravar('inv_turno', estado.turno); if ($('turno')) $('turno').value = estado.turno; if ($('fturno')) $('fturno').value = estado.turno; }
+  if ($('turno')) $('turno').addEventListener('change', function () { salvarTurno($('turno').value); });
+  if ($('fturno')) $('fturno').addEventListener('change', function () { salvarTurno($('fturno').value); });
+
+  // Bloqueio fail-closed: nenhum lançamento em dia útil sem snapshot SBF/MB52 do turno.
+  function validarBaseTurno(ok, falha) {
+    if (!estado.turno) {
+      mostrar('err', 'Selecione o turno antes de lançar.');
+      if (falha) falha();
+      return;
+    }
+    google.script.run
+      .withSuccessHandler(function (st) {
+        var liberado = !!(st && (st.domingo || (st.sabado ? st.algum : st.resets && st.resets[estado.turno])));
+        if (!liberado) {
+          var msg = 'BLOQUEADO: SBF/MB52 do ' + estado.turno + ' ainda não foi atualizada hoje.';
+          mostrar('err', msg);
+          if (typeof fMsg === 'function') fMsg(msg, true);
+          if (falha) falha();
+          return;
+        }
+        ok(st);
+      })
+      .withFailureHandler(function () {
+        var msg = 'BLOQUEADO: não foi possível confirmar a atualização SBF/MB52. Tente novamente.';
+        mostrar('err', msg);
+        if (typeof fMsg === 'function') fMsg(msg, true);
+        if (falha) falha();
+      })
+      .statusTurnos();
+  }
+  $('resp').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commitNome($('resp')); nmRender('resp', 'namesdd'); }
+    else if (e.key === 'Escape') { nmHide('namesdd'); }
+  });
+
+  // ---- endereço: caixa de seleção com pesquisa ----
+  function semAcento(s) { return String(s).toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim(); }
+  var END_IDX = ENDERECOS.map(function (e) { return { v: e, k: semAcento(e) }; });
+  var filtrados = [], ativo = 0, LIM = 100;
+
+  function abrirLista() { ativo = 0; listar(); $('opts').classList.add('on'); $('loc').setAttribute('aria-expanded', 'true'); }
+  function fecharLista() { $('opts').classList.remove('on'); $('loc').setAttribute('aria-expanded', 'false'); }
+
+  function listar() {
+    var digitado = $('loc').value;
+    var termo = semAcento(digitado === estado.loc ? '' : digitado);
+    var box = $('opts');
+    box.innerHTML = '';
+    if (!termo) filtrados = END_IDX.slice();
+    else {
+      var comeca = [], contem = [];
+      END_IDX.forEach(function (o) { var i = o.k.indexOf(termo); if (i === 0) comeca.push(o); else if (i > 0) contem.push(o); });
+      filtrados = comeca.concat(contem);
+    }
+    var frag = document.createDocumentFragment();
+    filtrados.slice(0, LIM).forEach(function (o, idx) {
+      var d = document.createElement('div');
+      d.className = 'opt' + (o.v === estado.loc ? ' sel' : '') + (idx === ativo ? ' ativo' : '');
+      d.setAttribute('role', 'option');
+      var i = termo ? o.k.indexOf(termo) : -1, s = document.createElement('span');
+      if (i >= 0) {
+        s.appendChild(document.createTextNode(o.v.slice(0, i)));
+        var m = document.createElement('mark'); m.textContent = o.v.slice(i, i + termo.length); s.appendChild(m);
+        s.appendChild(document.createTextNode(o.v.slice(i + termo.length)));
+      } else s.textContent = o.v;
+      d.appendChild(s);
+      d.addEventListener('mousedown', function (ev) { ev.preventDefault(); });  // não perde o foco
+      d.addEventListener('click', function () { escolher(o.v); });
+      frag.appendChild(d);
+    });
+    box.appendChild(frag);
+    if (filtrados.length > LIM) {
+      var inf = document.createElement('div'); inf.className = 'info';
+      inf.textContent = 'Mostrando ' + LIM + ' de ' + filtrados.length + ' — digite para filtrar.';
+      box.appendChild(inf);
+    }
+    if (!filtrados.length && termo) {
+      var n = document.createElement('div'); n.className = 'opt novo';
+      n.textContent = 'Endereço não cadastrado. Usar "' + limpa(digitado) + '" mesmo assim';
+      n.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      n.addEventListener('click', function () { escolher(limpa(digitado)); });
+      box.appendChild(n);
+    }
+  }
+  function escolher(v) {
+    estado.loc = v; gravar('inv_loc', v);
+    $('loc').value = v;
+    fecharLista();
+    $('cod').focus();
+    if ($('cod').value.trim()) { ultimoBuscado = ''; buscar(); }
+  }
+  function marcarAtivo() {
+    var itens = $('opts').querySelectorAll('.opt');
+    itens.forEach(function (el, i) { el.classList.toggle('ativo', i === ativo); });
+    if (itens[ativo]) itens[ativo].scrollIntoView({ block: 'nearest' });
+  }
+
+  $('loc').addEventListener('focus', function () { this.select(); abrirLista(); });
+  $('loc').addEventListener('click', function () { if (!$('opts').classList.contains('on')) abrirLista(); });
+  $('loc').addEventListener('input', function () { ativo = 0; listar(); $('opts').classList.add('on'); });
+  $('loc').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var exato = END_IDX.filter(function (o) { return o.k === semAcento($('loc').value); })[0];
+      if (exato) escolher(exato.v);
+      else if (filtrados.length) escolher(filtrados[Math.min(ativo, filtrados.length - 1)].v);
+      else if (limpa($('loc').value)) escolher(limpa($('loc').value));
+    } else if (e.key === 'Escape') { $('loc').value = estado.loc; fecharLista(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      var max = Math.min(filtrados.length, LIM) - 1;
+      ativo = Math.max(0, Math.min(max, ativo + (e.key === 'ArrowDown' ? 1 : -1)));
+      marcarAtivo();
+    }
+  });
+  // Saiu do campo sem escolher: volta para o último endereço escolhido
+  $('loc').addEventListener('blur', function () {
+    setTimeout(function () { fecharLista(); $('loc').value = estado.loc; }, 150);
+  });
+
+  // ---- código: autocomplete por prefixo (como o endereço) + bipar/digitar ----
+  var codFiltrados = [], codAtivo = -1;
+  function codNorm(s) { return String(s || '').toUpperCase().replace(/\s+/g, ''); }
+  function codListar() {
+    var termo = codNorm($('cod').value), box = $('codopts');
+    if (termo.length < 1 || !SKU_IDX.length) { box.classList.remove('on'); box.innerHTML = ''; codFiltrados = []; return; }
+    var comeca = [], contem = [];
+    for (var i = 0; i < SKU_IDX.length; i++) {
+      var p = SKU_IDX[i].k.indexOf(termo);
+      if (p === 0) comeca.push(SKU_IDX[i]); else if (p > 0) contem.push(SKU_IDX[i]);
+    }
+    codFiltrados = comeca.concat(contem);
+    if (!codFiltrados.length) { box.classList.remove('on'); box.innerHTML = ''; return; }
+    var frag = document.createDocumentFragment();
+    codFiltrados.slice(0, 80).forEach(function (o, idx) {
+      var d = document.createElement('div');
+      d.className = 'opt' + (idx === codAtivo ? ' ativo' : '');
+      d.setAttribute('role', 'option');
+      var tpos = o.k.indexOf(termo), b = document.createElement('b');
+      if (tpos >= 0) { b.appendChild(document.createTextNode(o.v.slice(0, tpos))); var mk = document.createElement('mark'); mk.textContent = o.v.slice(tpos, tpos + termo.length); b.appendChild(mk); b.appendChild(document.createTextNode(o.v.slice(tpos + termo.length))); } else b.textContent = o.v;
+      var sm = document.createElement('small'); sm.className = 'cdesc'; sm.textContent = o.d || '';
+      d.appendChild(b); d.appendChild(sm);
+      d.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      d.addEventListener('click', function () { codEscolher(o.v); });
+      frag.appendChild(d);
+    });
+    box.innerHTML = ''; box.appendChild(frag);
+    if (codFiltrados.length > 80) { var inf = document.createElement('div'); inf.className = 'info'; inf.textContent = 'Mostrando 80 de ' + codFiltrados.length + ' — digite mais números.'; box.appendChild(inf); }
+    box.classList.add('on');
+  }
+  function codMarcar() { var it = $('codopts').querySelectorAll('.opt'); for (var i = 0; i < it.length; i++) it[i].classList.toggle('ativo', i === codAtivo); if (it[codAtivo]) it[codAtivo].scrollIntoView({ block: 'nearest' }); }
+  function codFechar() { $('codopts').classList.remove('on'); codAtivo = -1; }
+  function codEscolher(v) { $('cod').value = v; codFechar(); ultimoBuscado = ''; buscar(); $('qtd').focus(); }
+  $('cod').addEventListener('input', function () { codAtivo = -1; codListar(); });
+  $('cod').addEventListener('blur', function () { setTimeout(function () { codFechar(); buscar(); }, 160); });
+  $('cod').addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (!codFiltrados.length) return;
+      e.preventDefault(); $('codopts').classList.add('on');
+      var max = Math.min(codFiltrados.length, 80) - 1;
+      codAtivo = codAtivo < 0 ? 0 : Math.max(0, Math.min(max, codAtivo + (e.key === 'ArrowDown' ? 1 : -1)));
+      codMarcar();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (codAtivo >= 0 && codFiltrados[codAtivo]) codEscolher(codFiltrados[codAtivo].v);
+      else { codFechar(); buscar(); $('qtd').focus(); }
+    } else if (e.key === 'Escape') { codFechar(); }
+  });
+  var ultimoBuscado = '';
+  function buscar() {
+    var c = $('cod').value.trim();
+    var d = $('desc');
+    if (!c) { d.textContent = ''; d.className = 'desc'; ultimoBuscado = ''; return; }
+    if (c === ultimoBuscado) return;
+    ultimoBuscado = c;
+    d.textContent = 'Buscando…'; d.className = 'desc';
+    google.script.run
+      .withSuccessHandler(function (r) {
+        if ($('cod').value.trim() !== c) return;
+        if (!r.encontrado) { d.textContent = 'Código não encontrado na base. Confira o número.'; d.className = 'desc warn'; return; }
+        if (r.produto !== c.toUpperCase()) { $('cod').value = r.produto; ultimoBuscado = r.produto; }
+        d.textContent = r.descricao + (r.enderecoNoSistema === false ? ' · sem saldo neste endereço no sistema' : '');
+        d.className = 'desc ' + (r.enderecoNoSistema === false ? 'warn' : 'ok');
+      })
+      .withFailureHandler(function () { d.textContent = ''; })
+      .buscarProduto(c, estado.loc);
+  }
+
+  // Abre já no campo certo
+  if (!estado.resp) $('resp').focus(); else if (!estado.loc) $('loc').focus(); else $('cod').focus();
+
+  // ---- lançar ----
+  $('f').addEventListener('submit', function (e) {
+    e.preventDefault();
+    salvarResp();
+    if (!estado.resp) { mostrar('err', 'Informe o conferente.'); $('resp').focus(); return; }
+    if (!estado.loc) { mostrar('err', 'Escolha o endereço.'); $('loc').focus(); return; }
+    var cod = $('cod').value.trim(), qtd = $('qtd').value.trim(), qtdNumero = numeroQuantidade(qtd);
+    if (!cod) { mostrar('err', 'Bipe ou digite o código do material.'); $('cod').focus(); return; }
+    if (qtdNumero === null) { mostrar('err', 'Quantidade inválida. Use inteiro, milhar (10.520) ou decimal de até 2 casas (1,20).'); $('qtd').focus(); return; }
+
+    qtd = String(qtdNumero);
+    var dados = { responsavel: estado.resp, locacao: estado.loc, codigo: cod, quantidade: qtd, segunda: $('seg').checked, origem: 'Avulsa', turno: estado.turno };
+    $('btn').disabled = true; $('btnTx').textContent = 'Conferindo…';
+    validarBaseTurno(function () {
+      jaLidoAntes([{ locacao: dados.locacao, codigo: cod }], dados.segunda, function (subst) {
+        if (subst === null) { mostrar('warn', 'Lançamento cancelado.'); pronto(); return; }
+        if (subst) dados.substituir = true;
+        $('btnTx').textContent = 'Salvando…';
+        enviarAvulsa(dados, qtd);
+      });
+    }, pronto);
+  });
+  function enviarAvulsa(dados, qtd) {
+    google.script.run
+      .withSuccessHandler(function (r) {
+        solicitarRecalculoHistorico(0);
+        atualizarLista();
+        mostrar(r.cadastrado ? 'ok' : 'warn',
+          '✔ ' + r.produto + ' · ' + qtd + ' un. em ' + dados.locacao + (r.cadastrado ? '' : ' — código fora da base, avise o responsável.'));
+        $('cod').value = ''; $('qtd').value = ''; $('desc').textContent = ''; ultimoBuscado = '';
+        $('cod').focus();
+        pronto();
+      })
+      .withFailureHandler(function (err) {
+        mostrar('err', 'Não salvou: ' + (err && err.message ? err.message : err) + ' Tente de novo.');
+        pronto();
+      })
+      .salvarContagem(dados);
+  }
+
+  // HISTÓRICO é a visão consolidada; LANÇAMENTOS continua como log técnico oculto.
+  // Se outro recálculo estiver em andamento, tenta novamente para não deixar o último lote para trás.
+  function solicitarRecalculoHistorico(tentativa) {
+    tentativa = tentativa || 0;
+    google.script.run
+      .withSuccessHandler(function (r) {
+        if (r && r.ocupado && tentativa < 4) {
+          setTimeout(function () { solicitarRecalculoHistorico(tentativa + 1); }, 3000);
+        }
+      })
+      .withFailureHandler(function () {
+        if (tentativa < 4) setTimeout(function () { solicitarRecalculoHistorico(tentativa + 1); }, 3000);
+      })
+      .recalcular();
+  }
+
+  // ---- aviso: posição já lida neste turno ----
+  // Mesma posição no mesmo turno NUNCA soma: cb(true) = substituir a anterior · cb(null) = cancelar
+  function jaLidoAntes(itens, segunda, cb) {
+    if (segunda) { cb(false); return; }   // 2ª contagem já substitui a 1ª
+    // Nunca libera uma possível substituição sem consultar a planilha.
+    // Antes, após 8 s (ou em falha de rede), cb(true) autorizava o lançamento
+    // silenciosamente e a pergunta de substituição não aparecia.
+    var feito = false, t = setTimeout(function () {
+      if (feito) return;
+      feito = true;
+      mostrar('err', 'Não foi possível verificar se este endereço já foi lançado. Tente novamente.');
+      fMsg('Não foi possível verificar se este endereço já foi lançado. Tente novamente.', true);
+      cb(null);
+    }, 15000);
+    google.script.run
+      .withSuccessHandler(function (r) {
+        if (feito) return; feito = true; clearTimeout(t);
+        var l = (r && r.lidos) || [];
+        if (!l.length) { cb(false); return; }
+        var lista = l.slice(0, 8).map(function (x) {
+          return '<li><b>' + esc(x.codigo) + '</b> em <b>' + esc(x.locacao) + '</b> — ' + fmtN(x.qtd) + ' un. por ' + esc(x.resp || '—') + (x.hora ? ' às ' + esc(x.hora) : '') + (x.n > 1 ? ' (' + x.n + ' lançamentos)' : '') + '</li>';
+        }).join('') + (l.length > 8 ? '<li>… e mais ' + (l.length - 8) + '</li>' : '');
+        avisoLido((l.length === 1 ? 'Esta posição já foi lida neste turno' : l.length + ' posições já foram lidas neste turno'), lista, cb);
+      })
+      .withFailureHandler(function () {
+        if (feito) return;
+        feito = true;
+        clearTimeout(t);
+        mostrar('err', 'Não foi possível verificar se este endereço já foi lançado. Tente novamente.');
+        fMsg('Não foi possível verificar se este endereço já foi lançado. Tente novamente.', true);
+        cb(null);
+      })
+      .jaLido(itens);
+  }
+  function fmtN(v) { return String(Math.round((Number(v) || 0) * 1000) / 1000).replace('.', ','); }
+  function avisoLido(titulo, lista, cb) {
+    var fundo = document.createElement('div');
+    fundo.className = 'lido-fundo';
+    fundo.innerHTML = '<div class="lido" role="dialog" aria-modal="true"><div class="lido-ic">!</div><h3>' + esc(titulo) + '</h3>' +
+      '<ul>' + lista + '</ul><p>A mesma posição não soma. Deseja <b>substituir</b> a contagem anterior? A anterior fica marcada como <i>Anulado</i> e vale só a nova.</p>' +
+      '<div class="lido-bt"><button type="button" class="sub">Substituir</button><button type="button" class="can">Cancelar</button></div></div>';
+    document.body.appendChild(fundo);
+    function fim(v) { document.removeEventListener('keydown', tecla); fundo.remove(); cb(v); }
+    function tecla(e) { if (e.key === 'Escape') fim(null); }
+    document.addEventListener('keydown', tecla);
+    fundo.querySelector('.sub').onclick = function () { fim(true); };
+    fundo.querySelector('.can').onclick = function () { fim(null); };
+    fundo.querySelector('.sub').focus();
+  }
+
+  function pronto() { $('btn').disabled = false; pintarSeg(); }
+  function mostrar(tipo, texto) { var m = $('msg'); m.className = 'msg ' + tipo; m.textContent = texto; }
+
+  // ---- lista ao vivo (todos os conferentes) + base atualizada sozinha ----
+  function atualizarLista() {
+    google.script.run
+      .withSuccessHandler(function (r) {
+        $('dot').className = 'dot';
+        $('upd').textContent = 'Atualizado às ' + r.agora;
+        $('nHist').textContent = r.total ? '· ' + r.total : '';
+        desenharLista(r.itens || []);
+        if (String(r.baseT) !== String(BASE_T)) { recarregarEnderecos(); recarregarSkus(); recarregarConferentes(); }
+      })
+      .withFailureHandler(function () { $('dot').className = 'dot off'; $('upd').textContent = 'Sem conexão — tentando de novo'; })
+      .ultimosLancamentos(15);
+  }
+  function recarregarEnderecos() {
+    google.script.run.withSuccessHandler(function (r) {
+      BASE_T = String(r.baseT);
+      ENDERECOS = r.enderecos || ENDERECOS;
+      END_IDX = ENDERECOS.map(function (e) { return { v: e, k: semAcento(e) }; });
+      if ($('opts').classList.contains('on')) listar();
+      montarKfl();
+    }).listarEnderecos();
+  }
+  function recarregarSkus() {
+    google.script.run.withSuccessHandler(function (r) {
+      SKUS = r.skus || SKUS;
+      SKU_IDX = SKUS.map(function (x) { return { v: String(x[0]), d: String(x[1] || ''), k: String(x[0]).toUpperCase() }; });
+    }).listarSkus();
+  }
+  function recarregarConferentes() {
+    google.script.run.withSuccessHandler(function (r) { CONFERENTES = (r.conferentes || []).slice(); }).listarConferentes();
+  }
+  function desenharLista(itens) {
+    var ul = $('hist');
+    ul.innerHTML = '';
+    if (!itens.length) { ul.innerHTML = '<li class="vazio">Nenhum lançamento ainda.</li>'; return; }
+    itens.forEach(function (x) {
+      var li = document.createElement('li');
+      var e2 = /2/.test(String(x.status));
+      if (/ANULAD|CANCEL/i.test(x.status)) li.className = 'anulada';
+      else if (e2) li.className = 'seg';
+      else if (estado.resp && String(x.conf).toUpperCase() === estado.resp) li.className = 'meu';
+      li.innerHTML = '<div class="q"></div><div class="t"><b></b><span></span></div><div class="h"><span></span><i></i></div>';
+      li.querySelector('.q').textContent = x.qtd;
+      li.querySelector('b').textContent = x.sku;
+      if (e2) { var t = document.createElement('span'); t.className = 'tag2'; t.textContent = '2ª'; li.querySelector('b').appendChild(t); }
+      li.querySelector('.t > span').textContent = x.end + ' · ' + (x.desc || '');
+      li.querySelector('.h span').textContent = String(x.hora).slice(0, 5);
+      li.querySelector('.h i').textContent = x.conf;
+      ul.appendChild(li);
+    });
+  }
+  // ---- KARDEX: ficha FO.SC.A.026 filtrada por endereço (Inventariados ou SBF) ----
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var kFonte = 'sbf';
+  function kNome(id) { var v = $(id).value.trim(); return v ? v.charAt(0).toUpperCase() + v.slice(1) : ''; }
+  function montarKardex(k) {
+    var cols = [38, 143, 297, 106, 67, 55, 55, 55, 56, 55];
+    var POR = 28, pags = Math.max(1, Math.ceil(k.itens.length / POR)), h = '';
+    for (var p = 0; p < pags; p++) {
+      h += '<div class="kpg"><div class="ktit">' + esc(k.titulo) + '</div><div class="kwrap"><table class="kx"><colgroup>' +
+           cols.map(function (w) { return '<col style="width:' + w + 'px">'; }).join('') + '</colgroup>';
+      h += '<tr class="r1"><td></td><td class="klogo"><img alt="BYD" src="img/byd.png"></td><td>KARDEX - MP / MERCADORIA</td>' +
+           '<td colspan="4" class="kcp">Conferido Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kconf">' + esc(kNome('kconf')) + '</span> / Criado Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kcria">' + esc(kNome('kcria')) + '</span></td><td colspan="3">FILIAL&nbsp;&nbsp;&nbsp;&nbsp;AUTO</td></tr>';
+      h += '<tr class="r2"><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRICÃO</th><th>LOCAL</th><th colspan="6">QUANT.</th></tr>';
+      for (var i = 0; i < POR; i++) {
+        var ix = p * POR + i, it = k.itens[ix] || { sku: '', desc: '', local: '', qtd: '' };
+        h += '<tr class="b' + (i === POR - 1 ? ' ult' : '') + '"><td>' + (k.itens[ix] ? ix + 1 : '') + '</td><td>' + esc(it.sku) + '</td><td class="l">' + esc(it.desc) + '</td><td>' + esc(it.local) + '</td>' +
+             '<td class="q q1">' + esc(it.qtd) + '</td><td class="q"></td><td class="q"></td><td class="q"></td><td class="q"></td><td class="q q6"></td></tr>';
+      }
+      h += '</table><div class="kfo"><b>FO.SC.A.026</b>Rev.00 - Set/25</div></div></div>';
+    }
+    $('kardex').innerHTML = h;
+  }
+  function montarKfl() {
+    var dl = $('kfl');
+    dl.innerHTML = '';
+    var pref = {};
+    (ENDERECOS || []).forEach(function (e) {
+      var s = String(e && e.end != null ? e.end : e);
+      var ps = s.split(' ');
+      for (var n = 1; n <= ps.length; n++) pref[ps.slice(0, n).join(' ')] = true;
+    });
+    Object.keys(pref).sort().forEach(function (v) { var o = document.createElement('option'); o.value = v; dl.appendChild(o); });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.kseg button'), function (bt) {
+    bt.addEventListener('click', function () {
+      kFonte = bt.getAttribute('data-f');
+      Array.prototype.forEach.call(document.querySelectorAll('.kseg button'), function (x) { x.classList.toggle('on', x === bt); });
+      if (kFonte === 'sbf') { $('kseg2').checked = false; $('ksw').classList.remove('on'); }
+    });
+  });
+  $('kseg2').addEventListener('change', function () {
+    var on = $('kseg2').checked;
+    $('ksw').classList.toggle('on', on);
+    if (on && kFonte === 'sbf') document.querySelector('.kseg button[data-f="inv"]').click();
+    $('kseg2').checked = on; $('ksw').classList.toggle('on', on);
+  });
+  // ---- Visualização ao vivo + impressão ----
+  var kAtual = null, kPedido = 0, kTimer = null;
+  function kParams() {
+    return { filtro: $('kf').value.trim(), fonte: (kFonte === 'inv' && $('kseg2').checked) ? 'inv2' : kFonte };
+  }
+  function ajustarZoom() {
+    var w = $('kprev').clientWidth;
+    $('kardex').style.zoom = w && w < 1123 ? (w / 1123).toFixed(3) : 1;
+  }
+  function kMsg(t, erro) { $('kmsg').textContent = t || ''; $('kmsg').className = 'kmsg' + (erro ? ' err' : ''); }
+  // SBF: cópia da aba SBF publicada junto com o site (sbf.json)
+  var SBF = null, sbfCarregando = null;
+  function carregarSBF() {
+    if (SBF) return Promise.resolve(SBF);
+    if (!sbfCarregando) sbfCarregando = fetch(API + '?api=sbf&t=' + Date.now()).then(function (r) { return r.json(); })
+      .then(function (j) { if (!j || !j.ok) throw new Error('sbf'); return j.dados; })
+      .catch(function () { return fetch('sbf.json?v=' + Date.now()).then(function (r) { return r.json(); }); })
+      .then(function (j) { SBF = j; setTimeout(function () { SBF = null; sbfCarregando = null; }, 10 * 60 * 1000); return j; });
+    return sbfCarregando;
+  }
+  function kardexSBF(filtro) {
+    return carregarSBF().then(function (s) {
+      var f = filtro.trim().toUpperCase().replace(/\s+/g, ' '), itens = [];
+      Object.keys(s.e).forEach(function (end) {
+        if (end === f) s.e[end].forEach(function (x) { itens.push({ sku: s.p[x[0]], desc: s.d[x[0]], local: end, qtd: x[1] }); });
+      });
+      itens.sort(function (a, b) { return a.local.localeCompare(b.local, 'pt-BR', { numeric: true }) || a.sku.localeCompare(b.sku, 'pt-BR', { numeric: true }); });
+      return { titulo: f, fonte: 'sbf', itens: itens, almoxarife: estado.resp || '', logo: '', gerado: s.gerado };
+    });
+  }
+  function visualizar(depois) {
+    var p = kParams();
+    if (!p.filtro) { kAtual = null; $('kardex').innerHTML = '<div class="kvazio">Digite um endereço (ex.: <b>T02 R33 B</b>) para ver o Kardex como ele sai na impressão.</div>'; kMsg(''); return; }
+    var n = ++kPedido;
+    kMsg('Carregando ' + p.filtro.toUpperCase() + '…');
+    var ok = function (k) {
+        if (n !== kPedido) return;
+        var enderecoExato = p.filtro.trim().toUpperCase().replace(/\s+/g, ' ');
+        k.itens = (k.itens || []).filter(function (item) {
+          return String(item.local || '').trim().toUpperCase().replace(/\s+/g, ' ') === enderecoExato;
+        });
+        k.titulo = enderecoExato;
+        kAtual = { chave: p.filtro.toUpperCase() + '|' + p.fonte, k: k };
+        var nome = k.fonte === 'sbf' ? 'no SBF' : k.fonte === 'inv2' ? 'com 2ª contagem' : 'inventariados';
+        montarKardex(k);
+        ajustarZoom();
+        kMsg(k.itens.length ? k.itens.length + ' ite' + (k.itens.length > 1 ? 'ns ' : 'm ') + nome + ' · ' + Math.max(1, Math.ceil(k.itens.length / 28)) + ' folha(s)' : 'Nenhum item ' + nome + ' em ' + k.titulo + '.');
+        if (k.gerado) kMsg($('kmsg').textContent + ' · SBF de ' + k.gerado);
+        if (depois) depois(k);
+    };
+    var falha = function (e) {
+      if (n !== kPedido) return;
+      var m = e && e.message ? e.message : String(e);
+      kMsg(/inválida/i.test(m) ? 'Inventariados ainda não liberado na planilha — use SBF por enquanto.' : 'Não gerou o Kardex: ' + m, true);
+    };
+    if (p.fonte === 'sbf') kardexSBF(p.filtro).then(ok, falha);
+    else google.script.run.withSuccessHandler(ok).withFailureHandler(falha).kardex(p.filtro, p.fonte);
+  }
+  function agendar() { clearTimeout(kTimer); kTimer = setTimeout(function () { visualizar(); }, 600); }
+  $('kf').addEventListener('input', agendar);
+  $('kf').addEventListener('keydown', function (e) { if (e.key === 'Enter') { clearTimeout(kTimer); visualizar(); } });
+  Array.prototype.forEach.call(document.querySelectorAll('.kseg button'), function (bt) { bt.addEventListener('click', function () { visualizar(); }); });
+  $('kseg2').addEventListener('change', function () { visualizar(); });
+  window.addEventListener('resize', ajustarZoom);
+  $('kardex').addEventListener('input', function (e) {
+    var el = e.target.closest && e.target.closest('.ked');
+    if (!el) return;
+    var id = el.getAttribute('data-k'), v = el.textContent.trim();
+    $(id).value = v; gravar('inv_' + id, v);
+    Array.prototype.forEach.call($('kardex').querySelectorAll('.ked[data-k="' + id + '"]'), function (x) { if (x !== el) x.textContent = v; });
+  });
+  $('kardex').addEventListener('keydown', function (e) { if (e.target.classList && e.target.classList.contains('ked') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+  ['kconf', 'kcria'].forEach(function (id) {
+    $(id).value = ler('inv_' + id);
+    $(id).addEventListener('input', function () { gravar('inv_' + id, $(id).value.trim()); if (kAtual) { montarKardex(kAtual.k); ajustarZoom(); } });
+  });
+  function imprimirAgora() {
+    var img = $('kardex').querySelector('img');
+    kMsg('Selecione “Expedição_Auto” na impressão. No celular, use o serviço de impressão da rede.');
+    var go = function () { setTimeout(function () { window.print(); }, 150); };
+    if (img && !img.complete) img.onload = go; else go();
+  }
+  $('kgo').addEventListener('click', function () {
+    var p = kParams();
+    if (!p.filtro) { kMsg('Digite o endereço do Kardex (ex.: T02 R33 B).', true); $('kf').focus(); return; }
+    if (kAtual && kAtual.chave === p.filtro.toUpperCase() + '|' + p.fonte) { if (kAtual.k.itens.length) imprimirAgora(); return; }
+    var b = $('kgo'); b.disabled = true;
+    visualizar(function (k) { b.disabled = false; if (k.itens.length) imprimirAgora(); });
+    setTimeout(function () { b.disabled = false; }, 15000);
+  });
+  // ---- CONFERÊNCIA KARDEX: SBF x físico, lança na planilha ----
+  var fItens = [], fTimer = null, fPedido = 0, fConfirmar = false, fRodando = false;
+  function fNum(v) { return numeroQuantidade(v); }
+  function fMsg(t, erro) { $('fmsg').textContent = t || ''; $('fmsg').className = 'kmsg' + (erro ? ' err' : ''); }
+  function fFmt(n) { return String(Math.round(n * 1000) / 1000).replace('.', ','); }
+  function fSituacao(it) {
+    if (it.estado === 'feito') return '<span class="chip feito">Lançado ✓</span>';
+    if (it.estado === 'erro') return '<span class="chip erro" title="' + esc(it.erro || '') + '">Erro — tente de novo</span>';
+    var f = fNum(it.fis);
+    if (f === null) return '<span class="chip bx" title="Sem quantidade: vai lançar 0">Sem qtde · lança 0</span>';
+    if (isNaN(f)) return '<span class="chip bx">Qtde inválida</span>';
+    return '<span class="chip ok">Conferido</span>';
+  }
+  function fResumo() {
+    var n = fItens.length, div = 0, bx = 0, al = 0, feitos = 0;
+    fItens.forEach(function (it) {
+      if (it.estado === 'feito') { feitos++; return; }
+      var f = fNum(it.fis); if (f === null || isNaN(f)) return;
+      div++;
+    });
+    $('fres').innerHTML = n ? '<b>' + n + '</b> ite' + (n > 1 ? 'ns' : 'm') + ' · <b>' + div + '</b> conferido' + (div === 1 ? '' : 's') +
+      (feitos ? ' · <b>' + feitos + '</b> lançado' + (feitos > 1 ? 's' : '') : '') : 'Nenhum item carregado.';
+    var pend = fItens.filter(function (it) { return it.estado !== 'feito'; }).length;
+    if (!fRodando) { fConfirmar = false; $('fgo').classList.remove('conf'); $('fgoTx').textContent = pend ? 'Lançar conferência (' + pend + ')' : 'Lançar conferência'; }
+    $('fgo').disabled = fRodando || !pend;
+  }
+  function fLinha(it, i) {
+    var tr = document.createElement('tr');
+    var f = fNum(it.fis);
+    tr.className = (it.estado === 'feito' ? 'lan' : '');
+    tr.innerHTML = '<td class="seq">' + (i + 1) + '</td>' +
+      (it.novo ? '<td class="sku"><input class="fc" placeholder="Código" value="' + esc(it.sku) + '"></td>' : '<td class="sku">' + esc(it.sku) + '</td>') +
+      '<td class="dsc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</td><td class="loc">' + esc(it.local) + '</td>' +
+      '<td class="sbf esf"></td>' +
+      '<td class="fis"><input class="fq" inputmode="decimal" value="' + esc(it.fis) + '"' + (it.estado === 'feito' ? ' disabled' : '') + '></td>' +
+      '<td class="st">' + fSituacao(it) + '</td>';
+    tr.addEventListener('click', function () { fSelecionar(tr); });
+    var q = tr.querySelector('input.fq');
+    q.addEventListener('input', function () {
+      it.fis = q.value; it.estado = '';
+      var v = fNum(q.value);
+      tr.querySelector('td.st').innerHTML = fSituacao(it);
+      fResumo();
+    });
+    q.addEventListener('focus', function () { q.select(); fSelecionar(tr); });
+    q.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); var t = tr.nextElementSibling && tr.nextElementSibling.querySelector('input.fq'); if (t) t.focus(); }
+    });
+    var c = tr.querySelector('input.fc');
+    if (c) c.addEventListener('change', function () {
+      it.sku = c.value.trim().toUpperCase(); c.value = it.sku;
+      if (!it.sku) return;
+      tr.querySelector('td.dsc').textContent = 'Buscando…';
+      google.script.run.withSuccessHandler(function (r) {
+        it.desc = r && r.encontrado ? r.descricao : 'Código não encontrado na base';
+        if (r && r.produto) { it.sku = r.produto; c.value = r.produto; }
+        tr.querySelector('td.dsc').textContent = it.desc;
+      }).withFailureHandler(function () { tr.querySelector('td.dsc').textContent = ''; }).buscarProduto(it.sku, it.local);
+    });
+    return tr;
+  }
+  var CK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  function fHist() { try { return JSON.parse(localStorage.getItem('inv_hist') || '[]'); } catch (e) { return []; } }
+  function fHistDesenhar() {
+    var l = fHist(), ul = $('fhl'); ul.innerHTML = '';
+    if (!l.length) { ul.innerHTML = '<li class="vz">Nenhuma posição lançada neste aparelho ainda.</li>'; return; }
+    l.forEach(function (x) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="ck">' + CK + '</span><span class="tx"><b></b><small></small><small></small></span>';
+      li.querySelector('b').textContent = x.end;
+      var s = li.querySelectorAll('small');
+      s[0].innerHTML = esc(x.n + ' ite' + (x.n > 1 ? 'ns' : 'm')) + ' · conferido' + (x.seg ? ' · 2ª contagem' : '');
+      s[1].textContent = x.dh + ' · ' + x.conf;
+      ul.appendChild(li);
+    });
+  }
+  function fHistAdd(reg) { var l = fHist(); l.unshift(reg); try { localStorage.setItem('inv_hist', JSON.stringify(l.slice(0, 60))); } catch (e) {} fHistDesenhar(); }
+  function fCab() {
+    $('ftit').textContent = $('ff').value.trim().toUpperCase();
+    $('fconf').textContent = 'Conferido Por: ' + (estado.resp ? estado.resp.charAt(0) + estado.resp.slice(1).toLowerCase() : '');
+    if (!$('flogo').getAttribute('src')) $('flogo').setAttribute('src', document.querySelector('.logo img').getAttribute('src'));
+  }
+  function fSelecionar(tr) {
+    Array.prototype.forEach.call($('fbody').querySelectorAll('tr.sel'), function (x) { if (x !== tr) x.classList.remove('sel'); });
+    tr.classList.add('sel');
+  }
+  function fDesenhar() {
+    fCab();
+    var tb = $('fbody'); tb.innerHTML = '';
+    if (!fItens.length) { tb.innerHTML = '<tr><td colspan="7" class="fvazio">' + ($('ff').value.trim() ? 'Nenhum item do SBF nesse endereço. Use "+ Adicionar item" se encontrou peças.' : 'Digite o endereço para carregar os itens do SBF.') + '</td></tr>'; }
+    fItens.forEach(function (it, i) { tb.appendChild(fLinha(it, i)); });
+    fResumo();
+  }
+  function fCarregar() {
+    var filtro = $('ff').value.trim();
+    var n = ++fPedido;
+    if (!filtro) { fItens = []; fDesenhar(); fMsg(''); return; }
+    fMsg('Carregando ' + filtro.toUpperCase() + '…');
+    kardexSBF(filtro).then(function (k) {
+      if (n !== fPedido) return;
+      fItens = k.itens.map(function (x) { return { sku: x.sku, desc: x.desc, local: x.local, sbf: Number(x.qtd), fis: '', estado: '' }; });
+      fDesenhar();
+      fMsg(k.itens.length ? 'Conte cada item e digite a quantidade na coluna "Qtde Kardex físico".' : '');
+    }, function (e) { if (n === fPedido) fMsg('Não carregou o SBF: ' + (e && e.message ? e.message : e), true); });
+  }
+  $('ff').addEventListener('input', function () { clearTimeout(fTimer); fTimer = setTimeout(fCarregar, 600); });
+  $('ff').addEventListener('keydown', function (e) { if (e.key === 'Enter') { clearTimeout(fTimer); fCarregar(); } });
+  $('fresp').value = '';
+  fHistDesenhar();
+  $('fresp').addEventListener('change', function () { commitNome($('fresp')); fCab(); });
+  $('fresp').addEventListener('focus', function () { nmRender('fresp', 'fnamesdd'); });
+  $('fresp').addEventListener('input', function () { nmRender('fresp', 'fnamesdd'); });
+  $('fresp').addEventListener('blur', function () { setTimeout(function () { nmHide('fnamesdd'); fCab(); }, 160); });
+  $('fresp').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commitNome($('fresp')); nmRender('fresp', 'fnamesdd'); } else if (e.key === 'Escape') { nmHide('fnamesdd'); } });
+  $('fseg').addEventListener('change', function () { $('fsw').classList.toggle('on', $('fseg').checked); });
+  $('fadd').addEventListener('click', function () {
+    var f = $('ff').value.trim().toUpperCase();
+    if (!f) { fMsg('Digite o endereço antes de adicionar um item.', true); $('ff').focus(); return; }
+    var locs = {}; fItens.forEach(function (x) { locs[x.local] = 1; });
+    var local = Object.keys(locs).length === 1 ? Object.keys(locs)[0] : f;
+    fItens.push({ sku: '', desc: '', local: local, sbf: 0, fis: '', estado: '', novo: true });
+    fDesenhar();
+    var ins = $('fbody').querySelectorAll('input.fc'); if (ins.length) ins[ins.length - 1].focus();
+  });
+  function fConcluir() {
+    var end = $('ff').value.trim().toUpperCase(), div = 0;
+    fItens.forEach(function (it) { if (fNum(it.fis) !== it.sbf) div++; });
+    var d = new Date(), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+    fHistAdd({ end: end, n: fItens.length, div: div, seg: $('fseg').checked, conf: estado.resp,
+               dh: p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) });
+    fItens = []; $('ff').value = ''; $('fseg').checked = false; $('fsw').classList.remove('on');
+    fDesenhar();
+    fMsg('Endereço ' + end + ' lançado na planilha ✓  Digite o próximo endereço.');
+    $('ff').focus();
+  }
+  $('fgo').addEventListener('click', function () {
+    if (fRodando) return;
+    commitNome($('fresp'));
+    if (!estado.resp) { fMsg('Informe o conferente.', true); $('fresp').focus(); return; }
+    var pend = fItens.filter(function (it) { return it.estado !== 'feito'; });
+    for (var i = 0; i < pend.length; i++) {
+      var v = fNum(pend[i].fis);
+      if (v === null) { pend[i].fis = '0'; v = 0; }   // sem quantidade = 0 na planilha
+      if (!pend[i].sku) { fMsg('Preencha o código do item adicionado (linha ' + (fItens.indexOf(pend[i]) + 1) + ').', true); return; }
+      if (v === null || isNaN(v) || v < 0) { fMsg('Informe a quantidade física da linha ' + (fItens.indexOf(pend[i]) + 1) + '.', true); return; }
+    }
+    fRodando = true; fConfirmar = false; $('fgo').classList.remove('conf'); $('fgo').disabled = true;
+    $('fgoTx').textContent = 'Conferindo…';
+    validarBaseTurno(function () {
+      jaLidoAntes(pend.map(function (it) { return { locacao: it.local, codigo: it.sku }; }), $('fseg').checked, function (subst) {
+        if (subst === null) { fRodando = false; $('fgo').disabled = false; fDesenhar(); fMsg('Lançamento cancelado.'); return; }
+        fLancar(pend, subst);
+      });
+    }, function () { fRodando = false; $('fgo').disabled = false; fDesenhar(); });
+  });
+  function fLancar(pend, subst) {
+    var feitos = 0, erros = 0, idx = 0;
+    $('fgoTx').textContent = 'Lançando ' + pend.length + ' ite' + (pend.length > 1 ? 'ns' : 'm') + '…';
+    google.script.run
+      .withSuccessHandler(function () { pend.forEach(function (it) { it.estado = 'feito'; }); feitos = pend.length; idx = pend.length; solicitarRecalculoHistorico(0); proximo(); })
+      .withFailureHandler(function (e) {
+        var m = e && e.message ? e.message : String(e);
+        if (/inválida/i.test(m)) { proximo(); return; }   // planilha ainda sem o lançamento em lote: envia um por um
+        pend.forEach(function (it) { it.estado = 'erro'; it.erro = m; }); erros = pend.length; idx = pend.length; proximo();
+      })
+      .salvarLote({ responsavel: estado.resp, segunda: $('fseg').checked, substituir: !!subst, origem: 'Kardex', turno: estado.turno, itens: pend.map(function (it) { return { locacao: it.local, codigo: it.sku, quantidade: String(fNum(it.fis)) }; }) });
+    function proximo() {
+      if (idx >= pend.length) {
+        fRodando = false; atualizarLista();
+        if (erros) { fDesenhar(); fMsg(feitos + ' lançado(s), ' + erros + ' com erro — clique em Lançar de novo para reenviar os que falharam.', true); return; }
+        solicitarRecalculoHistorico(0);
+        fConcluir();
+        return;
+      }
+      var it = pend[idx++];
+      $('fgoTx').textContent = 'Lançando ' + idx + ' de ' + pend.length + '…';
+      google.script.run
+        .withSuccessHandler(function () { it.estado = 'feito'; feitos++; fDesenhar(); proximo(); })
+        .withFailureHandler(function (e) { it.estado = 'erro'; it.erro = e && e.message ? e.message : String(e); erros++; fDesenhar(); proximo(); })
+        .salvarContagem({ responsavel: estado.resp, locacao: it.local, codigo: it.sku, quantidade: String(fNum(it.fis)), segunda: $('fseg').checked, substituir: !!subst, origem: 'Kardex', turno: estado.turno });
+    }
+  }
+
+  // ---- Tema de cores ----
+  function aplicarTema(t) {
+    document.body.setAttribute('data-tema', t);
+    Array.prototype.forEach.call(document.querySelectorAll('.tema .tw'), function (b) { b.classList.toggle('on', b.getAttribute('data-t') === t); });
+    gravar('inv_tema2', t);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.tema .tw'), function (b) { b.addEventListener('click', function () { aplicarTema(b.getAttribute('data-t')); }); });
+  aplicarTema(ler('inv_tema2') || 'marinho');
+  // ---- Menu lateral ----
+  function abrir(v) {
+    document.body.classList.toggle('v-k', v === 'k');
+    document.body.classList.toggle('v-f', v === 'f');
+    Array.prototype.forEach.call(document.querySelectorAll('.side button[data-v]'), function (x) { x.classList.toggle('on', x.getAttribute('data-v') === v); });
+    try { localStorage.setItem('inv_aba', v); } catch (e) {}
+    if (v === 'f') { $('fresp').value = ''; if ($('fturno')) $('fturno').value = estado.turno || ''; renderNomes(); fCab(); }
+    if (v === 'k' && !$('kconf').value && estado.resp) $('kconf').value = estado.resp.charAt(0) + estado.resp.slice(1).toLowerCase();
+    if (v === 'k') { if (!$('kf').value && estado.loc) { $('kf').value = estado.loc; visualizar(); } ajustarZoom(); }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.side button[data-v]'), function (x) { x.addEventListener('click', function () { abrir(x.getAttribute('data-v')); }); });
+  (function () { var a = ''; try { a = localStorage.getItem('inv_aba') || ''; } catch (e) {} abrir(a === 'k' || a === 'c' ? a : 'f'); })();
+
+  // ---- Robô (modal) ----
+  if ($('btnRobo')) $('btnRobo').addEventListener('click', function () { var m = $('roboModal'); if (m) m.hidden = false; });
+  if ($('roboX')) $('roboX').addEventListener('click', function () { var m = $('roboModal'); if (m) m.hidden = true; });
+  if ($('roboModal')) $('roboModal').addEventListener('click', function (e) { if (e.target === $('roboModal')) $('roboModal').hidden = true; });
+
+  pintarSeg();
+  recarregarEnderecos();
+  recarregarSkus();
+  recarregarConferentes();
+  atualizarLista();
+  setInterval(function () { if (!document.hidden) atualizarLista(); }, 20000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) atualizarLista(); });
+</script>
+</body>
+</html>
