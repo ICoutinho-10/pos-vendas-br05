@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.5.0 — 11/11/2026 — Impressão na ForkLift (1 clique no PC)
+- **Impressora alvo corrigida:** o botão do Kardex apontava texto "Expedição_Auto (10.42.11.189)" → agora **ForkLift - Expedição** (`\\10.42.1.253\ForkLift - Expedição`, Brother DCP-L5652DN, 10.42.36.232), que é a impressora da área.
+  - Botão: "IMPRIMIR · FORKLIFT"; `title` e a mensagem (`kMsg`) atualizados pra orientar PC (1 clique) e celular.
+- **PC — 1 clique de verdade (sem caixa de impressão):** perfil Chrome dedicado em `C:\Users\ivan.silva\AppData\Local\ForkLiftKiosk` com a ForkLift semeada no `print_preview_sticky_settings`; atalho na Área de Trabalho **"Contagem BR05 — 1 clique (ForkLift)"** = `chrome --user-data-dir=...ForkLiftKiosk --kiosk-printing --app=<URL do app>`. Isolado: **não altera o padrão do Windows** (etiquetas Zebra seguem iguais). Testar 1 impressão; se cair em outra, confirmar a ForkLift uma vez no preview do perfil.
+- **Celular:** navegador não imprime 100% silencioso (segurança do SO). Android = serviço de impressão Mopria/Brother; iPhone = AirPrint (a Brother suporta). Fica em poucos toques, com a ForkLift pré-selecionada.
+
 ## v0.4.0 — 11/11/2026 — Coluna SEGUIMENTO (Depósito da MB52)
 - **Server (Apps Script, Versão 2):** nova `mapaDeposito_()` lê **coluna D (Depósito) da MB52** por material; `sbfSite()` passou a mandar `seg` no `?api=sbf` (array paralelo a `p`).
 - **Contagem (`index.html`):** nova coluna **SEGUIMENTO** na tabela de conferência (entre LOCAL e QTDE SBF):
