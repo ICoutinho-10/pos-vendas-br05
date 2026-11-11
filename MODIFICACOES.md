@@ -1,5 +1,13 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.3.0 — 11/11/2026 — No ar (GitHub Pages)
+- Repo publicado: **github.com/ICoutinho-10/pos-vendas-br05** (branch `main`).
+- **GitHub Pages** ativado (Deploy from a branch → `main` / root).
+- No ar e testado (sem login, 0 erros no console, planilha zerada → "0 contagens"):
+  - Contagem: https://icoutinho-10.github.io/pos-vendas-br05/
+  - Gestão:   https://icoutinho-10.github.io/pos-vendas-br05/admin/
+- Atalhos do Desktop ("Pós-Vendas BR05 — Contagem/Gestão") apontam pro endereço online.
+
 ## v0.2.0 — 11/11/2026 — Backend ligado (App da Web publicado)
 - Apps Script do BR05 **publicado como App da Web** (Versão 1), acesso **"Qualquer pessoa"**.
 - URL `/exec` colada nos placeholders de `index.html` e `admin/index.html` (`var API = ...`).
