@@ -492,7 +492,7 @@
     <div class="ftit" id="ftit"></div>
     <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;AUTO</div></div>
     <div class="fscroll"><table class="ft">
-      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="esf">QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
+      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
       <tbody id="fbody"><tr><td colspan="7" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
     </table></div>
     <button type="button" class="fadd" id="fadd">+ Adicionar item encontrado fora da lista</button>
@@ -1213,7 +1213,7 @@
     tr.innerHTML = '<td class="seq">' + (i + 1) + '</td>' +
       (it.novo ? '<td class="sku"><input class="fc" placeholder="Código" value="' + esc(it.sku) + '"></td>' : '<td class="sku">' + esc(it.sku) + '</td>') +
       '<td class="dsc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</td><td class="loc">' + esc(it.local) + '</td>' +
-      '<td class="sbf esf"></td>' +
+      '<td class="sbf">' + (it.sbf != null && it.sbf !== '' ? it.sbf : '—') + '</td>' +
       '<td class="fis"><input class="fq" inputmode="decimal" value="' + esc(it.fis) + '"' + (it.estado === 'feito' ? ' disabled' : '') + '></td>' +
       '<td class="st">' + fSituacao(it) + '</td>';
     tr.addEventListener('click', function () { fSelecionar(tr); });

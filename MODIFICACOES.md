@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.3.1 — 11/11/2026 — QTDE SBF visível na contagem
+- A coluna **QTDE SBF** (qtde do SAP) deixou de ser mascarada na tela de contagem.
+- Antes a célula era criada vazia + borrada (classe `esf`, "contagem às cegas").
+- Agora mostra o valor real do SBF e o cabeçalho não fica mais acinzentado.
+- Obs.: remove a proteção de contagem às cegas (o conferente passa a ver a qtde do sistema).
+
 ## v0.3.0 — 11/11/2026 — No ar (GitHub Pages)
 - Repo publicado: **github.com/ICoutinho-10/pos-vendas-br05** (branch `main`).
 - **GitHub Pages** ativado (Deploy from a branch → `main` / root).
