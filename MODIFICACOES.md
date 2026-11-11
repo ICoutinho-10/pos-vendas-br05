@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.3.2 — 11/11/2026 — Turno único "ADM" (BR05 não diferencia turno)
+- Contagem (`index.html`): seletor de turno (contagem e conferência) passou de 1º/2º/3º → **único "ADM"**; `estado.turno` default = `ADM`.
+- Admin (`admin/index.html`): modal "Atualizar SBF/MB52" lista só **ADM**; filtro de turno idem.
+- Server (Apps Script) **não mudou**: `resetarBase`/`mapaResets_` guardam `resets[dia][turno]` de forma genérica — "ADM" funciona.
+- Verificado no server: trava do cliente (`validarBaseTurno`) bloqueia lançamento sem reset do turno no dia (= "libera ao atualizar"). Reforço no server (`travaAtiva_()`/`TRAVA_ATIVA`) ainda DESLIGADO.
+
 ## v0.3.1 — 11/11/2026 — QTDE SBF visível na contagem
 - A coluna **QTDE SBF** (qtde do SAP) deixou de ser mascarada na tela de contagem.
 - Antes a célula era criada vazia + borrada (classe `esf`, "contagem às cegas").

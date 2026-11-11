@@ -375,9 +375,7 @@
         <button type="button" class="btn" id="calLimpar" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Limpar filtro</button>
         <select class="btn" id="fTurno" title="Filtrar por turno" aria-label="Filtrar por turno">
           <option value="">Todos os turnos</option>
-          <option value="1º turno">1º turno</option>
-          <option value="2º turno">2º turno</option>
-          <option value="3º turno">3º turno</option>
+          <option value="ADM">ADM</option>
         </select>
         <button class="btn" id="bAtu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></svg>Atualizar</button>
         <button class="btn" id="bReset" title="Atualizar SBF e MB52 do turno"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg>Atualizar SBF/MB52</button>
@@ -972,7 +970,7 @@
         var chk = $('rTravaChk'); if (chk) chk.addEventListener('change', function () { setTravaAtiva(chk.checked, chk); });
       } else rt.innerHTML = '';
     }
-    var turnos = ['1º turno', '2º turno', '3º turno'];
+    var turnos = ['ADM'];
     $('rTurnos').innerHTML = turnos.map(function (t) {
       var r = (st.resets || {})[t];
       var info = r ? ('atualizado ' + r.dataHora + (r.usuario ? ' · ' + esc(r.usuario) : '')) : 'ainda não atualizado hoje';

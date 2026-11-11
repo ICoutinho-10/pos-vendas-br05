@@ -414,10 +414,7 @@
     <label class="box" for="turno">
       <span class="k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Turno</span>
       <select id="turno">
-        <option value="">—</option>
-        <option value="1º turno">1º turno</option>
-        <option value="2º turno">2º turno</option>
-        <option value="3º turno">3º turno</option>
+        <option value="ADM">ADM</option>
       </select>
     </label>
   </div>
@@ -471,10 +468,7 @@
     <div class="fr">
       <label class="kl" for="fturno">Turno</label>
       <select class="ki" id="fturno">
-        <option value="">—</option>
-        <option value="1º turno">1º turno</option>
-        <option value="2º turno">2º turno</option>
-        <option value="3º turno">3º turno</option>
+        <option value="ADM">ADM</option>
       </select>
     </div>
     <div class="kf">
@@ -633,7 +627,7 @@
   function limpa(v) { return String(v || '').trim().toUpperCase().replace(/\s+/g, ' '); }
   estado.resp = ler('inv_resp');
   estado.loc = ler('inv_loc');
-  estado.turno = ler('inv_turno') || '';
+  estado.turno = ler('inv_turno') || 'ADM';
   estado.nomes = estado.resp ? estado.resp.split(' / ').map(function (s) { return s.trim(); }).filter(Boolean) : [];
   renderNomes();
   $('loc').value = estado.loc;
