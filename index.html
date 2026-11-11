@@ -209,6 +209,10 @@
   .ft td.dsc { color: #334155; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ft td.loc { white-space: nowrap; font-weight: 700; color: #3730A3; }
   .ft td.sbf { width: 110px; text-align: center; font-weight: 800; font-size: 16px; color: #475569; }
+  .ft td.seg { width: 130px; text-align: center; font-weight: 800; font-size: 12.5px; color: #0f172a; }
+  .ft th.seg { width: 130px; }
+  .ft td.seg.s6000 { background: #bfdbfe; }
+  .ft td.seg.s3000 { background: #bbf7d0; }
   .ft td.fis { width: 150px; text-align: center; }
   .ft input.fq { width: 110px; height: 42px; font-size: 18px; text-align: center; padding: 0 8px; border-radius: 12px; background: #ECFDF5; border: 1.5px solid #A7F3D0; color: #065F46; }
   .ft input.fq:focus { border-color: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,.18); background: #fff; }
@@ -245,6 +249,7 @@
     .ft td.sku, .ft td.dsc, .ft td.loc, .ft td.st { grid-column: 2 / span 2; text-align: left; max-width: none; white-space: normal; }
     .ft td.sbf, .ft td.fis { width: auto; text-align: left; padding-top: 6px; }
     .ft td.sbf::before { content: "SBF "; font-size: 11px; color: var(--dim); font-weight: 700; }
+    .ft td.seg::before { content: "SEG "; font-size: 11px; color: var(--dim); font-weight: 700; }
     .ft td.fis input.fq { width: 100%; }
     .ft td.fvazio { grid-column: 1 / -1; }
     .side button { font-size: 12px; padding: 0 6px; gap: 6px; }
@@ -486,8 +491,8 @@
     <div class="ftit" id="ftit"></div>
     <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;AUTO</div></div>
     <div class="fscroll"><table class="ft">
-      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
-      <tbody id="fbody"><tr><td colspan="7" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
+      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="seg">SEGUIMENTO</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
+      <tbody id="fbody"><tr><td colspan="8" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
     </table></div>
     <button type="button" class="fadd" id="fadd">+ Adicionar item encontrado fora da lista</button>
     <div class="fbar">
@@ -1108,7 +1113,7 @@
     return carregarSBF().then(function (s) {
       var f = filtro.trim().toUpperCase().replace(/\s+/g, ' '), itens = [];
       Object.keys(s.e).forEach(function (end) {
-        if (end === f) s.e[end].forEach(function (x) { itens.push({ sku: s.p[x[0]], desc: s.d[x[0]], local: end, qtd: x[1] }); });
+        if (end === f) s.e[end].forEach(function (x) { itens.push({ sku: s.p[x[0]], desc: s.d[x[0]], local: end, qtd: x[1], seg: (s.seg || [])[x[0]] }); });
       });
       itens.sort(function (a, b) { return a.local.localeCompare(b.local, 'pt-BR', { numeric: true }) || a.sku.localeCompare(b.sku, 'pt-BR', { numeric: true }); });
       return { titulo: f, fonte: 'sbf', itens: itens, almoxarife: estado.resp || '', logo: '', gerado: s.gerado };
@@ -1179,6 +1184,12 @@
   function fNum(v) { return numeroQuantidade(v); }
   function fMsg(t, erro) { $('fmsg').textContent = t || ''; $('fmsg').className = 'kmsg' + (erro ? ' err' : ''); }
   function fFmt(n) { return String(Math.round(n * 1000) / 1000).replace('.', ','); }
+  function fSeg(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (s === '6000') return '<td class="seg s6000" title="Depósito 6000 · FORKLIFT">6000 · FORKLIFT</td>';
+    if (s === '3000') return '<td class="seg s3000" title="Depósito 3000 · BUS/TRUCK">3000 · BUS/TRUCK</td>';
+    return '<td class="seg">' + (s ? esc(s) : '—') + '</td>';
+  }
   function fSituacao(it) {
     if (it.estado === 'feito') return '<span class="chip feito">Lançado ✓</span>';
     if (it.estado === 'erro') return '<span class="chip erro" title="' + esc(it.erro || '') + '">Erro — tente de novo</span>';
@@ -1207,6 +1218,7 @@
     tr.innerHTML = '<td class="seq">' + (i + 1) + '</td>' +
       (it.novo ? '<td class="sku"><input class="fc" placeholder="Código" value="' + esc(it.sku) + '"></td>' : '<td class="sku">' + esc(it.sku) + '</td>') +
       '<td class="dsc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</td><td class="loc">' + esc(it.local) + '</td>' +
+      fSeg(it.seg) +
       '<td class="sbf">' + (it.sbf != null && it.sbf !== '' ? it.sbf : '—') + '</td>' +
       '<td class="fis"><input class="fq" inputmode="decimal" value="' + esc(it.fis) + '"' + (it.estado === 'feito' ? ' disabled' : '') + '></td>' +
       '<td class="st">' + fSituacao(it) + '</td>';
@@ -1274,7 +1286,7 @@
     fMsg('Carregando ' + filtro.toUpperCase() + '…');
     kardexSBF(filtro).then(function (k) {
       if (n !== fPedido) return;
-      fItens = k.itens.map(function (x) { return { sku: x.sku, desc: x.desc, local: x.local, sbf: Number(x.qtd), fis: '', estado: '' }; });
+      fItens = k.itens.map(function (x) { return { sku: x.sku, desc: x.desc, local: x.local, seg: x.seg, sbf: Number(x.qtd), fis: '', estado: '' }; });
       fDesenhar();
       fMsg(k.itens.length ? 'Conte cada item e digite a quantidade na coluna "Qtde Kardex físico".' : '');
     }, function (e) { if (n === fPedido) fMsg('Não carregou o SBF: ' + (e && e.message ? e.message : e), true); });
@@ -1294,7 +1306,7 @@
     if (!f) { fMsg('Digite o endereço antes de adicionar um item.', true); $('ff').focus(); return; }
     var locs = {}; fItens.forEach(function (x) { locs[x.local] = 1; });
     var local = Object.keys(locs).length === 1 ? Object.keys(locs)[0] : f;
-    fItens.push({ sku: '', desc: '', local: local, sbf: 0, fis: '', estado: '', novo: true });
+    fItens.push({ sku: '', desc: '', local: local, seg: '', sbf: 0, fis: '', estado: '', novo: true });
     fDesenhar();
     var ins = $('fbody').querySelectorAll('input.fc'); if (ins.length) ins[ins.length - 1].focus();
   });

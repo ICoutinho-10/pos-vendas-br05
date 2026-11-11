@@ -1,5 +1,12 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.4.0 — 11/11/2026 — Coluna SEGUIMENTO (Depósito da MB52)
+- **Server (Apps Script, Versão 2):** nova `mapaDeposito_()` lê **coluna D (Depósito) da MB52** por material; `sbfSite()` passou a mandar `seg` no `?api=sbf` (array paralelo a `p`).
+- **Contagem (`index.html`):** nova coluna **SEGUIMENTO** na tabela de conferência (entre LOCAL e QTDE SBF):
+  - `6000 → FORKLIFT` (fundo azul claro `#bfdbfe`), `3000 → BUS/TRUCK` (fundo verde `#bbf7d0`), outros → código/`—`.
+  - `seg` flui: `kardexSBF` → `k.itens` → `fItens` → `fLinha`/`fSeg`.
+- Só exibe valor quando a **MB52 estiver colada** na planilha (hoje zerada). Falta (opcional): levar o seguimento pro **Kardex impresso**.
+
 ## v0.3.2 — 11/11/2026 — Turno único "ADM" (BR05 não diferencia turno)
 - Contagem (`index.html`): seletor de turno (contagem e conferência) passou de 1º/2º/3º → **único "ADM"**; `estado.turno` default = `ADM`.
 - Admin (`admin/index.html`): modal "Atualizar SBF/MB52" lista só **ADM**; filtro de turno idem.
