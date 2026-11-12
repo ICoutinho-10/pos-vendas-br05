@@ -416,7 +416,19 @@
           <button class="btn" id="cCsv"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Exportar CSV</button>
         </div>
       </div>
+      <div id="cAviso"></div>
       <div id="cKpis"></div>
+      <div class="card" id="cEvoCard">
+        <div class="ctr" style="justify-content: space-between; flex-wrap: wrap; gap: 10px">
+          <h2 style="margin:0;font-size:15px">Evolução das divergências</h2>
+          <div class="ctr" style="gap:10px;flex-wrap:wrap">
+            <div class="chips" id="cGran"><button class="chip on" data-g="dia">Por dia</button><button class="chip" data-g="mes">Por mês</button></div>
+            <div class="chips" id="cMetr"><button class="chip on" data-m="div">Qtd divergentes</button><button class="chip" data-m="abs">Soma |diferença|</button></div>
+            <select class="sel" id="cPer" title="Período"><option value="">Todo o período</option><option value="30">Últimos 30 dias</option><option value="90">Últimos 90 dias</option><option value="180">Últimos 6 meses</option><option value="365">Último ano</option></select>
+          </div>
+        </div>
+        <div id="cEvo"></div>
+      </div>
       <div class="tw"><table class="t" id="cTab"></table></div>
       <div class="pag" id="cPag"></div>
     </section>
@@ -454,7 +466,7 @@
 
 <script>
   // === Auto-atualização (acaba o cache velho) ===
-  var APP_VERSION = '0.9.3';
+  var APP_VERSION = '0.9.4';
   (function () {
     function checar() {
       fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -544,7 +556,8 @@
       if (j.dados.planilha) $('lkPlan').href = j.dados.planilha;
       // #fDia é controlado pelo calendário (filtro de período); mantém o valor escolhido.
       carregar.feito = true;
-      desenhar();
+      CONCIL = null;                                  // recalcula a conciliação com os dados novos
+      if (VIEW === 'concil') { carregarConcil(); } else { desenhar(); }
     }).catch(function (e) {
       $('bAtu').disabled = false;
       $('dot').className = 'off'; $('upd').textContent = 'Sem conexão — tentando de novo';
@@ -951,17 +964,43 @@
   });
 
   // ---------- Conciliação TOTVS × SAP ----------
-  var CONCIL = null, cFil = '', cBuscaV = '', cMax = 100, cT;
+  var CONCIL = null, cFil = '', cBuscaV = '', cMax = 100, cT, cGranV = 'dia', cMetrV = 'div', cPerV = '';
+  // Conciliação calculada no próprio app a partir do HISTÓRICO (SBF/TOTVS e MB52/SAP de cada posição),
+  // sem depender de endpoint do Apps Script. Agrega por material: TOTVS = soma dos saldos nos endereços; SAP = MB52 do material.
+  function buildConcil() {
+    if (!D || !D.H) return null;
+    var bySku = {}, serieMap = {};
+    D.H.forEach(function (h) {
+      var cod = h.prod; if (!cod) return;
+      var sap = h.mb52 == null ? 0 : h.mb52, totvs = h.saldo || 0;
+      var o = bySku[cod] || (bySku[cod] = { cod: cod, desc: h.desc || '', totvs: 0, sap: 0, temSap: false });
+      o.totvs += totvs;
+      o.sap = Math.max(o.sap, sap);            // MB52 é o total do material no SAP, não por endereço
+      if (h.mb52 != null) o.temSap = true;
+      if (!o.desc && h.desc) o.desc = h.desc;
+      // série temporal por dia (turno) para a evolução
+      var dia = h.dia; if (!dia) return;
+      var s = serieMap[dia] || (serieMap[dia] = { dia: dia, div: 0, abs: 0, skus: 0 });
+      var dif = totvs - sap; s.skus++;
+      if (dif !== 0) { s.div++; s.abs += Math.abs(dif); }
+    });
+    var itens = Object.keys(bySku).map(function (k) { var o = bySku[k]; o.dif = o.totvs - o.sap; return o; });
+    var aMais = 0, aMenos = 0, iguais = 0, temAlgumSap = false;
+    itens.forEach(function (x) { if (x.temSap) temAlgumSap = true; if (x.dif > 0) aMais++; else if (x.dif < 0) aMenos++; else iguais++; });
+    var serie = Object.keys(serieMap).sort().map(function (k) { return serieMap[k]; });
+    var gerado = D.gerado ? String(D.gerado).slice(11, 16) : '';
+    return { itens: itens, serie: serie, semSap: !temAlgumSap || itens.every(function (x) { return x.sap === 0; }),
+             totais: { skus: itens.length, aMais: aMais, aMenos: aMenos, iguais: iguais }, gerado: gerado };
+  }
   function carregarConcil(force) {
     if ($('eb')) $('eb').textContent = 'Conciliação de sistemas';
     if ($('tit')) $('tit').textContent = 'TOTVS × SAP';
     if ($('sub')) $('sub').textContent = 'Diferença de saldo de cada item entre o TOTVS (SBF) e o SAP (MB52).';
+    if (!D) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Carregando dados…</td></tr></tbody>'; return; }
     if (CONCIL && !force) { renderConcil(); return; }
-    if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Carregando conciliação…</td></tr></tbody>';
-    fetch(API + '?api=concil&t=' + Date.now()).then(function (r) { return r.json(); }).then(function (j) {
-      if (!j || !j.ok) throw new Error('concil' + (j && j.erro ? ': ' + j.erro : ''));
-      CONCIL = j.dados; renderConcil();
-    }).catch(function (e) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Não foi possível carregar a conciliação. ' + esc(String(e && e.message || '')) + '</td></tr></tbody>'; });
+    CONCIL = buildConcil();
+    if (!CONCIL) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Sem dados para conciliar.</td></tr></tbody>'; return; }
+    renderConcil();
   }
   function concilFiltrado() {
     if (!CONCIL) return [];
@@ -974,15 +1013,39 @@
       return true;
     });
   }
+  function evoSerie() {
+    var S = (CONCIL && CONCIL.serie) || [];
+    if (cPerV) { var lim = new Date(Date.now() - (+cPerV) * 864e5); S = S.filter(function (p) { var d = p.dia.split('-'); return new Date(+d[0], +d[1] - 1, +d[2]) >= lim; }); }
+    if (cGranV === 'mes') {
+      var m = {};
+      S.forEach(function (p) { var k = p.dia.slice(0, 7); var o = m[k] || (m[k] = { dia: k, div: 0, abs: 0, skus: 0 }); o.div += p.div; o.abs += p.abs; o.skus += p.skus; });
+      return Object.keys(m).sort().map(function (k) { return m[k]; });
+    }
+    return S;
+  }
+  function renderEvo() {
+    var S = evoSerie();
+    if (!S.length) { $('cEvo').innerHTML = '<p class="sub" style="color:var(--tx3);margin:8px 0 0">Sem histórico no período selecionado.</p>'; return; }
+    var vals = S.map(function (p) { return cMetrV === 'abs' ? p.abs : p.div; });
+    var rots = S.map(function (p) { return cGranV === 'mes' ? p.dia.slice(5) + '/' + p.dia.slice(2, 4) : diaBR(p.dia); });
+    var cor = cMetrV === 'abs' ? 'var(--al)' : 'var(--azul)';
+    var tot = vals.reduce(function (a, b) { return a + b; }, 0);
+    $('cEvo').innerHTML = barrasV(vals, rots, cor, 210, 680)
+      + '<p class="sub" style="color:var(--tx3);margin:6px 0 0">' + (cMetrV === 'abs' ? 'Soma das diferenças absolutas' : 'Materiais divergentes') + ' · ' + S.length + (cGranV === 'mes' ? ' meses' : ' dias') + ' · total ' + n0(tot) + '</p>';
+  }
   function renderConcil() {
     if (!CONCIL) return;
     var t = CONCIL.totais || {};
+    $('cAviso').innerHTML = CONCIL.semSap
+      ? '<div class="card" style="border-color:var(--ama);background:color-mix(in srgb,var(--ama) 10%,transparent)"><b>SAP (MB52) sem saldo nesta base.</b> A importação do MB52 ainda não alimentou estes materiais — as diferenças abaixo refletem só o saldo do TOTVS. Assim que o MB52 for carregado, a conciliação passa a valer automaticamente.</div>'
+      : '';
     $('cKpis').innerHTML = '<div class="g4">'
       + tile('SKUs comparados', n0(t.skus || 0), 'Itens presentes no SBF (TOTVS) e/ou MB52 (SAP)')
       + tile('TOTVS a mais', n0(t.aMais || 0), 'Saldo do TOTVS maior que o do SAP', null, 'var(--al)')
       + tile('TOTVS a menos', n0(t.aMenos || 0), 'Saldo do TOTVS menor que o do SAP', null, 'var(--bx)')
       + tile('Conferem', n0(t.iguais || 0), 'TOTVS igual ao SAP' + (CONCIL.gerado ? ' · base ' + esc(CONCIL.gerado) : ''), null, 'var(--ok)')
       + '</div>';
+    renderEvo();
     var R = concilFiltrado().slice().sort(function (a, b) { return Math.abs(b.dif) - Math.abs(a.dif); });
     var rows = R.slice(0, cMax).map(function (x) {
       var cls = x.dif > 0 ? 'pos' : x.dif < 0 ? 'neg' : 'zero';
@@ -1007,6 +1070,9 @@
   if ($('cBusca')) $('cBusca').addEventListener('input', function () { clearTimeout(cT); cT = setTimeout(function () { cBuscaV = $('cBusca').value; cMax = 100; renderConcil(); }, 250); });
   Array.prototype.forEach.call(document.querySelectorAll('#cFil .chip'), function (b) { b.addEventListener('click', function () { cFil = b.getAttribute('data-f'); cMax = 100; Array.prototype.forEach.call(document.querySelectorAll('#cFil .chip'), function (x) { x.classList.toggle('on', x === b); }); renderConcil(); }); });
   if ($('cCsv')) $('cCsv').addEventListener('click', concilCsv);
+  Array.prototype.forEach.call(document.querySelectorAll('#cGran .chip'), function (b) { b.addEventListener('click', function () { cGranV = b.getAttribute('data-g'); Array.prototype.forEach.call(document.querySelectorAll('#cGran .chip'), function (x) { x.classList.toggle('on', x === b); }); renderEvo(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll('#cMetr .chip'), function (b) { b.addEventListener('click', function () { cMetrV = b.getAttribute('data-m'); Array.prototype.forEach.call(document.querySelectorAll('#cMetr .chip'), function (x) { x.classList.toggle('on', x === b); }); renderEvo(); }); });
+  if ($('cPer')) $('cPer').addEventListener('change', function () { cPerV = $('cPer').value; renderEvo(); });
 
   // ---------- navegação ----------
   function abrir(v) {

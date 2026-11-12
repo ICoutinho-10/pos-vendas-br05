@@ -1,5 +1,12 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.4 — 12/11/2026 — TOTVS × SAP: fim do erro "Ação inválida: concil" + evolução
+- **Bug:** a aba **TOTVS × SAP** chamava `?api=concil` no Apps Script, que **não existe** nesse deploy → tela de erro "Ação inválida: concil".
+- **Correção:** a conciliação agora é **calculada no próprio app** a partir do HISTÓRICO (`SBF`=TOTVS e `MB52`=SAP de cada posição), sem depender de endpoint. Agrega por material: TOTVS = soma dos saldos nos endereços; SAP = MB52 do material; diferença = TOTVS − SAP. Passa a funcionar sozinha e recalcula a cada atualização.
+- **Evolução** (pedido do Ivan): novo bloco "Evolução das divergências" com filtros **Por dia / Por mês**, métrica **Qtd divergentes / Soma |diferença|** e **período** (30/90/180/365 dias ou todo o período). Usa a data de turno de cada posição.
+- **Honestidade de dado:** quando o **MB52 vem zerado** (hoje: todos os 23 itens com SAP=0, importação do MB52 ainda não alimentada), aparece um **aviso** avisando que as diferenças refletem só o TOTVS. Assim que o MB52 real entrar, a conciliação passa a valer automaticamente, sem mexer no código.
+- Pendência p/ Ivan decidir: **de onde vem o MB52 do BR05** (robô popular a coluna `mb52` do histórico, ou a Pós-Vendas não está no SAP e a aba pode sair). Enquanto isso, a aba já abre e serve de base.
+
 ## v0.9.3 — 12/11/2026 — LOCALIZAR: Limpar realmente pequeno (corrige width:100%)
 - O botão **Limpar** ainda saía com largura total (herdava `width:100%` de `.side button`). Corrigido com `width:auto; flex:0 0 auto` → fica **compacto** no canto direito, abaixo do campo.
 
