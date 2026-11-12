@@ -404,6 +404,33 @@
   .etqb:hover { border-color: #94A3B8; background: #F1F5F9; }
   .etqb:active { transform: translateY(1px); }
   .etqb svg { width: 17px; height: 17px; }
+  /* --- Conferência: ocupar a largura, sem rolagem lateral, linhas densas (12/11) --- */
+  body.v-f .fview { grid-template-columns: minmax(0, 1fr) 300px; }
+  .fview .ktool, .fview .kmsg, .fview .fcard { max-width: none; }
+  .fscroll { overflow-x: hidden; }
+  table.ft { table-layout: fixed; min-width: 0; width: 100%; }
+  .ft thead th:nth-child(1) { width: 40px; }
+  .ft thead th:nth-child(2) { width: 116px; }
+  .ft thead th:nth-child(3) { width: auto; }
+  .ft thead th:nth-child(4) { width: 92px; }
+  .ft thead th:nth-child(5) { width: 116px; }
+  .ft thead th:nth-child(6) { width: 74px; }
+  .ft thead th:nth-child(7) { width: 116px; }
+  .ft thead th:nth-child(8) { width: 126px; }
+  .ft thead th:nth-child(9) { width: 46px; }
+  .ft th { padding: 5px 6px; font-size: 12px; }
+  .ft td { padding: 2px 6px; font-size: 13px; }
+  .ft td.dsc { max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ft td.sku { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ft td.seg { font-size: 11px; white-space: nowrap; padding: 2px 4px; }
+  .ft td.sbf { font-size: 14.5px; }
+  .ft td.st { white-space: nowrap; overflow: hidden; }
+  .ft input.fq { height: 28px; width: 94px; font-size: 14px; border-radius: 7px; }
+  .ft input.fc { height: 28px; width: 100%; font-size: 13px; }
+  .chip { padding: 2px 7px; font-size: 11px; }
+  .etqb { width: 30px; height: 26px; }
+  .etqb svg { width: 15px; height: 15px; }
+  @media (max-width: 1100px) { body.v-f .fview { grid-template-columns: minmax(0, 1fr); } .fhist { display: none; } }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js" defer></script>
 </head>
