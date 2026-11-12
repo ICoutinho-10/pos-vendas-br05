@@ -313,6 +313,7 @@
       <button data-v="perf"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 11l2 2 4-4"/></svg>Performance<span class="ct" id="ctPerf"></span></button>
       <button data-v="hist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>Histórico<span class="ct" id="ctHist"></span></button>
       <button data-v="kdx"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Contagem Kardex<span class="ct" id="ctKdx"></span></button>
+      <button data-v="concil"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 7V5a2 2 0 0 0-2-2H9"/><path d="M6 17v2a2 2 0 0 0 2 2h7"/><circle cx="6" cy="7" r="2"/><circle cx="18" cy="17" r="2"/><path d="m9 4-3 3 3 3M15 20l3-3-3-3"/></svg>TOTVS × SAP<span class="ct" id="ctConcil"></span></button>
       <button data-v="usr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Usuários<span class="ct" id="ctUsr"></span></button>
     </nav>
     <div class="links">
@@ -403,6 +404,21 @@
         </div>
       </div>
       <div id="kLista" style="display: grid; gap: 14px"></div>
+    </section>
+    <!-- TOTVS × SAP -->
+    <section class="view" id="v-concil">
+      <div class="card">
+        <div class="ctr" style="justify-content: space-between">
+          <div class="ctr">
+            <input class="inp" id="cBusca" placeholder="Buscar código ou descrição" style="width: 320px; max-width: 100%">
+            <div class="chips" id="cFil"><button class="chip on" data-f="">Todos</button><button class="chip" data-f="dif">Só divergentes</button><button class="chip" data-f="mais">TOTVS a mais</button><button class="chip" data-f="menos">TOTVS a menos</button></div>
+          </div>
+          <button class="btn" id="cCsv"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Exportar CSV</button>
+        </div>
+      </div>
+      <div id="cKpis"></div>
+      <div class="tw"><table class="t" id="cTab"></table></div>
+      <div class="pag" id="cPag"></div>
     </section>
     <!-- USUÁRIOS -->
     <section class="view" id="v-usr">
@@ -920,6 +936,64 @@
     b.addEventListener('click', function () { kSt = b.getAttribute('data-s'); kMax = 40; Array.prototype.forEach.call(document.querySelectorAll('#kSt .chip'), function (x) { x.classList.toggle('on', x === b); }); kdx(filtrados()); });
   });
 
+  // ---------- Conciliação TOTVS × SAP ----------
+  var CONCIL = null, cFil = '', cBuscaV = '', cMax = 100, cT;
+  function carregarConcil(force) {
+    if ($('eb')) $('eb').textContent = 'Conciliação de sistemas';
+    if ($('tit')) $('tit').textContent = 'TOTVS × SAP';
+    if ($('sub')) $('sub').textContent = 'Diferença de saldo de cada item entre o TOTVS (SBF) e o SAP (MB52).';
+    if (CONCIL && !force) { renderConcil(); return; }
+    if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Carregando conciliação…</td></tr></tbody>';
+    fetch(API + '?api=concil&t=' + Date.now()).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) throw new Error('concil' + (j && j.erro ? ': ' + j.erro : ''));
+      CONCIL = j.dados; renderConcil();
+    }).catch(function (e) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Não foi possível carregar a conciliação. ' + esc(String(e && e.message || '')) + '</td></tr></tbody>'; });
+  }
+  function concilFiltrado() {
+    if (!CONCIL) return [];
+    var q = cBuscaV.trim().toLowerCase();
+    return (CONCIL.itens || []).filter(function (x) {
+      if (cFil === 'dif' && x.dif === 0) return false;
+      if (cFil === 'mais' && x.dif <= 0) return false;
+      if (cFil === 'menos' && x.dif >= 0) return false;
+      if (q && (x.cod + ' ' + (x.desc || '')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+  function renderConcil() {
+    if (!CONCIL) return;
+    var t = CONCIL.totais || {};
+    $('cKpis').innerHTML = '<div class="g4">'
+      + tile('SKUs comparados', n0(t.skus || 0), 'Itens presentes no SBF (TOTVS) e/ou MB52 (SAP)')
+      + tile('TOTVS a mais', n0(t.aMais || 0), 'Saldo do TOTVS maior que o do SAP', null, 'var(--al)')
+      + tile('TOTVS a menos', n0(t.aMenos || 0), 'Saldo do TOTVS menor que o do SAP', null, 'var(--bx)')
+      + tile('Conferem', n0(t.iguais || 0), 'TOTVS igual ao SAP' + (CONCIL.gerado ? ' · base ' + esc(CONCIL.gerado) : ''), null, 'var(--ok)')
+      + '</div>';
+    var R = concilFiltrado().slice().sort(function (a, b) { return Math.abs(b.dif) - Math.abs(a.dif); });
+    var rows = R.slice(0, cMax).map(function (x) {
+      var cls = x.dif > 0 ? 'pos' : x.dif < 0 ? 'neg' : 'zero';
+      var sit = x.dif > 0 ? '<span class="tag al">a mais</span>' : x.dif < 0 ? '<span class="tag bx">a menos</span>' : '<span class="tag ok">confere</span>';
+      return '<tr><td><b>' + esc(x.cod) + '</b></td><td class="dsc" title="' + esc(x.desc) + '">' + esc(x.desc) + '</td><td class="n num">' + n(x.totvs) + '</td><td class="n num">' + n(x.sap) + '</td><td class="n num ' + cls + '">' + (x.dif > 0 ? '+' : '') + n(x.dif) + '</td><td>' + sit + '</td></tr>';
+    }).join('');
+    $('cTab').innerHTML = '<thead><tr><th>Material</th><th>Descrição</th><th class="n">TOTVS (SBF)</th><th class="n">SAP (MB52)</th><th class="n">Diferença</th><th>Situação</th></tr></thead><tbody>'
+      + (rows || '<tr><td colspan="6" class="vazio">Nenhum item com esse filtro.</td></tr>') + '</tbody>'
+      + '<tfoot><tr><td colspan="2">' + n0(R.length) + ' itens</td><td class="n num">' + n(soma(R, function (x) { return x.totvs; })) + '</td><td class="n num">' + n(soma(R, function (x) { return x.sap; })) + '</td><td class="n num">' + (soma(R, function (x) { return x.dif; }) > 0 ? '+' : '') + n(soma(R, function (x) { return x.dif; })) + '</td><td></td></tr></tfoot>';
+    $('cPag').innerHTML = R.length > cMax ? '<button class="btn" id="cMais">Mostrar mais (' + n0(R.length - cMax) + ')</button>' : '';
+    if ($('cMais')) $('cMais').addEventListener('click', function () { cMax += 300; renderConcil(); });
+    var ct = $('ctConcil'); if (ct) ct.textContent = ((t.aMais || 0) + (t.aMenos || 0)) ? n0((t.aMais || 0) + (t.aMenos || 0)) : '';
+  }
+  function concilCsv() {
+    var R = concilFiltrado().slice().sort(function (a, b) { return Math.abs(b.dif) - Math.abs(a.dif); });
+    var head = ['Material', 'Descricao', 'TOTVS_SBF', 'SAP_MB52', 'Diferenca', 'Situacao'];
+    var linhas = R.map(function (x) { return [x.cod, String(x.desc || '').replace(/[\r\n;]/g, ' '), x.totvs, x.sap, x.dif, x.dif > 0 ? 'TOTVS a mais' : x.dif < 0 ? 'TOTVS a menos' : 'confere']; });
+    var csv = [head].concat(linhas).map(function (r) { return r.join(';'); }).join('\n');
+    var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'conciliacao_totvs_x_sap.csv'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  if ($('cBusca')) $('cBusca').addEventListener('input', function () { clearTimeout(cT); cT = setTimeout(function () { cBuscaV = $('cBusca').value; cMax = 100; renderConcil(); }, 250); });
+  Array.prototype.forEach.call(document.querySelectorAll('#cFil .chip'), function (b) { b.addEventListener('click', function () { cFil = b.getAttribute('data-f'); cMax = 100; Array.prototype.forEach.call(document.querySelectorAll('#cFil .chip'), function (x) { x.classList.toggle('on', x === b); }); renderConcil(); }); });
+  if ($('cCsv')) $('cCsv').addEventListener('click', concilCsv);
+
   // ---------- navegação ----------
   function abrir(v) {
     VIEW = v;
@@ -927,6 +1001,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('.view'), function (s) { s.classList.toggle('on', s.id === 'v-' + v); });
     try { localStorage.setItem('adm_view', v); } catch (e) {}
     if (v === 'usr') { return; } // Usuários desativado (sem backend de login)
+    if (v === 'concil') { carregarConcil(); return; }
     desenhar();
   }
   Array.prototype.forEach.call(document.querySelectorAll('#nav button'), function (b) { b.addEventListener('click', function () { abrir(b.getAttribute('data-v')); }); });

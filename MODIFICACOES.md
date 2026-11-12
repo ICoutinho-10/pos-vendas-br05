@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.7.0 — 12/11/2026 — Conciliação TOTVS × SAP (nova aba na Gestão)
+- Nova aba **TOTVS × SAP** no painel de Gestão: diferença de saldo **de cada item** entre **TOTVS (SBF)** e **SAP (MB52)**, com KPIs (SKUs comparados, TOTVS a mais, TOTVS a menos, Conferem), tabela ordenada por maior divergência, filtros (Todos / Só divergentes / a mais / a menos), busca e **Exportar CSV**.
+- **TOTVS** por item = soma do saldo por endereço (`b.p[k].l`); **SAP** por item = `b.sap[k].q` (soma da coluna "Utilização livre" do MB52). Itens só de um sistema entram com o outro lado = 0.
+- **Apps Script:** adicionada a função `concilSistemas()` + branch `else if (acao === 'concil')` no `responder_`. **Acréscimo aditivo** (não altera endpoints existentes). **Salvo, mas PRECISA de NOVA VERSÃO (redeploy)** pra o `/exec` enxergar — Implantar → Gerenciar implantações → lápis → Versão: Nova versão → Implantar.
+- ⚠ **Descoberta:** na MB52 atual a quantidade SAP é a coluna **"Utilização livre" (E)**; não há mais "UM básica". O Script já soma essa coluna (por nome de cabeçalho), então o saldo SAP interno (`b.sap`) está correto.
+
 ## v0.6.1 — 12/11/2026 — Kardex/app: FILIAL "AUTO" → "PÓS VENDAS"
 - No **Kardex impresso** o campo **FILIAL** vinha "AUTO" (leftover do clone BR02) → agora **PÓS VENDAS** (cabeçalho estático `index.html:492` e a tabela renderizada/impressa `index.html:1057`).
 - Título do app: "Inventário **AUTO** · BR05" → "Inventário **Pós-Vendas** · BR05" (removido o sufixo duplicado do subtítulo).
