@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.3 — 12/11/2026 — Conferência: tabela ocupa a largura, sem rolagem lateral, linhas densas
+- Pedido do Ivan: **sem barra de rolagem horizontal**, **tabela redimensionada p/ a largura toda** e **linhas mais baixas** (caber o máximo de itens).
+- Grid da Conferência passou de `minmax(0,1080px) 280px` → **`minmax(0,1fr) 300px`**; `fcard/ktool/kmsg` sem `max-width` → usa a tela toda. Abaixo de 1100px o balão "Posições lançadas" some e a tabela vira 1 coluna.
+- `table-layout:fixed` + largura por coluna (descrição = sobra) e **`.fscroll{overflow-x:hidden}`** → acaba a rolagem lateral. Cabeçalhos longos quebram em 2 linhas (não estouram).
+- Linhas compactas: `td` 1px, `input.fq` 26px, chips/seg menores → **~33px por linha** (era ~68). Testado ao vivo em **R01 A 01 A**: 0 overflow horizontal, coluna ETIQUETA inteira visível.
+
 ## v0.8.2 — 12/11/2026 — Etiqueta redesenhada + código de barras que lê
 - **Pedidos do Ivan atendidos:** removido o **PN pequeno** (linha PN/Val.Lote) e o **PROCESSO/NF**; removido o **"46"** (nº da semana ISO — não serve) e a **hora**; **data** e **descrição** com fonte bem maior; **Quantidade ~dobrada** (fonte gigante, com auto-ajuste p/ 1–5 dígitos); **código grande descido** com folga do barcode. `Oper:` foi pra baixo da data.
 - **Código de barras agora lê:** a causa era (1) `margin:0` → **sem quiet zone**, e (2) `+getAttribute('width')` virava `NaN` (valor vem como `"580px"`) → caía no fallback e **distorcia** as barras. Corrigido: `parseInt(...)` p/ largura/altura reais + **quiet zone** (`marginLeft/Right:44`), módulo mais largo (`width:4`), `preserveAspectRatio` sem esticar e `shape-rendering:crispEdges`. SVG vetorial = alta definição na Zebra.
