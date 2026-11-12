@@ -3,62 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>try{var _t=localStorage.getItem('central_tema');if(_t&&_t!=='azul')document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script>try{var _t=localStorage.getItem('central_tema');if(_t==='claro')document.documentElement.setAttribute('data-theme','claro');}catch(e){}</script>
 <title>Gestão de Desempenho · Pós-Vendas BR05 · Administração</title>
 <link rel="icon" type="image/png" href="../img/byd.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Oxanium:wght@600;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap">
 <style>
-  /* ===== Padrão WS — Neon Indigo (navy #03101f + acento índigo→ciano #6366f1→#06b6d4) ===== */
+  /* ===== Enterprise — Grafite / branco / cinza técnico / vermelho BYD (acento único, com moderação) ===== */
   :root {
-    --bg: #03101f; --card1: #08223b; --card2: #041426; --borda: #174768; --borda2: #123b59;
-    --acento: #818cf8; --eyebrow: #a6b0e8; --tx: #eef1ff; --tx2: #a6b0e8; --tx3: #7480c0; --tx4: #5f6ba0;
-    --trilho: #0b2237; --ok: #34d399; --bx: #ff5f7e; --al: #f59e0b; --azul: #22d3ee; --ama: #fbbf24;
-    --ctrl: #061a2e; --ctrl2: #0a2d4c; --row-alt: rgba(8,34,59,.45); --row-hover: rgba(129,140,248,.09);
-    --on-accent: #0a1026; --tese1: #0a2947; --tese2: #05192e; --accent-weak: rgba(129,140,248,.16);
-    --glow1: rgba(12,51,88,.55); --glow2: rgba(99,102,241,.12); --grad: linear-gradient(135deg, #6366f1, #06b6d4); --acento-rgb: 129,140,248;
-  }
-  [data-theme="lime"] {
-    --bg:#07100B; --card1:#0E2017; --card2:#081610; --borda:#1E5A3A; --borda2:#164830;
-    --acento:#B6FF2E; --eyebrow:#8FE34D; --tx:#EAFFF3; --tx2:#A7D7BC; --tx3:#6FA487; --tx4:#5C8B72;
-    --trilho:#0C2419; --ok:#34d399; --bx:#f87171; --al:#fb923c; --azul:#10B981; --ama:#fbbf24;
-    --ctrl:#0C1E14; --ctrl2:#123524; --row-alt:rgba(14,32,23,.5); --row-hover:rgba(182,255,46,.08);
-    --on-accent:#07140B; --tese1:#10281A; --tese2:#0A1A11; --accent-weak:rgba(182,255,46,.16);
-    --glow1:rgba(16,185,129,.20); --glow2:rgba(182,255,46,.08); --grad:linear-gradient(135deg,#B6FF2E,#10B981); --acento-rgb:182,255,46;
-  }
-  [data-theme="cyan"] {
-    --bg:#04121A; --card1:#072433; --card2:#04151F; --borda:#0E4D63; --borda2:#0B3C50;
-    --acento:#00E5FF; --eyebrow:#38C7E0; --tx:#E6FBFF; --tx2:#A0CDD9; --tx3:#6D9BA8; --tx4:#5A8290;
-    --trilho:#08202C; --ok:#34d399; --bx:#f87171; --al:#fb923c; --azul:#3B82F6; --ama:#fbbf24;
-    --ctrl:#06202C; --ctrl2:#0A3346; --row-alt:rgba(7,36,51,.5); --row-hover:rgba(0,229,255,.08);
-    --on-accent:#021318; --tese1:#072E3F; --tese2:#04171F; --accent-weak:rgba(0,229,255,.16);
-    --glow1:rgba(59,130,246,.18); --glow2:rgba(0,229,255,.09); --grad:linear-gradient(135deg,#00E5FF,#3B82F6); --acento-rgb:0,229,255;
-  }
-  [data-theme="teal"] {
-    --bg:#06161A; --card1:#0D2A2F; --card2:#07191D; --borda:#155E62; --borda2:#104A4F;
-    --acento:#2DD4BF; --eyebrow:#5EE0CF; --tx:#E6F7F5; --tx2:#9FCFC9; --tx3:#6C9F99; --tx4:#588680;
-    --trilho:#0A2529; --ok:#34d399; --bx:#f87171; --al:#fb923c; --azul:#22d3ee; --ama:#fbbf24;
-    --ctrl:#092227; --ctrl2:#0E353A; --row-alt:rgba(13,42,47,.5); --row-hover:rgba(45,212,191,.08);
-    --on-accent:#04140F; --tese1:#0C2E33; --tese2:#07191D; --accent-weak:rgba(45,212,191,.16);
-    --glow1:rgba(34,211,238,.16); --glow2:rgba(45,212,191,.09); --grad:linear-gradient(135deg,#2DD4BF,#22D3EE); --acento-rgb:45,212,191;
+    --bg: #0c0f14; --card1: #12171f; --card2: #10141b; --borda: #262f3b; --borda2: #1d242e;
+    --acento: #e2231a; --eyebrow: #aab2bf; --tx: #e7eaef; --tx2: #aab2bf; --tx3: #727c8a; --tx4: #5b6472;
+    --trilho: #0a0d12; --ok: #3f9b6d; --bx: #e2231a; --al: #c6902f; --azul: #3f78b5; --ama: #c6902f;
+    --ctrl: #10141b; --ctrl2: #151b24; --row-alt: rgba(255,255,255,.015); --row-hover: rgba(255,255,255,.035);
+    --on-accent: #ffffff; --tese1: #12171f; --tese2: #10141b; --accent-weak: rgba(226,35,26,.12);
+    --glow1: transparent; --glow2: transparent; --grad: linear-gradient(180deg, #e2231a, #cf2019); --acento-rgb: 226,35,26;
   }
   [data-theme="claro"] {
-    --bg:#EDF1F6; --card1:#FFFFFF; --card2:#F7F9FC; --borda:#DCE3EC; --borda2:#E7ECF3;
-    --acento:#2563EB; --eyebrow:#4F46E5; --tx:#0F172A; --tx2:#475569; --tx3:#64748B; --tx4:#94A3B8;
-    --trilho:#E6EAF2; --ok:#059669; --bx:#DC2626; --al:#EA580C; --azul:#2563EB; --ama:#D97706;
-    --ctrl:#F1F4F9; --ctrl2:#E7ECF5; --row-alt:rgba(15,23,42,.03); --row-hover:rgba(37,99,235,.07);
-    --on-accent:#FFFFFF; --tese1:#FFFFFF; --tese2:#F4F7FC; --accent-weak:rgba(37,99,235,.14);
-    --glow1:rgba(37,99,235,.08); --glow2:rgba(79,70,229,.06); --grad:linear-gradient(135deg,#4F46E5,#2563EB); --acento-rgb:37,99,235;
+    --bg:#f4f5f7; --card1:#ffffff; --card2:#eef0f3; --borda:#dcdfe4; --borda2:#e6e8ec;
+    --acento:#d4241b; --eyebrow:#525b67; --tx:#1a1f26; --tx2:#525b67; --tx3:#8a929e; --tx4:#a4abb5;
+    --trilho:#e6e8ec; --ok:#2f7d55; --bx:#d4241b; --al:#9a6c17; --azul:#2d5d94; --ama:#9a6c17;
+    --ctrl:#fafbfc; --ctrl2:#eef0f3; --row-alt:rgba(16,24,40,.02); --row-hover:rgba(212,36,27,.05);
+    --on-accent:#ffffff; --tese1:#ffffff; --tese2:#fafbfc; --accent-weak:rgba(212,36,27,.1);
+    --glow1:transparent; --glow2:transparent; --grad:linear-gradient(180deg,#d4241b,#c01f17); --acento-rgb:212,36,27;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: radial-gradient(1100px 700px at 92% -8%, var(--glow1), transparent 55%), radial-gradient(900px 600px at -10% 110%, var(--glow2), transparent 60%), var(--bg); transition: background-color .25s ease;
-         background-attachment: fixed; color: var(--tx); font-family: "DM Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-  .num { font-variant-numeric: tabular-nums; }
+  body { background: var(--bg); transition: background-color .25s ease;
+         color: var(--tx); font-family: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 13px; letter-spacing: -.1px; -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; font-family: "Geist Mono", "Geist", ui-monospace, monospace; letter-spacing: -.3px; }
   button, input, select { font-family: inherit; }
-  /* tipografia de display do WS: Oxanium em títulos, eyebrows e números grandes */
-  h1, h2, h3, .marca b, .eyebrow, .num, .kpi-num, .big, .valor { font-family: "Oxanium", "Manrope", "DM Sans", system-ui, sans-serif; }
+  /* display: Geist nos títulos; Geist Mono nos números grandes (ar de engenharia/controle) */
+  h1, h2, h3, .marca b, .eyebrow { font-family: "Geist", system-ui, sans-serif; }
+  .num, .kpi-num, .big, .valor { font-family: "Geist Mono", "Geist", ui-monospace, monospace; }
 
   /* ---------- layout ---------- */
   .lay { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
@@ -81,10 +58,9 @@
   .lk { height: 40px; border-radius: 10px; display: flex; align-items: center; gap: 10px; padding: 0 12px; text-decoration: none; font-weight: 700; font-size: 12.5px;
         border: 1px solid var(--borda); color: var(--tx); background: linear-gradient(145deg, var(--card1), var(--card2)); transition: .15s; }
   .lk:hover { border-color: var(--acento); }
-  .lk.verde { border-color: rgba(52,211,153,.45); }
   .lk.verde svg { color: var(--ok); }
-  .lk.robo { border-color: rgba(20,184,166,.5); background: linear-gradient(135deg, rgba(20,184,166,.18), rgba(34,197,94,.10)); }
-  .lk.robo svg { color: #2DD4BF; }
+  .lk.robo { border-color: var(--borda); background: var(--ctrl); }
+  .lk.robo svg { color: var(--acento); }
   .lk svg { color: var(--acento); flex: 0 0 auto; }
   .vivo { font-size: 11px; color: var(--tx3); display: flex; align-items: center; gap: 8px; padding: 0 4px; }
   .vivo i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: pulso 2s infinite; }
@@ -386,11 +362,8 @@
           <div class="tema-pop" id="temaPop" hidden role="group" aria-label="Cores do painel">
             <div class="tema-pop-h">Cor do painel</div>
             <div class="tema-dots">
-              <button type="button" class="sw-dot" data-t="azul"  title="Azul-marinho"  aria-label="Azul-marinho"  style="background:linear-gradient(135deg,#38b9ff,#22d3ee)"></button>
-              <button type="button" class="sw-dot" data-t="lime"  title="Cyber Lime"    aria-label="Cyber Lime"    style="background:linear-gradient(135deg,#B6FF2E,#10B981)"></button>
-              <button type="button" class="sw-dot" data-t="cyan"  title="Electric Cyan" aria-label="Electric Cyan" style="background:linear-gradient(135deg,#00E5FF,#3B82F6)"></button>
-              <button type="button" class="sw-dot" data-t="teal"  title="Deep Teal"     aria-label="Deep Teal"     style="background:linear-gradient(135deg,#2DD4BF,#22D3EE)"></button>
-              <button type="button" class="sw-dot" data-t="claro" title="Claro"         aria-label="Tema claro"    style="background:linear-gradient(135deg,#4F46E5,#2563EB)"></button>
+              <button type="button" class="sw-dot" data-t="azul"  title="Grafite (escuro)" aria-label="Grafite escuro" style="background:#12171f;border:1px solid #3a4150"></button>
+              <button type="button" class="sw-dot" data-t="claro" title="Claro"           aria-label="Tema claro"     style="background:#f4f5f7;border:1px solid #d0d4da"></button>
             </div>
           </div>
         </div>
@@ -724,9 +697,9 @@
     h += '<div class="card"><p class="eyebrow">Ritmo do turno</p><h3>Lançamentos por hora</h3><p class="sc">' + (F.dia ? 'Turno ' + diaBR(F.dia) : 'Todos os dias somados') + ' · pico de ' + n0(picos) + ' lançamentos às ' + rot[hrs.indexOf(picos)] + 'h</p>' +
          barrasV(hrs.slice(ini, fim + 1), rot.slice(ini, fim + 1), function (v) { return v === picos ? 'var(--acento)' : 'var(--azul)'; }) + '</div>';
     h += '<div class="card"><p class="eyebrow">Situação</p><h3>Posições por resultado</h3><p class="sc">Comparação da quantidade contada com o saldo TOTVS</p><div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">' +
-         donut([{ n: 'Confere', v: k.ok, c: '#34d399' }, { n: 'Baixa 602', v: k.bx.length, c: '#f87171' }, { n: 'Alta 202', v: k.al.length, c: '#fb923c' }], pc(k.acur, 0), 'confere') +
+         donut([{ n: 'Confere', v: k.ok, c: '#3f9b6d' }, { n: 'Baixa 602', v: k.bx.length, c: '#e2231a' }, { n: 'Alta 202', v: k.al.length, c: '#c6902f' }], pc(k.acur, 0), 'confere') +
          '<div class="barras" style="flex:1;min-width:180px">' +
-         [['Confere', k.ok, '#34d399'], ['Baixa 602', k.bx.length, '#f87171'], ['Alta 202', k.al.length, '#fb923c']].map(function (x) {
+         [['Confere', k.ok, '#3f9b6d'], ['Baixa 602', k.bx.length, '#e2231a'], ['Alta 202', k.al.length, '#c6902f']].map(function (x) {
            return '<div class="barra" style="grid-template-columns:90px 1fr auto"><div class="r">' + x[0] + '</div><div class="trilho"><i style="width:' + (k.pos ? 100 * x[1] / k.pos : 0) + '%;background:' + x[2] + '"></i></div><div class="v num">' + n0(x[1]) + ' <small style="color:var(--tx3)">' + (k.pos ? pc(x[1] / k.pos, 0) : '') + '</small></div></div>';
          }).join('') + '</div></div></div>';
     h += '</div>';
@@ -744,7 +717,7 @@
     h += '<div class="g2b">';
     h += '<div class="card"><p class="eyebrow">Onde está o dinheiro</p><h3>Maiores divergências</h3><p class="sc">Top 10 por impacto em R$ (custo médio SBF). Vermelho = baixa, laranja = alta.</p>' +
          (top.length ? barrasH(top.slice(0, 10).map(function (x) {
-           return { r: x.h.prod + ' · ' + x.h.end, s: x.h.desc, v: x.v || x.h.dif, c: x.h.dif < 0 ? '#f87171' : '#fb923c', t: (x.v ? brl.format(x.v) : (x.h.dif > 0 ? '+' : '') + n0(x.h.dif) + ' pç') };
+           return { r: x.h.prod + ' · ' + x.h.end, s: x.h.desc, v: x.v || x.h.dif, c: x.h.dif < 0 ? '#e2231a' : '#c6902f', t: (x.v ? brl.format(x.v) : (x.h.dif > 0 ? '+' : '') + n0(x.h.dif) + ' pç') };
          })) : '<div class="vazio">Nenhuma divergência.</div>') + '</div>';
     var rk = groupBy(L, function (l) { return l.conf; }).map(function (g) { return { r: g.k, v: g.itens.length }; }).sort(function (a, b) { return b.v - a.v; });
     h += '<div class="card"><p class="eyebrow">Equipe</p><h3>Lançamentos por conferente</h3><p class="sc">Detalhe completo no menu Performance</p>' + barrasH(rk.slice(0, 10), 0, 'linear-gradient(90deg,var(--azul),var(--acento))') + '</div>';
@@ -761,7 +734,7 @@
     k.cob.forEach(function (v) { bk[v < .5 ? 0 : v < .9 ? 1 : v < .995 ? 2 : v <= 1.005 ? 3 : 4]++; });
     h += '<div class="g2b">';
     h += '<div class="card"><p class="eyebrow">MB52</p><h3>% consolidada por SKU</h3><p class="sc">Contagem consolidada do dia ÷ MB52</p>' +
-         barrasV(bk, ['< 50%', '50–90%', '90–99%', '100%', '> 100%'], function (v, i) { return ['#f87171', '#fb923c', '#fbbf24', '#34d399', '#60a5fa'][i]; }, 230, 380) + '</div>';
+         barrasV(bk, ['< 50%', '50–90%', '90–99%', '100%', '> 100%'], function (v, i) { return ['#e2231a', '#c6902f', '#b9a24a', '#3f9b6d', '#3f78b5'][i]; }, 230, 380) + '</div>';
     var dias = D.dias.slice().reverse().map(function (dk) {
       var hh = D.H.filter(function (x) { return x.dia === dk; }), ok = hh.filter(function (x) { return x.mov === 'OK'; }).length;
       return { dk: dk, v: hh.length, ac: hh.length ? ok / hh.length : 0 };
@@ -1098,7 +1071,7 @@
   }
   // ---------- seletor de tema (bolinhas) ----------
   (function () {
-    var VALIDOS = ["azul", "lime", "cyan", "teal", "claro"];
+    var VALIDOS = ["azul", "claro"];
     function salvo() { try { return localStorage.getItem("central_tema") || "azul"; } catch (e) { return "azul"; } }
     function aplica(t) {
       if (VALIDOS.indexOf(t) < 0) t = "azul";
