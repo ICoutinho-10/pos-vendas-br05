@@ -1,5 +1,12 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.6 — 12/11/2026 — Dash de acuracidade TOTVS × SAP (SAP principal) + evolução por foto
+- Pedido do Ivan: acompanhar **acuracidade** do TOTVS contra o **SAP (principal)**, com **qtde de itens a mais e a menos**, e **evolução** conforme inventaria.
+- **KPIs:** Acuracidade (itens que conferem ÷ total, cor por faixa), Materiais divergentes, TOTVS a mais (sobra vs SAP), TOTVS a menos (falta vs SAP).
+- **Evolução:** métricas **Acuracidade % / Divergentes / A mais / A menos**, por **dia/mês** e **período**. Fonte = **foto diária** do estado gravada no navegador (`localStorage`), já que o `?api=admin` só devolve o estado atual (sem histórico). "Por mês" usa a última foto do mês. Começa a acumular a partir de hoje.
+- **Análise fria registrada:** histórico real e compartilhado exige snapshot no servidor (Apps Script grava 1 linha/dia numa aba `_ACURACIDADE`) — preparado para ligar quando o Ivan quiser (precisa do deploy dele). Enquanto isso, foto local resolve sem deploy.
+- Com MB52=0 hoje, Acuracidade aparece 0% e tudo "a mais" (correto; vira útil quando o SAP for carregado).
+
 ## v0.9.5 — 12/11/2026 — Conciliação: SBF/MB52 são total do item (não somar por endereço)
 - Ivan reforçou: **QTDE SBF é o total do item, independente do endereço**. Confirmado por ele que **SBF=TOTVS e MB52=SAP** (como estava rotulado).
 - **Correção:** `buildConcil` deixou de **somar** o SBF/MB52 entre endereços — passa a usar o valor do material (`Math.max` por SKU). A **evolução** também agrega por material/dia (um item conta 1 vez no dia, mesmo em vários endereços). Para a base de hoje (1 endereço por item) o resultado é igual; evita inflar quando o mesmo material estiver em vários endereços.

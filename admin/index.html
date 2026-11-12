@@ -420,10 +420,10 @@
       <div id="cKpis"></div>
       <div class="card" id="cEvoCard">
         <div class="ctr" style="justify-content: space-between; flex-wrap: wrap; gap: 10px">
-          <h2 style="margin:0;font-size:15px">Evolução das divergências</h2>
+          <h2 style="margin:0;font-size:15px">Evolução — acuracidade e divergências</h2>
           <div class="ctr" style="gap:10px;flex-wrap:wrap">
             <div class="chips" id="cGran"><button class="chip on" data-g="dia">Por dia</button><button class="chip" data-g="mes">Por mês</button></div>
-            <div class="chips" id="cMetr"><button class="chip on" data-m="div">Qtd divergentes</button><button class="chip" data-m="abs">Soma |diferença|</button></div>
+            <div class="chips" id="cMetr"><button class="chip on" data-m="acc">Acuracidade</button><button class="chip" data-m="div">Divergentes</button><button class="chip" data-m="mais">A mais</button><button class="chip" data-m="menos">A menos</button></div>
             <select class="sel" id="cPer" title="Período"><option value="">Todo o período</option><option value="30">Últimos 30 dias</option><option value="90">Últimos 90 dias</option><option value="180">Últimos 6 meses</option><option value="365">Último ano</option></select>
           </div>
         </div>
@@ -466,7 +466,7 @@
 
 <script>
   // === Auto-atualização (acaba o cache velho) ===
-  var APP_VERSION = '0.9.5';
+  var APP_VERSION = '0.9.6';
   (function () {
     function checar() {
       fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -964,12 +964,27 @@
   });
 
   // ---------- Conciliação TOTVS × SAP ----------
-  var CONCIL = null, cFil = '', cBuscaV = '', cMax = 100, cT, cGranV = 'dia', cMetrV = 'div', cPerV = '';
-  // Conciliação calculada no próprio app a partir do HISTÓRICO, sem endpoint.
+  var CONCIL = null, cFil = '', cBuscaV = '', cMax = 100, cT, cGranV = 'dia', cMetrV = 'acc', cPerV = '';
+  // Acuracidade TOTVS × SAP (SAP = principal), calculada no app a partir do HISTÓRICO, sem endpoint.
   // SBF e MB52 são o TOTAL do material (independente do endereço) — NÃO somar entre endereços; usar o valor do item.
+  var SNAP_KEY = 'concil_snap_br05';
+  function snapUpsert(t) {                              // grava 1 "foto" por dia (estado atual) no navegador
+    var map = {}; try { map = JSON.parse(localStorage.getItem(SNAP_KEY) || '{}') || {}; } catch (e) {}
+    var k = diaKey(diaTurno(new Date()));
+    map[k] = { skus: t.skus, conf: t.iguais, mais: t.aMais, menos: t.aMenos, ts: Date.now() };
+    try { localStorage.setItem(SNAP_KEY, JSON.stringify(map)); } catch (e) {}
+    return map;
+  }
+  function snapHist() {
+    var map = {}; try { map = JSON.parse(localStorage.getItem(SNAP_KEY) || '{}') || {}; } catch (e) {}
+    return Object.keys(map).sort().map(function (k) {
+      var o = map[k]; var skus = o.skus || 0, div = (o.mais || 0) + (o.menos || 0);
+      return { dia: k, skus: skus, conf: o.conf || 0, mais: o.mais || 0, menos: o.menos || 0, div: div, acc: skus ? o.conf / skus : 0 };
+    });
+  }
   function buildConcil() {
     if (!D || !D.H) return null;
-    var bySku = {}, serieMap = {};
+    var bySku = {};
     D.H.forEach(function (h) {
       var cod = h.prod; if (!cod) return;
       var sap = h.mb52 == null ? 0 : h.mb52, totvs = h.saldo || 0;
@@ -978,28 +993,19 @@
       o.sap = Math.max(o.sap, sap);            // MB52 é o total do material no SAP, não por endereço
       if (h.mb52 != null) o.temSap = true;
       if (!o.desc && h.desc) o.desc = h.desc;
-      // série temporal por dia (turno): agrega por material no dia (independente do endereço) — SBF/MB52 são totais do item
-      var dia = h.dia; if (!dia) return;
-      var dm = serieMap[dia] || (serieMap[dia] = {});
-      var a = dm[cod] || (dm[cod] = { totvs: 0, sap: 0 });
-      a.totvs = Math.max(a.totvs, totvs); a.sap = Math.max(a.sap, sap);
     });
     var itens = Object.keys(bySku).map(function (k) { var o = bySku[k]; o.dif = o.totvs - o.sap; return o; });
     var aMais = 0, aMenos = 0, iguais = 0, temAlgumSap = false;
     itens.forEach(function (x) { if (x.temSap) temAlgumSap = true; if (x.dif > 0) aMais++; else if (x.dif < 0) aMenos++; else iguais++; });
-    var serie = Object.keys(serieMap).sort().map(function (dia) {
-      var dm = serieMap[dia], s = { dia: dia, div: 0, abs: 0, skus: 0 };
-      Object.keys(dm).forEach(function (cod) { var d = dm[cod].totvs - dm[cod].sap; s.skus++; if (d !== 0) { s.div++; s.abs += Math.abs(d); } });
-      return s;
-    });
+    var totais = { skus: itens.length, aMais: aMais, aMenos: aMenos, iguais: iguais, acc: itens.length ? iguais / itens.length : 0 };
+    snapUpsert(totais);                                  // atualiza a foto de hoje
     var gerado = D.gerado ? String(D.gerado).slice(11, 16) : '';
-    return { itens: itens, serie: serie, semSap: !temAlgumSap || itens.every(function (x) { return x.sap === 0; }),
-             totais: { skus: itens.length, aMais: aMais, aMenos: aMenos, iguais: iguais }, gerado: gerado };
+    return { itens: itens, semSap: !temAlgumSap || itens.every(function (x) { return x.sap === 0; }), totais: totais, gerado: gerado };
   }
   function carregarConcil(force) {
     if ($('eb')) $('eb').textContent = 'Conciliação de sistemas';
     if ($('tit')) $('tit').textContent = 'TOTVS × SAP';
-    if ($('sub')) $('sub').textContent = 'Diferença de saldo de cada item entre o TOTVS (SBF) e o SAP (MB52).';
+    if ($('sub')) $('sub').textContent = 'Acuracidade do TOTVS (SBF) contra o SAP (MB52) — SAP é o principal. Itens a mais e a menos para resolver conforme o inventário.';
     if (!D) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Carregando dados…</td></tr></tbody>'; return; }
     if (CONCIL && !force) { renderConcil(); return; }
     CONCIL = buildConcil();
@@ -1018,36 +1024,40 @@
     });
   }
   function evoSerie() {
-    var S = (CONCIL && CONCIL.serie) || [];
+    var S = snapHist();                                  // fotos diárias (estado por dia)
     if (cPerV) { var lim = new Date(Date.now() - (+cPerV) * 864e5); S = S.filter(function (p) { var d = p.dia.split('-'); return new Date(+d[0], +d[1] - 1, +d[2]) >= lim; }); }
-    if (cGranV === 'mes') {
+    if (cGranV === 'mes') {                               // snapshot é um ESTADO, não fluxo → usa a última foto do mês
       var m = {};
-      S.forEach(function (p) { var k = p.dia.slice(0, 7); var o = m[k] || (m[k] = { dia: k, div: 0, abs: 0, skus: 0 }); o.div += p.div; o.abs += p.abs; o.skus += p.skus; });
-      return Object.keys(m).sort().map(function (k) { return m[k]; });
+      S.forEach(function (p) { m[p.dia.slice(0, 7)] = p; });
+      return Object.keys(m).sort().map(function (k) { var o = {}; for (var z in m[k]) o[z] = m[k][z]; o.dia = k; return o; });
     }
     return S;
   }
+  var MET = { acc: { lbl: 'Acuracidade (TOTVS = SAP)', cor: 'var(--ok)', pct: true, v: function (p) { return Math.round(p.acc * 1000) / 10; } },
+              div: { lbl: 'Materiais divergentes', cor: 'var(--al)', v: function (p) { return p.div; } },
+              mais: { lbl: 'TOTVS a mais (sobra vs SAP)', cor: 'var(--al)', v: function (p) { return p.mais; } },
+              menos: { lbl: 'TOTVS a menos (falta vs SAP)', cor: 'var(--bx)', v: function (p) { return p.menos; } } };
   function renderEvo() {
-    var S = evoSerie();
-    if (!S.length) { $('cEvo').innerHTML = '<p class="sub" style="color:var(--tx3);margin:8px 0 0">Sem histórico no período selecionado.</p>'; return; }
-    var vals = S.map(function (p) { return cMetrV === 'abs' ? p.abs : p.div; });
+    var S = evoSerie(), M = MET[cMetrV] || MET.acc;
+    if (!S.length) { $('cEvo').innerHTML = '<p class="sub" style="color:var(--tx3);margin:8px 0 0">Sem fotos ainda — o histórico começa a acumular a partir de hoje.</p>'; return; }
+    var vals = S.map(M.v);
     var rots = S.map(function (p) { return cGranV === 'mes' ? p.dia.slice(5) + '/' + p.dia.slice(2, 4) : diaBR(p.dia); });
-    var cor = cMetrV === 'abs' ? 'var(--al)' : 'var(--azul)';
-    var tot = vals.reduce(function (a, b) { return a + b; }, 0);
-    $('cEvo').innerHTML = barrasV(vals, rots, cor, 210, 680)
-      + '<p class="sub" style="color:var(--tx3);margin:6px 0 0">' + (cMetrV === 'abs' ? 'Soma das diferenças absolutas' : 'Materiais divergentes') + ' · ' + S.length + (cGranV === 'mes' ? ' meses' : ' dias') + ' · total ' + n0(tot) + '</p>';
+    var ult = vals[vals.length - 1];
+    $('cEvo').innerHTML = barrasV(vals, rots, M.cor, 210, 680)
+      + '<p class="sub" style="color:var(--tx3);margin:6px 0 0">' + esc(M.lbl) + ' · ' + S.length + (cGranV === 'mes' ? ' meses' : ' dias') + ' · atual ' + (M.pct ? ult.toFixed(1) + '%' : n0(ult)) + ' · <span title="Histórico salvo neste navegador">foto local</span></p>';
   }
   function renderConcil() {
     if (!CONCIL) return;
     var t = CONCIL.totais || {};
     $('cAviso').innerHTML = CONCIL.semSap
-      ? '<div class="card" style="border-color:var(--ama);background:color-mix(in srgb,var(--ama) 10%,transparent)"><b>SAP (MB52) sem saldo nesta base.</b> A importação do MB52 ainda não alimentou estes materiais — as diferenças abaixo refletem só o saldo do TOTVS. Assim que o MB52 for carregado, a conciliação passa a valer automaticamente.</div>'
+      ? '<div class="card" style="border-color:var(--ama);background:color-mix(in srgb,var(--ama) 10%,transparent)"><b>SAP (MB52) sem saldo nesta base.</b> Como o SAP é o principal e está zerado, a acuracidade aparece em 0% e tudo cai em “TOTVS a mais”. Assim que a importação do MB52 alimentar os materiais, a acuracidade e as divergências passam a valer automaticamente.</div>'
       : '';
+    var acc = t.acc || 0, div = (t.aMais || 0) + (t.aMenos || 0);
     $('cKpis').innerHTML = '<div class="g4">'
-      + tile('SKUs comparados', n0(t.skus || 0), 'Itens presentes no SBF (TOTVS) e/ou MB52 (SAP)')
-      + tile('TOTVS a mais', n0(t.aMais || 0), 'Saldo do TOTVS maior que o do SAP', null, 'var(--al)')
-      + tile('TOTVS a menos', n0(t.aMenos || 0), 'Saldo do TOTVS menor que o do SAP', null, 'var(--bx)')
-      + tile('Conferem', n0(t.iguais || 0), 'TOTVS igual ao SAP' + (CONCIL.gerado ? ' · base ' + esc(CONCIL.gerado) : ''), null, 'var(--ok)')
+      + tile('Acuracidade', (acc * 100).toFixed(1) + '%', (t.iguais || 0) + ' de ' + (t.skus || 0) + ' materiais conferem · SAP é o principal' + (CONCIL.gerado ? ' · base ' + esc(CONCIL.gerado) : ''), null, corAc(acc))
+      + tile('Materiais divergentes', n0(div), 'TOTVS diferente do SAP — a resolver no inventário', null, 'var(--al)')
+      + tile('TOTVS a mais', n0(t.aMais || 0), 'TOTVS maior que o SAP (sobra no TOTVS)', null, 'var(--al)')
+      + tile('TOTVS a menos', n0(t.aMenos || 0), 'TOTVS menor que o SAP (falta no TOTVS)', null, 'var(--bx)')
       + '</div>';
     renderEvo();
     var R = concilFiltrado().slice().sort(function (a, b) { return Math.abs(b.dif) - Math.abs(a.dif); });
