@@ -655,6 +655,24 @@
 </div>
 
 <script>
+  // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
+  var APP_VERSION = '0.8.9';
+  (function () {
+    function checar() {
+      fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (j && j.v && j.v !== APP_VERSION) {
+            // nova versão publicada: recarrega forçando HTML fresco (query nova = fora do cache)
+            location.replace(location.pathname + '?v=' + encodeURIComponent(j.v));
+          }
+        }).catch(function () {});
+    }
+    setTimeout(checar, 1500);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) checar(); });
+    setInterval(checar, 120000);
+  })();
+
   // Ponte GitHub Pages -> planilha (API do Apps Script). Mantém a mesma interface do google.script.run.
   var API = 'https://script.google.com/macros/s/AKfycby4HhAM6hrwjv-714oUBcbWcikzc7dS7hNtiqNZJMABYOeRMQY88rjTyuu81ehwYNE/exec';
   (function () {

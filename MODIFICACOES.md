@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.9 — 12/11/2026 — Auto-atualização (acaba o cache velho do kiosk)
+- Problema: o atalho kiosk do Chrome guardava uma **cópia antiga** do app (ex.: sem o painel LOCALIZAR e com o chip "lança 0" antigo), mesmo com o deploy no ar. Só pegava o novo com refresh manual.
+- Correção: o app agora tem `APP_VERSION` e checa `version.json` (fetch `no-store`) ao abrir, ao voltar o foco e a cada 2 min. Saiu versão nova → **recarrega sozinho** com `?v=<nova>` (query nova = HTML fresco, fora do cache).
+- ⚠ Processo a partir de agora: a cada mudança, **bumpar `APP_VERSION` no index.html E o `version.json`**. Uma vez que o Ivan abrir a versão 0.8.9 (1 refresh manual nessa transição), as próximas se aplicam automáticas.
+
 ## v0.8.8 — 12/11/2026 — Conferência: item em branco NÃO entra no Kardex (não lança 0)
 - Pedido do Ivan (R01 A 01 A): itens que ele não contou apareciam "Sem qtde · lança 0" e, ao Lançar conferência, **entravam no Kardex como 0**. Não é o desejado.
 - Correção: no Lançar, `pend` passou a incluir **só itens com quantidade digitada** (`fNum(fis) !== null`). Item em branco (não contado) **não é mais forçado a 0** nem enviado. Se nada foi digitado, avisa e não lança.
