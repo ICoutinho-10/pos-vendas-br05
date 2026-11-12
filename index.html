@@ -139,7 +139,8 @@
   @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.55); } 70% { box-shadow: 0 0 0 8px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
   /* Menu lateral (parte escura) */
   .side { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; z-index: 6; padding: 22px 14px; color: #EEF1FF;
-          background: rgba(10,12,40,.55); border-right: 1px solid rgba(120,130,240,.22); }
+          background: rgba(10,12,40,.55); border-right: 1px solid rgba(120,130,240,.22);
+          display: flex; flex-direction: column; overflow-y: auto; }
   .side .mt { font-family: "Oxanium", var(--font); font-weight: 800; font-size: 12px; letter-spacing: 1.2px; color: #A6B0E8; margin: 0 10px 12px; }
   .side button { width: 100%; height: 46px; margin-bottom: 6px; border: 0; border-radius: 12px; background: transparent; color: #C7CEF5;
                  font-family: var(--font); font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 0 12px; text-align: left; }
@@ -178,7 +179,7 @@
   @media (max-width: 900px) {
     body { padding-left: 0; }
     .app { margin: 12px; height: calc(100vh - 80px); height: calc(100dvh - 80px); border-radius: 24px; }
-    .side { position: sticky; top: 0; bottom: auto; width: auto; display: flex; gap: 6px; padding: 8px 10px; border-right: 0; border-bottom: 1px solid rgba(120,130,240,.22); background: #0f1030; }
+    .side { position: sticky; top: 0; bottom: auto; width: auto; display: flex; flex-direction: row; gap: 6px; padding: 8px 10px; border-right: 0; border-bottom: 1px solid rgba(120,130,240,.22); background: #0f1030; overflow-x: auto; overflow-y: visible; }
     .side .mt { display: none; }
     .side button { margin: 0; height: 40px; justify-content: center; }
   }
@@ -372,7 +373,7 @@
   .side .mt, .kvazio, #fhl li small, #fhl li.vz { color: var(--tx2); }
   .side button:hover { background: var(--pan); }
   .fhist { background: var(--pan); border-color: var(--pbr); }
-  .tema { margin: 22px 10px 0; }
+  .tema { margin: auto 10px 4px; }
   .tema .mt { margin: 0 0 10px; }
   .tema .sws { display: flex; gap: 10px; }
   .tema button.tw { width: 28px; height: 28px; min-width: 0; padding: 0; margin: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); cursor: pointer; }
@@ -461,7 +462,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js" defer></script>
 </head>
 <body>
-<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div><div class="loc" id="locBox"><div class="mt">LOCALIZAR ITEM</div><div class="locf"><input id="locFiltro" placeholder="Código ou descrição" autocomplete="off" autocapitalize="characters"><button type="button" id="locLimpar">Limpar</button></div><div class="locList" id="locList"><div class="locvz">Carregue um endereço para ver as posições no SBF.</div></div></div></nav>
+<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="loc" id="locBox"><div class="mt">LOCALIZAR ITEM</div><div class="locf"><input id="locFiltro" placeholder="Código ou descrição" autocomplete="off" autocapitalize="characters"><button type="button" id="locLimpar">Limpar</button></div><div class="locList" id="locList"><div class="locvz">Carregue um endereço para ver as posições no SBF.</div></div></div><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div></nav>
 <div class="app">
 <div class="top"><div class="topin">
   <div class="logo"><img alt="BYD" src="img/byd.png"></div>
@@ -666,7 +667,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.9.0';
+  var APP_VERSION = '0.9.1';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })

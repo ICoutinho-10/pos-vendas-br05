@@ -1,5 +1,8 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.1 — 12/11/2026 — TEMA foi pro rodapé da barra lateral
+- Pedido do Ivan: a seção **TEMA** (cores) foi jogada **pra baixo** (rodapé da `.side`). `.side` virou flex-column; TEMA com `margin-top:auto` encosta no fim; LOCALIZAR fica logo abaixo do menu. Mobile (≤900px) segue em linha, sem mudança.
+
 ## v0.9.0 — 12/11/2026 — Admin "Abrir robô" abre o Robô Inventário já na BR05 + auto-update no admin
 - Pedido do Ivan: no app de Gestão (admin BR05), o botão **"Abrir robô"** deve abrir o **Robô Inventário (Baixa/Alta TOTVS)** — o que mexemos ontem/hoje — já na **BR05** (o painel começava em BR02).
 - `admin/index.html`: botão "Abrir robô" passou de `roboinventario://abrir` → **`roboinventario://br05`** (passa a unidade). O protocolo já aponta pro `painel_inventario.pyw` da rede (confirmado no HKCU).
