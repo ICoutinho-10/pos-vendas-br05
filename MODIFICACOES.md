@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.6 — 12/11/2026 — Etiqueta cortava na esquerda: margem de segurança
+- Impressão real na Zebra saía **deslocada p/ a esquerda** (cortava a borda e o 1º caractere da descrição, ex.: "ONJUNTO DE CHICOTES"). O código de barras já lia OK.
+- Correção no SVG: todo o conteúdo foi envolto num `<g transform="translate(78,32) scale(0.86)">` → **recua tudo pra dentro** (margem ~6–7mm na esquerda, empurrado pra direita) pra nada ficar na beira que a impressora corta. `offx` deixado configurável p/ ajuste fino.
+- ⚠ Se ainda sair levemente cortado, é só ajustar o `offx` (ou calibrar o tamanho/again a origem da etiqueta no driver da ZT410). **Aguardando reimpressão de teste.**
+
 ## v0.8.5 — 12/11/2026 — SITUAÇÃO não corta + cabeçalho ETIQUETA vira ícone
 - A coluna **SITUAÇÃO** era estreita e cortava o chip "Sem qtde · lança 0" → alargada p/ **150px** (`overflow:visible`); verificado que o chip cabe **dentro** da célula (não invade o ícone de etiqueta). Descrição absorve a diferença.
 - Cabeçalho **"ETIQUETA"** saía cortado ("ETIQUET") em coluna de 52px → trocado por um **ícone de impressora** (igual ao botão da linha).

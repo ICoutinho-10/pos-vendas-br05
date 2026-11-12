@@ -1334,6 +1334,8 @@
     var S = 'http://www.w3.org/2000/svg';
     var s = '<svg xmlns="' + S + '" viewBox="0 0 944 590" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">';
     s += '<rect x="0" y="0" width="944" height="590" fill="#fff"/>';
+    // margem de segurança: recua o conteúdo pra dentro (a Zebra estava cortando a borda esquerda)
+    s += '<g transform="translate(' + (d.offx != null ? d.offx : 78) + ',32) scale(0.86)">';
     s += '<rect x="2" y="2" width="940" height="586" fill="none" stroke="#000" stroke-width="4"/>';
     // faixa de cima: DATA grande + Oper | FIFO | Aprov. Qualidade
     s += '<rect x="600" y="0" width="3" height="150" fill="#000"/><rect x="720" y="0" width="3" height="150" fill="#000"/><rect x="0" y="150" width="944" height="3" fill="#000"/>';
@@ -1356,7 +1358,7 @@
     s += '<rect x="' + (bx - 8) + '" y="' + (by - 8) + '" width="' + (dispW + 16) + '" height="' + (dispH + 16) + '" fill="#fff"/>';
     s += '<svg x="' + bx + '" y="' + by + '" width="' + dispW + '" height="' + dispH + '" viewBox="0 0 ' + bw + ' ' + bh + '" preserveAspectRatio="none" shape-rendering="crispEdges">' + d.bcInner + '</svg>';
     s += '<text x="472" y="566" font-size="' + fcod + '" font-weight="800" font-family="Geist Mono,ui-monospace,monospace" text-anchor="middle" letter-spacing="2">' + etqX(d.cod) + '</text>';
-    s += '</svg>';
+    s += '</g></svg>';
     return s;
   }
   var etqItem = null;
