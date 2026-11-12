@@ -1,5 +1,8 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.3 — 12/11/2026 — LOCALIZAR: Limpar realmente pequeno (corrige width:100%)
+- O botão **Limpar** ainda saía com largura total (herdava `width:100%` de `.side button`). Corrigido com `width:auto; flex:0 0 auto` → fica **compacto** no canto direito, abaixo do campo.
+
 ## v0.9.2 — 12/11/2026 — LOCALIZAR: input largura total + Limpar menor
 - Pedido do Ivan: no filtro **LOCALIZAR ITEM**, o campo de digitar passou a ocupar a **largura toda** (cabe o código inteiro, ex.: `11254926-00`), fonte maior (15px). O botão **Limpar** ficou **menor** (24px, 11px) no canto direito, abaixo do campo (`flex-wrap`).
 
