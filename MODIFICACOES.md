@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.5 — 12/11/2026 — SITUAÇÃO não corta + cabeçalho ETIQUETA vira ícone
+- A coluna **SITUAÇÃO** era estreita e cortava o chip "Sem qtde · lança 0" → alargada p/ **150px** (`overflow:visible`); verificado que o chip cabe **dentro** da célula (não invade o ícone de etiqueta). Descrição absorve a diferença.
+- Cabeçalho **"ETIQUETA"** saía cortado ("ETIQUET") em coluna de 52px → trocado por um **ícone de impressora** (igual ao botão da linha).
+- Verificado ao vivo (R01 A 01 A, 1366px): sem rolagem, SITUAÇÃO inteira, ETIQUETA visível, cabeçalhos sem encostar.
+
 ## v0.8.4 — 12/11/2026 — Correção: a ETIQUETA cortava em janela estreita
 - Com `overflow-x:hidden` (v0.8.3), em janela estreita (ex.: a do atalho kiosk ~1040–1300px) a tabela não cabia e **cortava a coluna ETIQUETA** + a direita da SITUAÇÃO; o cabeçalho "DESCRIÇÃO" encostava no "LOCAL".
 - Correções: o balão **"Posições lançadas" some em telas < 1500px** (a tabela ganha a largura toda) e as **colunas foram afinadas** (soma fixa ~652px, descrição = sobra).
