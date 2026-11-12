@@ -160,6 +160,9 @@
   .kseg { display: flex; background: rgba(10,12,40,.6); border: 1px solid rgba(120,130,240,.35); border-radius: 10px; padding: 3px; gap: 3px; min-width: 230px; }
   .kseg button { flex: 1; height: 34px; border: 0; border-radius: 8px; background: transparent; color: #A6B0E8; font-family: var(--font); font-weight: 800; font-size: 13px; cursor: pointer; padding: 0 12px; }
   .kseg button.on { background: #EEF1FF; color: #111827; }
+  .kfil { display: flex; background: rgba(10,12,40,.6); border: 1px solid rgba(120,130,240,.35); border-radius: 10px; padding: 3px; gap: 3px; min-width: 150px; }
+  .kfil button { flex: 1; height: 34px; border: 0; border-radius: 8px; background: transparent; color: #A6B0E8; font-family: var(--font); font-weight: 800; font-size: 13px; cursor: pointer; padding: 0 12px; }
+  .kfil button.on { background: #10B981; color: #06281d; }
   .ktool .sw { margin: 0; padding: 7px 12px; background: rgba(10,12,40,.6); border: 1.5px dashed rgba(120,130,240,.35); color: #EEF1FF; }
   .ktool .sw .tx small { color: #A6B0E8; }
   .ktool .sw.on { border: 1.5px solid #F59E0B; background: rgba(245,158,11,.14); }
@@ -391,6 +394,9 @@
   .kseg { background: #F1F5F9; border: 1px solid #E2E8F0; }
   .kseg button { color: #64748B; }
   .kseg button.on { background: #0F172A; color: #fff; }
+  .kfil { background: #F1F5F9; border: 1px solid #E2E8F0; }
+  .kfil button { color: #64748B; }
+  .kfil button.on { background: #10B981; color: #fff; }
 
   /* ===== Linha selecionada na conferência ===== */
   .ft tbody tr { cursor: pointer; }
@@ -579,6 +585,10 @@
       <label class="kl">Fonte</label>
       <div class="kseg"><button type="button" data-f="inv">Inventariados</button><button type="button" class="on" data-f="sbf">SBF</button></div>
     </div>
+    <div>
+      <label class="kl">Filtros</label>
+      <div class="kfil"><button type="button" id="kzero" class="on" title="Esconde do Kardex os itens com quantidade 0">Ocultar zerados</button></div>
+    </div>
     <label class="sw" id="ksw">
       <input type="checkbox" id="kseg2">
       <span class="tg" aria-hidden="true"></span>
@@ -656,7 +666,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.8.9';
+  var APP_VERSION = '0.9.0';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1150,6 +1160,7 @@
   // ---- KARDEX: ficha FO.SC.A.026 filtrada por endereço (Inventariados ou SBF) ----
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var kFonte = 'sbf';
+  var kOcultarZero = true;   // Filtros: esconde itens com quantidade 0
   function kNome(id) { var v = $(id).value.trim(); return v ? v.charAt(0).toUpperCase() + v.slice(1) : ''; }
   function montarKardex(k) {
     var cols = [38, 143, 297, 106, 67, 55, 55, 55, 56, 55];
@@ -1234,6 +1245,9 @@
         k.itens = (k.itens || []).filter(function (item) {
           return String(item.local || '').trim().toUpperCase().replace(/\s+/g, ' ') === enderecoExato;
         });
+        if (kOcultarZero) {
+          k.itens = k.itens.filter(function (item) { var q = numeroQuantidade(item.qtd); return q === null || q !== 0; });
+        }
         k.titulo = enderecoExato;
         kAtual = { chave: p.filtro.toUpperCase() + '|' + p.fonte, k: k };
         var nome = k.fonte === 'sbf' ? 'no SBF' : k.fonte === 'inv2' ? 'com 2ª contagem' : 'inventariados';
@@ -1255,6 +1269,7 @@
   $('kf').addEventListener('input', agendar);
   $('kf').addEventListener('keydown', function (e) { if (e.key === 'Enter') { clearTimeout(kTimer); visualizar(); } });
   Array.prototype.forEach.call(document.querySelectorAll('.kseg button'), function (bt) { bt.addEventListener('click', function () { visualizar(); }); });
+  if ($('kzero')) $('kzero').addEventListener('click', function () { kOcultarZero = !kOcultarZero; this.classList.toggle('on', kOcultarZero); this.textContent = kOcultarZero ? 'Ocultar zerados' : 'Mostrar zerados'; if (kAtual) visualizar(); });
   $('kseg2').addEventListener('change', function () { visualizar(); });
   window.addEventListener('resize', ajustarZoom);
   $('kardex').addEventListener('input', function (e) {

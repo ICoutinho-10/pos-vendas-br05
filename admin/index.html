@@ -319,7 +319,7 @@
     <div class="links">
       <a class="lk" id="lkPlan" href="https://docs.google.com/spreadsheets/d/1EXdECuL9Fi-hrw05pqpLgDrNw5xAkJ_jXvpQsvLurW8/edit" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Abrir planilha</a>
       <a class="lk verde" href="https://icoutinho-10.github.io/pos-vendas-br05/" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 7v10M12 7v10M16 7v10"/></svg>Abrir contagem</a>
-      <a class="lk robo" href="roboinventario://abrir" title="Abre o Robô Inventário neste PC (precisa ter rodado o INSTALAR uma vez)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Abrir robô</a>
+      <a class="lk robo" href="roboinventario://br05" title="Abre o Robô Inventário (Baixa/Alta TOTVS) já na BR05 neste PC (precisa ter rodado o INSTALAR uma vez)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Abrir robô</a>
       <a class="lk" href="https://script.google.com/home" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l2 2-2 2M13 17h2"/></svg>Apps Script</a>
       <a class="lk" href="/scripts-publicados/" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Scripts publicados</a>
       <div class="vivo"><i id="dot"></i><span id="upd">conectando…</span></div>
@@ -453,6 +453,20 @@
 </div>
 
 <script>
+  // === Auto-atualização (acaba o cache velho) ===
+  var APP_VERSION = '0.9.0';
+  (function () {
+    function checar() {
+      fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) { if (j && j.v && j.v !== APP_VERSION) { location.replace(location.pathname + '?v=' + encodeURIComponent(j.v)); } })
+        .catch(function () {});
+    }
+    setTimeout(checar, 1500);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) checar(); });
+    setInterval(checar, 120000);
+  })();
+
   var API = 'https://script.google.com/macros/s/AKfycby4HhAM6hrwjv-714oUBcbWcikzc7dS7hNtiqNZJMABYOeRMQY88rjTyuu81ehwYNE/exec';
   var D = null, VIEW = 'dash', ULT = '';
   var $ = function (id) { return document.getElementById(id); };

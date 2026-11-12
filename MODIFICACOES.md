@@ -1,5 +1,13 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.0 — 12/11/2026 — Admin "Abrir robô" abre o Robô Inventário já na BR05 + auto-update no admin
+- Pedido do Ivan: no app de Gestão (admin BR05), o botão **"Abrir robô"** deve abrir o **Robô Inventário (Baixa/Alta TOTVS)** — o que mexemos ontem/hoje — já na **BR05** (o painel começava em BR02).
+- `admin/index.html`: botão "Abrir robô" passou de `roboinventario://abrir` → **`roboinventario://br05`** (passa a unidade). O protocolo já aponta pro `painel_inventario.pyw` da rede (confirmado no HKCU).
+- `painel_inventario.pyw` (rede V:\1.10 Inventario): passou a **ler a unidade do argumento** do protocolo e abrir `http://localhost:8793/?uni=br05`; o JS lê `?uni=` e entra direto na BR05 (e persiste). Sem argumento, mantém o padrão (localStorage/BR02) — não quebra a BR02.
+- **Imprimir Kardex:** novo botão **"Filtros → Ocultar zerados"** (ativo por padrão) — o Kardex deixa de listar/imprimir itens com quantidade **0** (ex.: TANQUE DE OLEO, TAMPA DA BATERIA, MOTO DE TRACAO, MOTOR DO FREIO no R01 A 01 A). Clicando vira "Mostrar zerados". Vale p/ as duas fontes (SBF e Inventariados); o contador de itens/folhas acompanha.
+- Admin também ganhou o **auto-update** (checa `../version.json`), igual ao app. Bump geral p/ **0.9.0** (index + admin + version.json).
+- ⚠ Se o painel do robô já estiver **aberto** quando clicar "Abrir robô", feche a janela dele uma vez (a instância antiga em execução ignora o `?uni`); na próxima abertura entra na BR05.
+
 ## v0.8.9 — 12/11/2026 — Auto-atualização (acaba o cache velho do kiosk)
 - Problema: o atalho kiosk do Chrome guardava uma **cópia antiga** do app (ex.: sem o painel LOCALIZAR e com o chip "lança 0" antigo), mesmo com o deploy no ar. Só pegava o novo com refresh manual.
 - Correção: o app agora tem `APP_VERSION` e checa `version.json` (fetch `no-store`) ao abrir, ao voltar o foco e a cada 2 min. Saiu versão nova → **recarrega sozinho** com `?v=<nova>` (query nova = HTML fresco, fora do cache).
