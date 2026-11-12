@@ -405,7 +405,7 @@
 <div class="app">
 <div class="top"><div class="topin">
   <div class="logo"><img alt="BYD" src="img/byd.png"></div>
-  <div class="tt"><b>Inventário AUTO · BR05</b><small>Contagem de estoque<span class="pv"> · Pós-Vendas</span></small></div>
+  <div class="tt"><b>Inventário Pós-Vendas · BR05</b><small>Contagem de estoque</small></div>
 </div></div>
 
 <form class="wrap" id="f" autocomplete="off">
@@ -489,7 +489,7 @@
   <div class="kmsg" id="fmsg"></div>
   <div class="fcard">
     <div class="ftit" id="ftit"></div>
-    <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;AUTO</div></div>
+    <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;PÓS VENDAS</div></div>
     <div class="fscroll"><table class="ft">
       <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="seg">SEGUIMENTO</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
       <tbody id="fbody"><tr><td colspan="8" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
@@ -1054,7 +1054,7 @@
       h += '<div class="kpg"><div class="ktit">' + esc(k.titulo) + '</div><div class="kwrap"><table class="kx"><colgroup>' +
            cols.map(function (w) { return '<col style="width:' + w + 'px">'; }).join('') + '</colgroup>';
       h += '<tr class="r1"><td></td><td class="klogo"><img alt="BYD" src="img/byd.png"></td><td>KARDEX - MP / MERCADORIA</td>' +
-           '<td colspan="4" class="kcp">Conferido Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kconf">' + esc(kNome('kconf')) + '</span> / Criado Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kcria">' + esc(kNome('kcria')) + '</span></td><td colspan="3">FILIAL&nbsp;&nbsp;&nbsp;&nbsp;AUTO</td></tr>';
+           '<td colspan="4" class="kcp">Conferido Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kconf">' + esc(kNome('kconf')) + '</span> / Criado Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kcria">' + esc(kNome('kcria')) + '</span></td><td colspan="3">FILIAL&nbsp;&nbsp;&nbsp;&nbsp;PÓS VENDAS</td></tr>';
       h += '<tr class="r2"><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRICÃO</th><th>LOCAL</th><th colspan="6">QUANT.</th></tr>';
       for (var i = 0; i < POR; i++) {
         var ix = p * POR + i, it = k.itens[ix] || { sku: '', desc: '', local: '', qtd: '' };

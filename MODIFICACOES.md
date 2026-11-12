@@ -1,5 +1,15 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.6.1 — 12/11/2026 — Kardex/app: FILIAL "AUTO" → "PÓS VENDAS"
+- No **Kardex impresso** o campo **FILIAL** vinha "AUTO" (leftover do clone BR02) → agora **PÓS VENDAS** (cabeçalho estático `index.html:492` e a tabela renderizada/impressa `index.html:1057`).
+- Título do app: "Inventário **AUTO** · BR05" → "Inventário **Pós-Vendas** · BR05" (removido o sufixo duplicado do subtítulo).
+
+## v0.6.0 — 12/11/2026 — Reskin da Gestão (visual enterprise, sem cara de IA)
+- **`admin/index.html`** (painel de Gestão) refeito no padrão **enterprise**: grafite / branco / cinza técnico + **vermelho BYD** como acento único e com moderação. Fontes **Geist** (textos) + **Geist Mono** (números/códigos). Sem glows, gradientes neon nem Oxanium.
+- **Temas reduzidos:** saíram os neon (Azul-marinho/Lime/Cyan/Teal); ficam só **Grafite (escuro)** e **Claro**. Seletor de cor atualizado; `VALIDOS` = `["azul","claro"]` (valor salvo antigo cai pra grafite).
+- Cores dos gráficos (rosca de acuracidade, barras, Top divergências) alinhadas à paleta: ok `#3f9b6d`, erro/baixa `#e2231a`, alta/alerta `#c6902f`, info `#3f78b5`. Nenhuma lógica/JS de dados alterada.
+- Commit `0d49dad`, push no GitHub (Pages redeploy). Contagem (raiz) **não** mexida — só o painel de Gestão.
+
 ## v0.5.0 — 11/11/2026 — Impressão na ForkLift (1 clique no PC)
 - **Impressora alvo corrigida:** o botão do Kardex apontava texto "Expedição_Auto (10.42.11.189)" → agora **ForkLift - Expedição** (`\\10.42.1.253\ForkLift - Expedição`, Brother DCP-L5652DN, 10.42.36.232), que é a impressora da área.
   - Botão: "IMPRIMIR · FORKLIFT"; `title` e a mensagem (`kMsg`) atualizados pra orientar PC (1 clique) e celular.
