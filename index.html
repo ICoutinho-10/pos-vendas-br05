@@ -1280,7 +1280,7 @@
     if (it.estado === 'feito') return '<span class="chip feito">Lançado ✓</span>';
     if (it.estado === 'erro') return '<span class="chip erro" title="' + esc(it.erro || '') + '">Erro — tente de novo</span>';
     var f = fNum(it.fis);
-    if (f === null) return '<span class="chip bx" title="Sem quantidade: vai lançar 0">Sem qtde · lança 0</span>';
+    if (f === null) return '<span class="chip bx" title="Sem quantidade digitada: não entra no Kardex">Sem qtde · não entra</span>';
     if (isNaN(f)) return '<span class="chip bx">Qtde inválida</span>';
     return '<span class="chip ok">Conferido</span>';
   }
@@ -1293,7 +1293,7 @@
     });
     $('fres').innerHTML = n ? '<b>' + n + '</b> ite' + (n > 1 ? 'ns' : 'm') + ' · <b>' + div + '</b> conferido' + (div === 1 ? '' : 's') +
       (feitos ? ' · <b>' + feitos + '</b> lançado' + (feitos > 1 ? 's' : '') : '') : 'Nenhum item carregado.';
-    var pend = fItens.filter(function (it) { return it.estado !== 'feito'; }).length;
+    var pend = fItens.filter(function (it) { return it.estado !== 'feito' && fNum(it.fis) !== null; }).length;
     if (!fRodando) { fConfirmar = false; $('fgo').classList.remove('conf'); $('fgoTx').textContent = pend ? 'Lançar conferência (' + pend + ')' : 'Lançar conferência'; }
     $('fgo').disabled = fRodando || !pend;
   }
@@ -1552,7 +1552,7 @@
   });
   function fConcluir() {
     var end = $('ff').value.trim().toUpperCase(), div = 0;
-    fItens.forEach(function (it) { if (fNum(it.fis) !== it.sbf) div++; });
+    fItens.forEach(function (it) { var f = fNum(it.fis); if (f !== null && !isNaN(f) && f !== it.sbf) div++; });
     var d = new Date(), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
     fHistAdd({ end: end, n: fItens.length, div: div, seg: $('fseg').checked, conf: estado.resp,
                dh: p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) });
@@ -1565,10 +1565,11 @@
     if (fRodando) return;
     commitNome($('fresp'));
     if (!estado.resp) { fMsg('Informe o conferente.', true); $('fresp').focus(); return; }
-    var pend = fItens.filter(function (it) { return it.estado !== 'feito'; });
+    // só entram no Kardex os itens com quantidade digitada; em branco (não contado) NÃO lança
+    var pend = fItens.filter(function (it) { return it.estado !== 'feito' && fNum(it.fis) !== null; });
+    if (!pend.length) { fMsg('Digite a quantidade de ao menos um item — itens em branco não entram no Kardex.', true); return; }
     for (var i = 0; i < pend.length; i++) {
       var v = fNum(pend[i].fis);
-      if (v === null) { pend[i].fis = '0'; v = 0; }   // sem quantidade = 0 na planilha
       if (!pend[i].sku) { fMsg('Preencha o código do item adicionado (linha ' + (fItens.indexOf(pend[i]) + 1) + ').', true); return; }
       if (v === null || isNaN(v) || v < 0) { fMsg('Informe a quantidade física da linha ' + (fItens.indexOf(pend[i]) + 1) + '.', true); return; }
     }

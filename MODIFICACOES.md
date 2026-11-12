@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.8 — 12/11/2026 — Conferência: item em branco NÃO entra no Kardex (não lança 0)
+- Pedido do Ivan (R01 A 01 A): itens que ele não contou apareciam "Sem qtde · lança 0" e, ao Lançar conferência, **entravam no Kardex como 0**. Não é o desejado.
+- Correção: no Lançar, `pend` passou a incluir **só itens com quantidade digitada** (`fNum(fis) !== null`). Item em branco (não contado) **não é mais forçado a 0** nem enviado. Se nada foi digitado, avisa e não lança.
+- Chip do item em branco: "Sem qtde · lança 0" → **"Sem qtde · não entra"**. Contador do botão e "divergências" do histórico passam a contar **só o que foi conferido** (ignoram brancos). Um **0 digitado** (achei e confirmei zero) continua entrando normalmente.
+
 ## v0.8.7 — 12/11/2026 — Localizar item: filtro + posições do SBF na lateral
 - Pedido do Ivan: na lateral da Conferência, um **filtro** que mostra só o item do endereço atual no Kardex, um **botão Limpar**, e abaixo **todas as posições (endereços) do SBF** onde constam os itens do endereço aberto.
 - Novo painel **"LOCALIZAR ITEM"** (`#locBox`) na barra lateral, visível só na view de Conferência (some < 900px). Campo filtra a tabela por **código OU descrição** (digitar restringe as linhas visíveis + a lista); Limpar reseta e volta todas as linhas.
