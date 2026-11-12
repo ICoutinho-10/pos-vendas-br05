@@ -466,7 +466,7 @@
 
 <script>
   // === Auto-atualização (acaba o cache velho) ===
-  var APP_VERSION = '0.9.4';
+  var APP_VERSION = '0.9.5';
   (function () {
     function checar() {
       fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -965,8 +965,8 @@
 
   // ---------- Conciliação TOTVS × SAP ----------
   var CONCIL = null, cFil = '', cBuscaV = '', cMax = 100, cT, cGranV = 'dia', cMetrV = 'div', cPerV = '';
-  // Conciliação calculada no próprio app a partir do HISTÓRICO (SBF/TOTVS e MB52/SAP de cada posição),
-  // sem depender de endpoint do Apps Script. Agrega por material: TOTVS = soma dos saldos nos endereços; SAP = MB52 do material.
+  // Conciliação calculada no próprio app a partir do HISTÓRICO, sem endpoint.
+  // SBF e MB52 são o TOTAL do material (independente do endereço) — NÃO somar entre endereços; usar o valor do item.
   function buildConcil() {
     if (!D || !D.H) return null;
     var bySku = {}, serieMap = {};
@@ -974,20 +974,24 @@
       var cod = h.prod; if (!cod) return;
       var sap = h.mb52 == null ? 0 : h.mb52, totvs = h.saldo || 0;
       var o = bySku[cod] || (bySku[cod] = { cod: cod, desc: h.desc || '', totvs: 0, sap: 0, temSap: false });
-      o.totvs += totvs;
+      o.totvs = Math.max(o.totvs, totvs);      // SBF é o total do material, não por endereço → não somar
       o.sap = Math.max(o.sap, sap);            // MB52 é o total do material no SAP, não por endereço
       if (h.mb52 != null) o.temSap = true;
       if (!o.desc && h.desc) o.desc = h.desc;
-      // série temporal por dia (turno) para a evolução
+      // série temporal por dia (turno): agrega por material no dia (independente do endereço) — SBF/MB52 são totais do item
       var dia = h.dia; if (!dia) return;
-      var s = serieMap[dia] || (serieMap[dia] = { dia: dia, div: 0, abs: 0, skus: 0 });
-      var dif = totvs - sap; s.skus++;
-      if (dif !== 0) { s.div++; s.abs += Math.abs(dif); }
+      var dm = serieMap[dia] || (serieMap[dia] = {});
+      var a = dm[cod] || (dm[cod] = { totvs: 0, sap: 0 });
+      a.totvs = Math.max(a.totvs, totvs); a.sap = Math.max(a.sap, sap);
     });
     var itens = Object.keys(bySku).map(function (k) { var o = bySku[k]; o.dif = o.totvs - o.sap; return o; });
     var aMais = 0, aMenos = 0, iguais = 0, temAlgumSap = false;
     itens.forEach(function (x) { if (x.temSap) temAlgumSap = true; if (x.dif > 0) aMais++; else if (x.dif < 0) aMenos++; else iguais++; });
-    var serie = Object.keys(serieMap).sort().map(function (k) { return serieMap[k]; });
+    var serie = Object.keys(serieMap).sort().map(function (dia) {
+      var dm = serieMap[dia], s = { dia: dia, div: 0, abs: 0, skus: 0 };
+      Object.keys(dm).forEach(function (cod) { var d = dm[cod].totvs - dm[cod].sap; s.skus++; if (d !== 0) { s.div++; s.abs += Math.abs(d); } });
+      return s;
+    });
     var gerado = D.gerado ? String(D.gerado).slice(11, 16) : '';
     return { itens: itens, serie: serie, semSap: !temAlgumSap || itens.every(function (x) { return x.sap === 0; }),
              totais: { skus: itens.length, aMais: aMais, aMenos: aMenos, iguais: iguais }, gerado: gerado };

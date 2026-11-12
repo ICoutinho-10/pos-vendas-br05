@@ -1,5 +1,9 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.5 — 12/11/2026 — Conciliação: SBF/MB52 são total do item (não somar por endereço)
+- Ivan reforçou: **QTDE SBF é o total do item, independente do endereço**. Confirmado por ele que **SBF=TOTVS e MB52=SAP** (como estava rotulado).
+- **Correção:** `buildConcil` deixou de **somar** o SBF/MB52 entre endereços — passa a usar o valor do material (`Math.max` por SKU). A **evolução** também agrega por material/dia (um item conta 1 vez no dia, mesmo em vários endereços). Para a base de hoje (1 endereço por item) o resultado é igual; evita inflar quando o mesmo material estiver em vários endereços.
+
 ## v0.9.4 — 12/11/2026 — TOTVS × SAP: fim do erro "Ação inválida: concil" + evolução
 - **Bug:** a aba **TOTVS × SAP** chamava `?api=concil` no Apps Script, que **não existe** nesse deploy → tela de erro "Ação inválida: concil".
 - **Correção:** a conciliação agora é **calculada no próprio app** a partir do HISTÓRICO (`SBF`=TOTVS e `MB52`=SAP de cada posição), sem depender de endpoint. Agrega por material: TOTVS = soma dos saldos nos endereços; SAP = MB52 do material; diferença = TOTVS − SAP. Passa a funcionar sozinha e recalcula a cada atualização.
