@@ -1,5 +1,8 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.2 — 12/11/2026 — LOCALIZAR: input largura total + Limpar menor
+- Pedido do Ivan: no filtro **LOCALIZAR ITEM**, o campo de digitar passou a ocupar a **largura toda** (cabe o código inteiro, ex.: `11254926-00`), fonte maior (15px). O botão **Limpar** ficou **menor** (24px, 11px) no canto direito, abaixo do campo (`flex-wrap`).
+
 ## v0.9.1 — 12/11/2026 — TEMA foi pro rodapé da barra lateral
 - Pedido do Ivan: a seção **TEMA** (cores) foi jogada **pra baixo** (rodapé da `.side`). `.side` virou flex-column; TEMA com `margin-top:auto` encosta no fim; LOCALIZAR fica logo abaixo do menu. Mobile (≤900px) segue em linha, sem mudança.
 
