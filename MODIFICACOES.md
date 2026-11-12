@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.1 — 12/11/2026 — Etiqueta: modal (peças + cópias), sem sobreposição e 1-clique na Zebra
+- **Fluxo pedido pelo Ivan:** o botão **não imprime direto** mais — abre uma **janela (modal)** com **Qtd de peças** (vai no campo Quantidade da etiqueta, já pré-preenchido com a física/SBF) e **Qtd de etiquetas** (cópias, 1–200); Imprimir manda tudo de uma vez (uma etiqueta por página).
+- **Sobreposição corrigida:** na faixa de cima, **ano/semana** não encostam mais (textLength trava a largura por coluna) e **FIFO / "Aprov. Qualidade:"** deixaram de ser cortados.
+- **Impressão direta na Zebra (sem escolher impressora):** a Zebra `\\h2bruno-li\ZDesigner 170Xi4 300 dpi` **já está instalada** no PC do Ivan (e era a padrão). Criado perfil Chrome `...\AppData\Local\ZebraEtqKiosk` travado nessa Zebra (sem margem) + atalho **"Etiquetas BR05 — Zebra (1 clique)"** na Área de Trabalho (`--kiosk-printing`). Abrindo o app por esse atalho, Imprimir sai **direto na Zebra, sem diálogo**. Aditivo: não mexe no atalho ForkLift nem no padrão do Windows.
+  - ⚠ Um perfil kiosk imprime sempre no destino travado dele: use o atalho **Zebra** p/ etiquetas e o **ForkLift** p/ o Kardex. **Falta 1 impressão real de teste** p/ confirmar tamanho 80×50 no driver.
+
 ## v0.8.0 — 12/11/2026 — Botão "Imprimir etiqueta" (Zebra, com código de barras) na Conferência
 - Nova coluna **ETIQUETA** na tabela de Conferência Kardex: um botão por item que gera a **etiqueta 80×50 mm no mesmo padrão do Robô Baixa TOTVS** (faixa data/ano/semana/FIFO · Descrição/UM/Quantidade · PN · PROCESSO-NF/Oper · código grande) **+ código de barras Code128** acima do código (como o `etiqueta_totvs.py.bkp_barras`).
 - Dados da etiqueta: **PN/código de barras = CÓDIGO SAP** do item; Quantidade = física (se preenchida) senão SBF; Oper = Conferente (`#fresp`). NF/UM/Val.Lote em branco (iguais ao robô quando vazios).

@@ -558,6 +558,23 @@
   .robo-nota { margin: 0 0 18px; font-size: 12.5px; color: #64748B; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 11px 13px; line-height: 1.55; }
   .robo-go { display: block; text-align: center; text-decoration: none; background: linear-gradient(135deg, #10B981, #059669); color: #fff; font-weight: 800; font-size: 15px; padding: 14px; border-radius: 13px; }
   .robo-go:hover { filter: brightness(1.06); }
+  /* Modal da etiqueta (qtd peças + cópias) */
+  .etqmodal { position: fixed; inset: 0; background: rgba(15, 23, 42, .5); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+  .etqmodal.on { display: flex; }
+  .etqbox { background: #fff; border-radius: 16px; width: min(420px, 100%); padding: 22px; box-shadow: 0 24px 60px rgba(0, 0, 0, .3); }
+  .etqh { font-size: 18px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px; }
+  .etqsub { margin: 7px 0 16px; font-size: 13px; color: #475569; display: flex; flex-direction: column; gap: 3px; }
+  .etqsub b { font-family: 'Geist Mono', ui-monospace, monospace; color: #0F172A; font-size: 15px; }
+  .etqrow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .etqrow label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 600; color: #334155; }
+  .etqrow input { padding: 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 19px; font-weight: 700; text-align: center; color: #0F172A; }
+  .etqrow input:focus { outline: 0; border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, .15); }
+  .etqbtns { display: flex; gap: 10px; margin-top: 18px; }
+  .etqbtns button { flex: 1; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; border: 1px solid transparent; }
+  .etqcancel { background: #fff; border-color: #CBD5E1; color: #475569; }
+  .etqcancel:hover { background: #F1F5F9; }
+  .etqprint { background: #DC2626; color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+  .etqprint:hover { filter: brightness(1.07); }
 </style>
 <div class="robo-modal" id="roboModal" hidden>
   <div class="robo-card" role="dialog" aria-modal="true" aria-labelledby="roboTit">
@@ -572,6 +589,21 @@
     </ol>
     <p class="robo-nota">Precisa ter o Robô instalado neste computador (rodar o <b>INSTALAR</b> uma vez). Ao abrir, confira os itens e clique em iniciar no próprio Robô.</p>
     <a class="robo-go" href="roboinventario://abrir">Abrir o Robô</a>
+  </div>
+</div>
+
+<div class="etqmodal" id="etqModal" role="dialog" aria-modal="true" aria-labelledby="etqH">
+  <div class="etqbox">
+    <div class="etqh" id="etqH"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v4a1 1 0 0 0 1 1h3"/><rect x="3" y="3" width="18" height="12" rx="1"/><path d="M7 17h10a2 2 0 0 1 2 2v2H5v-2a2 2 0 0 1 2-2Z"/></svg>Imprimir etiqueta</div>
+    <div class="etqsub"><b id="etqCod"></b><span id="etqDesc"></span></div>
+    <div class="etqrow">
+      <label>Qtd de peças (na etiqueta)<input id="etqQtd" inputmode="decimal" autocomplete="off"></label>
+      <label>Qtd de etiquetas (cópias)<input id="etqCopias" type="number" min="1" max="200" value="1" inputmode="numeric"></label>
+    </div>
+    <div class="etqbtns">
+      <button type="button" class="etqcancel" id="etqCancel">Cancelar</button>
+      <button type="button" class="etqprint" id="etqOk"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Imprimir</button>
+    </div>
   </div>
 </div>
 
@@ -1276,12 +1308,12 @@
     // faixa de cima
     [205, 290, 375, 470, 560].forEach(function (x) { s += '<rect x="' + x + '" y="0" width="3" height="140" fill="#000"/>'; });
     s += '<rect x="0" y="140" width="944" height="3" fill="#000"/>';
-    s += '<text x="102" y="58" font-size="26" text-anchor="middle" font-family="monospace">' + etqX(dh) + '</text>';
-    s += '<text x="102" y="96" font-size="26" text-anchor="middle" font-family="monospace">' + etqX(hm) + '</text>';
-    s += '<text x="247" y="94" font-size="40" font-weight="700" text-anchor="middle">' + ano + '</text>';
-    s += '<text x="332" y="102" font-size="54" font-weight="800" text-anchor="middle">' + sem + '</text>';
-    s += '<text x="420" y="132" font-size="48" font-weight="800" transform="rotate(-90 420 132)">FIFO</text>';
-    s += '<text x="512" y="134" font-size="17" transform="rotate(-90 512 134)">Aprov. Qualidade:</text>';
+    s += '<text x="102" y="60" font-size="25" text-anchor="middle" font-family="monospace">' + etqX(dh) + '</text>';
+    s += '<text x="102" y="98" font-size="25" text-anchor="middle" font-family="monospace">' + etqX(hm) + '</text>';
+    s += '<text x="247" y="92" font-size="36" font-weight="700" text-anchor="middle" textLength="74" lengthAdjust="spacingAndGlyphs">' + ano + '</text>';
+    s += '<text x="332" y="100" font-size="48" font-weight="800" text-anchor="middle" textLength="70" lengthAdjust="spacingAndGlyphs">' + sem + '</text>';
+    s += '<text x="422" y="128" font-size="43" font-weight="800" transform="rotate(-90 422 128)">FIFO</text>';
+    s += '<text x="514" y="136" font-size="14" transform="rotate(-90 514 136)">Aprov. Qualidade:</text>';
     // grade do meio
     [188, 246, 294, 342].forEach(function (y) { s += '<rect x="0" y="' + y + '" width="944" height="3" fill="#000"/>'; });
     s += '<rect x="470" y="140" width="3" height="202" fill="#000"/><rect x="610" y="140" width="3" height="202" fill="#000"/><rect x="180" y="246" width="3" height="96" fill="#000"/>';
@@ -1305,23 +1337,39 @@
     s += '</svg>';
     return s;
   }
+  var etqItem = null;
   function imprimirEtiqueta(it) {
     if (!it || !it.sku) { fMsg('Item sem código — não dá para gerar a etiqueta.', true); return; }
     if (typeof JsBarcode !== 'function') { fMsg('A biblioteca de código de barras ainda não carregou. Aguarde 1s e tente de novo.', true); return; }
+    etqItem = it;
+    var cod = String(it.sku || '').toUpperCase().replace(/[\^~]/g, '').trim();
+    $('etqCod').textContent = cod;
+    $('etqDesc').textContent = String(it.desc || '');
+    var qv = (it.fis != null && it.fis !== '') ? it.fis : (it.sbf != null ? it.sbf : '');
+    $('etqQtd').value = (qv == null ? '' : String(qv));
+    $('etqCopias').value = '1';
+    $('etqModal').classList.add('on');
+    setTimeout(function () { var q = $('etqQtd'); q.focus(); try { q.select(); } catch (e) {} }, 60);
+  }
+  function etqFechar() { $('etqModal').classList.remove('on'); }
+  function etqImprimir() {
+    var it = etqItem; if (!it) return;
     var cod = String(it.sku || '').toUpperCase().replace(/[\^~]/g, '').trim().slice(0, 20);
     if (!cod) { fMsg('Código inválido para etiqueta.', true); return; }
-    var qv = (it.fis != null && it.fis !== '') ? it.fis : (it.sbf != null ? it.sbf : '');
+    var copias = Math.max(1, Math.min(parseInt($('etqCopias').value, 10) || 1, 200));
+    var qtd = String($('etqQtd').value || '').trim().slice(0, 12);
     var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     try { JsBarcode(tmp, cod, { format: 'CODE128', displayValue: false, margin: 0, height: 118, width: 3 }); }
     catch (e) { fMsg('Não foi possível gerar o código de barras para ' + cod + '.', true); return; }
-    var d = {
+    var base = {
       now: new Date(), cod: cod,
       desc: String(it.desc || '').replace(/[\^~]/g, ' ').slice(0, 64),
-      qtd: String(qv).slice(0, 12), um: String(it.um || '').slice(0, 6), nf: '',
+      qtd: qtd, um: String(it.um || '').slice(0, 6), nf: '',
       oper: String(($('fresp') && $('fresp').value || '').trim()).slice(0, 22),
       bcInner: tmp.innerHTML, bcW: +tmp.getAttribute('width') || 300, bcH: +tmp.getAttribute('height') || 118
     };
-    var svg = etqSVG(d);
+    var pages = '';
+    for (var i = 0; i < copias; i++) { pages += '<div class="pg"' + (i < copias - 1 ? ' style="page-break-after:always"' : '') + '>' + etqSVG(base) + '</div>'; }
     var f = document.getElementById('etqframe');
     if (f && f.parentNode) f.parentNode.removeChild(f);
     f = document.createElement('iframe');
@@ -1330,11 +1378,19 @@
     document.body.appendChild(f);
     var doc = f.contentWindow.document;
     doc.open();
-    doc.write('<!doctype html><html><head><meta charset="utf-8"><style>@page{size:80mm 50mm;margin:0}html,body{margin:0;padding:0}svg{display:block;width:80mm;height:50mm}</style></head><body>' + svg + '</body></html>');
+    doc.write('<!doctype html><html><head><meta charset="utf-8"><style>@page{size:80mm 50mm;margin:0}html,body{margin:0;padding:0}.pg{width:80mm;height:50mm;overflow:hidden}svg{display:block;width:80mm;height:50mm}</style></head><body>' + pages + '</body></html>');
     doc.close();
-    fMsg('Etiqueta de ' + cod + ' enviada. No PC escolha a “ZDesigner 170Xi4 300 dpi” (Zebra) na impressão — ou use o atalho 1-clique da Zebra.');
-    setTimeout(function () { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {} }, 180);
+    etqFechar();
+    fMsg(copias + ' etiqueta' + (copias > 1 ? 's' : '') + ' de ' + cod + ' enviada' + (copias > 1 ? 's' : '') + ' para a Zebra.');
+    setTimeout(function () { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {} }, 220);
   }
+  $('etqCancel').addEventListener('click', etqFechar);
+  $('etqOk').addEventListener('click', etqImprimir);
+  $('etqModal').addEventListener('click', function (e) { if (e.target === $('etqModal')) etqFechar(); });
+  ['etqQtd', 'etqCopias'].forEach(function (id) {
+    $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); etqImprimir(); } });
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('etqModal').classList.contains('on')) etqFechar(); });
   var CK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
   function fHist() { try { return JSON.parse(localStorage.getItem('inv_hist') || '[]'); } catch (e) { return []; } }
   function fHistDesenhar() {
