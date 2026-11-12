@@ -432,11 +432,30 @@
   .etqb { width: 30px; height: 26px; }
   .etqb svg { width: 15px; height: 15px; }
   @media (max-width: 1499px) { body.v-f .fview { grid-template-columns: minmax(0, 1fr); } .fhist { display: none; } }
+  /* Localizador de item (barra lateral, só na Conferência) */
+  .side .loc { display: none; margin-top: 20px; }
+  body.v-f .side .loc { display: block; }
+  @media (max-width: 900px) { .side .loc, body.v-f .side .loc { display: none; } }
+  .locf { display: flex; gap: 6px; margin: 8px 0 10px; }
+  .locf input { flex: 1; min-width: 0; height: 34px; padding: 0 10px; border-radius: 9px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #EEF1FF; font-size: 13px; font-family: inherit; }
+  .locf input::placeholder { color: rgba(238,241,255,.45); }
+  .locf input:focus { outline: 0; border-color: #6366F1; background: rgba(255,255,255,.1); }
+  #locLimpar { height: 34px; padding: 0 12px; border-radius: 9px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #EEF1FF; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; }
+  #locLimpar:hover { background: rgba(255,255,255,.12); }
+  .locList { max-height: calc(100vh - 432px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 3px; }
+  .locvz { color: rgba(238,241,255,.5); font-size: 12.5px; padding: 6px 2px; line-height: 1.4; }
+  .locit { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 8px 9px; }
+  .loch { display: flex; flex-direction: column; gap: 1px; margin-bottom: 6px; }
+  .loch b { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; color: #fff; letter-spacing: -.2px; }
+  .loch small { font-size: 11px; color: rgba(238,241,255,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .locps { display: flex; flex-wrap: wrap; gap: 4px; }
+  .locp { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: rgba(99,102,241,.22); color: #C7D2FE; white-space: nowrap; }
+  .locp.cur { background: #10B981; color: #fff; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js" defer></script>
 </head>
 <body>
-<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div></nav>
+<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div><div class="loc" id="locBox"><div class="mt">LOCALIZAR ITEM</div><div class="locf"><input id="locFiltro" placeholder="Código ou descrição" autocomplete="off" autocapitalize="characters"><button type="button" id="locLimpar">Limpar</button></div><div class="locList" id="locList"><div class="locvz">Carregue um endereço para ver as posições no SBF.</div></div></div></nav>
 <div class="app">
 <div class="top"><div class="topin">
   <div class="logo"><img alt="BYD" src="img/byd.png"></div>
@@ -1446,9 +1465,62 @@
     if (!fItens.length) { tb.innerHTML = '<tr><td colspan="9" class="fvazio">' + ($('ff').value.trim() ? 'Nenhum item do SBF nesse endereço. Use "+ Adicionar item" se encontrou peças.' : 'Digite o endereço para carregar os itens do SBF.') + '</td></tr>'; }
     fItens.forEach(function (it, i) { tb.appendChild(fLinha(it, i)); });
     fResumo();
+    locAplicar();
+  }
+  // ---- Localizador: filtra a tabela e lista as posições de cada item no SBF ----
+  var locRev = null, locRevSrc = null;
+  function locBuildRev(s) {
+    if (locRev && locRevSrc === s) return locRev;
+    var m = {}, e = s.e || {}, p = s.p || {};
+    Object.keys(e).forEach(function (end) {
+      (e[end] || []).forEach(function (x) {
+        var cod = p[x[0]]; if (cod == null) return;
+        cod = String(cod).toUpperCase();
+        (m[cod] || (m[cod] = [])).push({ end: end, qtd: x[1] });
+      });
+    });
+    locRev = m; locRevSrc = s; return m;
+  }
+  function locRender(q) {
+    var box = $('locList'); if (!box) return;
+    if (!fItens.length) { box.innerHTML = '<div class="locvz">Carregue um endereço para ver as posições no SBF.</div>'; return; }
+    var rev = SBF ? locBuildRev(SBF) : null;
+    var seen = {}, blocks = [];
+    fItens.forEach(function (it) {
+      var cod = String(it.sku || '').toUpperCase(); if (!cod || seen[cod]) return; seen[cod] = 1;
+      if (q && (cod + ' ' + String(it.desc || '').toUpperCase()).indexOf(q) === -1) return;
+      var poss = (rev && rev[cod]) ? rev[cod].slice() : [];
+      poss.sort(function (a, b) { return String(a.end).localeCompare(String(b.end), 'pt-BR', { numeric: true }); });
+      blocks.push({ cod: cod, desc: it.desc || '', cur: String(it.local || '').toUpperCase(), poss: poss });
+    });
+    if (!blocks.length) { box.innerHTML = '<div class="locvz">Nada encontrado para “' + esc(q) + '”.</div>'; return; }
+    box.innerHTML = blocks.map(function (b) {
+      var lst = b.poss.length ? b.poss : [{ end: b.cur, qtd: '' }];
+      var pills = lst.map(function (p) {
+        var cur = String(p.end).toUpperCase() === b.cur;
+        return '<span class="locp' + (cur ? ' cur' : '') + '">' + esc(p.end) + (p.qtd !== '' ? ' · ' + p.qtd : '') + '</span>';
+      }).join('');
+      return '<div class="locit"><div class="loch"><b>' + esc(b.cod) + '</b><small>' + esc(b.desc) + '</small></div><div class="locps">' + pills + '</div></div>';
+    }).join('');
+  }
+  function locAplicar() {
+    var inp = $('locFiltro'); var q = inp ? inp.value.trim().toUpperCase() : '';
+    var rows = $('fbody').querySelectorAll('tr');
+    Array.prototype.forEach.call(rows, function (tr) {
+      var sku = tr.querySelector('td.sku'), dsc = tr.querySelector('td.dsc');
+      if (!sku && !dsc) return;
+      var txt = ((sku ? sku.textContent : '') + ' ' + (dsc ? dsc.textContent : '')).toUpperCase();
+      tr.style.display = (!q || txt.indexOf(q) > -1) ? '' : 'none';
+    });
+    locRender(q);
+  }
+  if ($('locFiltro')) {
+    $('locFiltro').addEventListener('input', locAplicar);
+    $('locLimpar').addEventListener('click', function () { $('locFiltro').value = ''; locAplicar(); $('locFiltro').focus(); });
   }
   function fCarregar() {
     var filtro = $('ff').value.trim();
+    var lf = $('locFiltro'); if (lf) lf.value = '';
     var n = ++fPedido;
     if (!filtro) { fItens = []; fDesenhar(); fMsg(''); return; }
     fMsg('Carregando ' + filtro.toUpperCase() + '…');
