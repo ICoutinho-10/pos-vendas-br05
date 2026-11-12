@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.2 — 12/11/2026 — Etiqueta redesenhada + código de barras que lê
+- **Pedidos do Ivan atendidos:** removido o **PN pequeno** (linha PN/Val.Lote) e o **PROCESSO/NF**; removido o **"46"** (nº da semana ISO — não serve) e a **hora**; **data** e **descrição** com fonte bem maior; **Quantidade ~dobrada** (fonte gigante, com auto-ajuste p/ 1–5 dígitos); **código grande descido** com folga do barcode. `Oper:` foi pra baixo da data.
+- **Código de barras agora lê:** a causa era (1) `margin:0` → **sem quiet zone**, e (2) `+getAttribute('width')` virava `NaN` (valor vem como `"580px"`) → caía no fallback e **distorcia** as barras. Corrigido: `parseInt(...)` p/ largura/altura reais + **quiet zone** (`marginLeft/Right:44`), módulo mais largo (`width:4`), `preserveAspectRatio` sem esticar e `shape-rendering:crispEdges`. SVG vetorial = alta definição na Zebra.
+- Testado render no navegador (barras uniformes com margem, layout sem corte). **Falta 1 impressão real** p/ validar a leitura no coletor e o tamanho 80×50.
+
 ## v0.8.1 — 12/11/2026 — Etiqueta: modal (peças + cópias), sem sobreposição e 1-clique na Zebra
 - **Fluxo pedido pelo Ivan:** o botão **não imprime direto** mais — abre uma **janela (modal)** com **Qtd de peças** (vai no campo Quantidade da etiqueta, já pré-preenchido com a física/SBF) e **Qtd de etiquetas** (cópias, 1–200); Imprimir manda tudo de uma vez (uma etiqueta por página).
 - **Sobreposição corrigida:** na faixa de cima, **ano/semana** não encostam mais (textLength trava a largura por coluna) e **FIFO / "Aprov. Qualidade:"** deixaram de ser cortados.

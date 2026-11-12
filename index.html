@@ -1296,44 +1296,38 @@
   function etqCorta2(s, per) { s = String(s || ''); if (s.length <= per) return [s, '']; var cut = s.lastIndexOf(' ', per); if (cut < per * 0.5) cut = per; return [s.slice(0, cut), s.slice(cut).trim().slice(0, per)]; }
   function etqSVG(d) {
     var dh = etqPad(d.now.getDate()) + '/' + etqPad(d.now.getMonth() + 1) + '/' + d.now.getFullYear();
-    var hm = etqPad(d.now.getHours()) + ':' + etqPad(d.now.getMinutes());
-    var ano = d.now.getFullYear(), sem = etqPad(etqSemana(d.now));
-    var dl = etqCorta2(d.desc, 32);
-    var dispW = Math.min(864, d.bcW || 300), bx = Math.round((944 - dispW) / 2);
-    var fcod = d.cod.length <= 11 ? 92 : (d.cod.length <= 15 ? 76 : 60);
+    var dl = etqCorta2(d.desc, 24);
+    var bw = d.bcW || 600, bh = d.bcH || 96;
+    var dispW = Math.min(840, bw), dispH = 92;
+    var bx = Math.round((944 - dispW) / 2), by = 390;
+    var qn = String(d.qtd).length;
+    var fq = qn <= 2 ? 118 : (qn <= 3 ? 94 : (qn <= 4 ? 74 : 58));
+    var fcod = d.cod.length <= 11 ? 100 : (d.cod.length <= 15 ? 84 : 66);
     var S = 'http://www.w3.org/2000/svg';
-    var s = '<svg xmlns="' + S + '" viewBox="0 0 944 590">';
+    var s = '<svg xmlns="' + S + '" viewBox="0 0 944 590" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">';
     s += '<rect x="0" y="0" width="944" height="590" fill="#fff"/>';
     s += '<rect x="2" y="2" width="940" height="586" fill="none" stroke="#000" stroke-width="4"/>';
-    // faixa de cima
-    [205, 290, 375, 470, 560].forEach(function (x) { s += '<rect x="' + x + '" y="0" width="3" height="140" fill="#000"/>'; });
-    s += '<rect x="0" y="140" width="944" height="3" fill="#000"/>';
-    s += '<text x="102" y="60" font-size="25" text-anchor="middle" font-family="monospace">' + etqX(dh) + '</text>';
-    s += '<text x="102" y="98" font-size="25" text-anchor="middle" font-family="monospace">' + etqX(hm) + '</text>';
-    s += '<text x="247" y="92" font-size="36" font-weight="700" text-anchor="middle" textLength="74" lengthAdjust="spacingAndGlyphs">' + ano + '</text>';
-    s += '<text x="332" y="100" font-size="48" font-weight="800" text-anchor="middle" textLength="70" lengthAdjust="spacingAndGlyphs">' + sem + '</text>';
-    s += '<text x="422" y="128" font-size="43" font-weight="800" transform="rotate(-90 422 128)">FIFO</text>';
-    s += '<text x="514" y="136" font-size="14" transform="rotate(-90 514 136)">Aprov. Qualidade:</text>';
-    // grade do meio
-    [188, 246, 294, 342].forEach(function (y) { s += '<rect x="0" y="' + y + '" width="944" height="3" fill="#000"/>'; });
-    s += '<rect x="470" y="140" width="3" height="202" fill="#000"/><rect x="610" y="140" width="3" height="202" fill="#000"/><rect x="180" y="246" width="3" height="96" fill="#000"/>';
-    s += '<text x="235" y="176" font-size="32" text-anchor="middle">Descrição:</text>';
-    s += '<text x="540" y="176" font-size="32" text-anchor="middle">UM:</text>';
-    s += '<text x="777" y="176" font-size="32" text-anchor="middle">Quantidade:</text>';
-    s += '<text x="12" y="215" font-size="22">' + etqX(dl[0]) + '</text>';
-    if (dl[1]) s += '<text x="12" y="240" font-size="22">' + etqX(dl[1]) + '</text>';
-    s += '<text x="540" y="230" font-size="38" text-anchor="middle">' + etqX(d.um) + '</text>';
-    s += '<text x="777" y="233" font-size="46" font-weight="700" text-anchor="middle">' + etqX(d.qtd) + '</text>';
-    s += '<text x="90" y="284" font-size="32" text-anchor="middle">PN:</text>';
-    s += '<text x="192" y="284" font-size="30" font-family="monospace">' + etqX(d.cod) + '</text>';
-    s += '<text x="540" y="282" font-size="26" text-anchor="middle">Val.Lote:</text>';
-    s += '<text x="90" y="326" font-size="20" text-anchor="middle">PROCESSO/NF:</text>';
-    s += '<text x="192" y="330" font-size="30" font-family="monospace">' + etqX(d.nf) + '</text>';
-    s += '<text x="540" y="328" font-size="30" text-anchor="middle">Oper:</text>';
-    s += '<text x="777" y="328" font-size="28" text-anchor="middle">' + etqX(d.oper) + '</text>';
-    // código de barras + código grande
-    s += '<svg x="' + bx + '" y="356" width="' + dispW + '" height="118" viewBox="0 0 ' + (d.bcW || 300) + ' ' + (d.bcH || 118) + '" preserveAspectRatio="none">' + d.bcInner + '</svg>';
-    s += '<text x="472" y="528" font-size="' + fcod + '" font-weight="800" font-family="monospace" text-anchor="middle" letter-spacing="2">' + etqX(d.cod) + '</text>';
+    // faixa de cima: DATA grande + Oper | FIFO | Aprov. Qualidade
+    s += '<rect x="600" y="0" width="3" height="150" fill="#000"/><rect x="720" y="0" width="3" height="150" fill="#000"/><rect x="0" y="150" width="944" height="3" fill="#000"/>';
+    s += '<text x="300" y="84" font-size="58" font-weight="700" text-anchor="middle" font-family="Geist Mono,ui-monospace,monospace">' + etqX(dh) + '</text>';
+    s += '<text x="300" y="131" font-size="28" text-anchor="middle">Oper: ' + etqX(d.oper) + '</text>';
+    s += '<text x="662" y="143" font-size="52" font-weight="800" transform="rotate(-90 662 143)">FIFO</text>';
+    s += '<text x="793" y="147" font-size="20" transform="rotate(-90 793 147)">Aprov. Qualidade:</text>';
+    // rótulos
+    s += '<rect x="600" y="150" width="3" height="230" fill="#000"/><rect x="720" y="150" width="3" height="230" fill="#000"/><rect x="0" y="208" width="944" height="3" fill="#000"/>';
+    s += '<text x="300" y="192" font-size="34" text-anchor="middle">Descrição:</text>';
+    s += '<text x="660" y="192" font-size="34" text-anchor="middle">UM:</text>';
+    s += '<text x="832" y="192" font-size="32" text-anchor="middle">Quantidade:</text>';
+    // valores
+    s += '<text x="18" y="268" font-size="36" font-weight="600">' + etqX(dl[0]) + '</text>';
+    if (dl[1]) s += '<text x="18" y="314" font-size="36" font-weight="600">' + etqX(dl[1]) + '</text>';
+    s += '<text x="660" y="314" font-size="56" font-weight="700" text-anchor="middle">' + etqX(d.um) + '</text>';
+    s += '<text x="832" y="338" font-size="' + fq + '" font-weight="800" text-anchor="middle">' + etqX(d.qtd) + '</text>';
+    s += '<rect x="0" y="380" width="944" height="3" fill="#000"/>';
+    // código de barras (natural, com quiet zone, sem distorção) + código grande embaixo
+    s += '<rect x="' + (bx - 8) + '" y="' + (by - 8) + '" width="' + (dispW + 16) + '" height="' + (dispH + 16) + '" fill="#fff"/>';
+    s += '<svg x="' + bx + '" y="' + by + '" width="' + dispW + '" height="' + dispH + '" viewBox="0 0 ' + bw + ' ' + bh + '" preserveAspectRatio="none" shape-rendering="crispEdges">' + d.bcInner + '</svg>';
+    s += '<text x="472" y="566" font-size="' + fcod + '" font-weight="800" font-family="Geist Mono,ui-monospace,monospace" text-anchor="middle" letter-spacing="2">' + etqX(d.cod) + '</text>';
     s += '</svg>';
     return s;
   }
@@ -1359,14 +1353,14 @@
     var copias = Math.max(1, Math.min(parseInt($('etqCopias').value, 10) || 1, 200));
     var qtd = String($('etqQtd').value || '').trim().slice(0, 12);
     var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    try { JsBarcode(tmp, cod, { format: 'CODE128', displayValue: false, margin: 0, height: 118, width: 3 }); }
+    try { JsBarcode(tmp, cod, { format: 'CODE128', displayValue: false, width: 4, height: 96, marginTop: 0, marginBottom: 0, marginLeft: 44, marginRight: 44 }); }
     catch (e) { fMsg('Não foi possível gerar o código de barras para ' + cod + '.', true); return; }
     var base = {
       now: new Date(), cod: cod,
       desc: String(it.desc || '').replace(/[\^~]/g, ' ').slice(0, 64),
       qtd: qtd, um: String(it.um || '').slice(0, 6), nf: '',
       oper: String(($('fresp') && $('fresp').value || '').trim()).slice(0, 22),
-      bcInner: tmp.innerHTML, bcW: +tmp.getAttribute('width') || 300, bcH: +tmp.getAttribute('height') || 118
+      bcInner: tmp.innerHTML, bcW: parseInt(tmp.getAttribute('width'), 10) || 580, bcH: parseInt(tmp.getAttribute('height'), 10) || 116
     };
     var pages = '';
     for (var i = 0; i < copias; i++) { pages += '<div class="pg"' + (i < copias - 1 ? ' style="page-break-after:always"' : '') + '>' + etqSVG(base) + '</div>'; }
