@@ -398,7 +398,14 @@
   .ft tbody tr.sel td:first-child { box-shadow: inset 5px 0 0 #2563EB; color: #1D4ED8; }
   .ft tbody tr.sel td.sku, .ft tbody tr.sel td.dsc { color: #1E3A8A; }
   @media (max-width: 700px) { .ft tbody tr.sel { background: #DBEAFE !important; box-shadow: inset 5px 0 0 #2563EB; } }
+  /* Etiqueta Zebra (Conferência) */
+  .ft th.etq, .ft td.etq { width: 54px; text-align: center; }
+  .etqb { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: #334155; cursor: pointer; line-height: 1; }
+  .etqb:hover { border-color: #94A3B8; background: #F1F5F9; }
+  .etqb:active { transform: translateY(1px); }
+  .etqb svg { width: 17px; height: 17px; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js" defer></script>
 </head>
 <body>
 <nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div></nav>
@@ -491,8 +498,8 @@
     <div class="ftit" id="ftit"></div>
     <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;PÓS VENDAS</div></div>
     <div class="fscroll"><table class="ft">
-      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="seg">SEGUIMENTO</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th></tr></thead>
-      <tbody id="fbody"><tr><td colspan="8" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
+      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="seg">SEGUIMENTO</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th><th class="etq">ETIQUETA</th></tr></thead>
+      <tbody id="fbody"><tr><td colspan="9" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
     </table></div>
     <button type="button" class="fadd" id="fadd">+ Adicionar item encontrado fora da lista</button>
     <div class="fbar">
@@ -1221,8 +1228,11 @@
       fSeg(it.seg) +
       '<td class="sbf">' + (it.sbf != null && it.sbf !== '' ? it.sbf : '—') + '</td>' +
       '<td class="fis"><input class="fq" inputmode="decimal" value="' + esc(it.fis) + '"' + (it.estado === 'feito' ? ' disabled' : '') + '></td>' +
-      '<td class="st">' + fSituacao(it) + '</td>';
+      '<td class="st">' + fSituacao(it) + '</td>' +
+      '<td class="etq"><button type="button" class="etqb" title="Imprimir etiqueta (código de barras) na Zebra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v4a1 1 0 0 0 1 1h3"/><rect x="3" y="3" width="18" height="12" rx="1"/><path d="M7 17h10a2 2 0 0 1 2 2v2H5v-2a2 2 0 0 1 2-2Z"/></svg></button></td>';
     tr.addEventListener('click', function () { fSelecionar(tr); });
+    var eb = tr.querySelector('.etqb');
+    if (eb) eb.addEventListener('click', function (ev) { ev.stopPropagation(); imprimirEtiqueta(it); });
     var q = tr.querySelector('input.fq');
     q.addEventListener('input', function () {
       it.fis = q.value; it.estado = '';
@@ -1246,6 +1256,84 @@
       }).withFailureHandler(function () { tr.querySelector('td.dsc').textContent = ''; }).buscarProduto(it.sku, it.local);
     });
     return tr;
+  }
+  // ---- Etiqueta Zebra (80x50 mm, Code128) — mesmo padrão do Robô Baixa TOTVS ----
+  function etqSemana(d) { var t = new Date(d.getTime()); t.setHours(0, 0, 0, 0); t.setDate(t.getDate() + 3 - ((t.getDay() + 6) % 7)); var w1 = new Date(t.getFullYear(), 0, 4); return 1 + Math.round(((t - w1) / 864e5 - 3 + ((w1.getDay() + 6) % 7)) / 7); }
+  function etqPad(n) { return (n < 10 ? '0' : '') + n; }
+  function etqX(t) { return String(t == null ? '' : t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function etqCorta2(s, per) { s = String(s || ''); if (s.length <= per) return [s, '']; var cut = s.lastIndexOf(' ', per); if (cut < per * 0.5) cut = per; return [s.slice(0, cut), s.slice(cut).trim().slice(0, per)]; }
+  function etqSVG(d) {
+    var dh = etqPad(d.now.getDate()) + '/' + etqPad(d.now.getMonth() + 1) + '/' + d.now.getFullYear();
+    var hm = etqPad(d.now.getHours()) + ':' + etqPad(d.now.getMinutes());
+    var ano = d.now.getFullYear(), sem = etqPad(etqSemana(d.now));
+    var dl = etqCorta2(d.desc, 32);
+    var dispW = Math.min(864, d.bcW || 300), bx = Math.round((944 - dispW) / 2);
+    var fcod = d.cod.length <= 11 ? 92 : (d.cod.length <= 15 ? 76 : 60);
+    var S = 'http://www.w3.org/2000/svg';
+    var s = '<svg xmlns="' + S + '" viewBox="0 0 944 590">';
+    s += '<rect x="0" y="0" width="944" height="590" fill="#fff"/>';
+    s += '<rect x="2" y="2" width="940" height="586" fill="none" stroke="#000" stroke-width="4"/>';
+    // faixa de cima
+    [205, 290, 375, 470, 560].forEach(function (x) { s += '<rect x="' + x + '" y="0" width="3" height="140" fill="#000"/>'; });
+    s += '<rect x="0" y="140" width="944" height="3" fill="#000"/>';
+    s += '<text x="102" y="58" font-size="26" text-anchor="middle" font-family="monospace">' + etqX(dh) + '</text>';
+    s += '<text x="102" y="96" font-size="26" text-anchor="middle" font-family="monospace">' + etqX(hm) + '</text>';
+    s += '<text x="247" y="94" font-size="40" font-weight="700" text-anchor="middle">' + ano + '</text>';
+    s += '<text x="332" y="102" font-size="54" font-weight="800" text-anchor="middle">' + sem + '</text>';
+    s += '<text x="420" y="132" font-size="48" font-weight="800" transform="rotate(-90 420 132)">FIFO</text>';
+    s += '<text x="512" y="134" font-size="17" transform="rotate(-90 512 134)">Aprov. Qualidade:</text>';
+    // grade do meio
+    [188, 246, 294, 342].forEach(function (y) { s += '<rect x="0" y="' + y + '" width="944" height="3" fill="#000"/>'; });
+    s += '<rect x="470" y="140" width="3" height="202" fill="#000"/><rect x="610" y="140" width="3" height="202" fill="#000"/><rect x="180" y="246" width="3" height="96" fill="#000"/>';
+    s += '<text x="235" y="176" font-size="32" text-anchor="middle">Descrição:</text>';
+    s += '<text x="540" y="176" font-size="32" text-anchor="middle">UM:</text>';
+    s += '<text x="777" y="176" font-size="32" text-anchor="middle">Quantidade:</text>';
+    s += '<text x="12" y="215" font-size="22">' + etqX(dl[0]) + '</text>';
+    if (dl[1]) s += '<text x="12" y="240" font-size="22">' + etqX(dl[1]) + '</text>';
+    s += '<text x="540" y="230" font-size="38" text-anchor="middle">' + etqX(d.um) + '</text>';
+    s += '<text x="777" y="233" font-size="46" font-weight="700" text-anchor="middle">' + etqX(d.qtd) + '</text>';
+    s += '<text x="90" y="284" font-size="32" text-anchor="middle">PN:</text>';
+    s += '<text x="192" y="284" font-size="30" font-family="monospace">' + etqX(d.cod) + '</text>';
+    s += '<text x="540" y="282" font-size="26" text-anchor="middle">Val.Lote:</text>';
+    s += '<text x="90" y="326" font-size="20" text-anchor="middle">PROCESSO/NF:</text>';
+    s += '<text x="192" y="330" font-size="30" font-family="monospace">' + etqX(d.nf) + '</text>';
+    s += '<text x="540" y="328" font-size="30" text-anchor="middle">Oper:</text>';
+    s += '<text x="777" y="328" font-size="28" text-anchor="middle">' + etqX(d.oper) + '</text>';
+    // código de barras + código grande
+    s += '<svg x="' + bx + '" y="356" width="' + dispW + '" height="118" viewBox="0 0 ' + (d.bcW || 300) + ' ' + (d.bcH || 118) + '" preserveAspectRatio="none">' + d.bcInner + '</svg>';
+    s += '<text x="472" y="528" font-size="' + fcod + '" font-weight="800" font-family="monospace" text-anchor="middle" letter-spacing="2">' + etqX(d.cod) + '</text>';
+    s += '</svg>';
+    return s;
+  }
+  function imprimirEtiqueta(it) {
+    if (!it || !it.sku) { fMsg('Item sem código — não dá para gerar a etiqueta.', true); return; }
+    if (typeof JsBarcode !== 'function') { fMsg('A biblioteca de código de barras ainda não carregou. Aguarde 1s e tente de novo.', true); return; }
+    var cod = String(it.sku || '').toUpperCase().replace(/[\^~]/g, '').trim().slice(0, 20);
+    if (!cod) { fMsg('Código inválido para etiqueta.', true); return; }
+    var qv = (it.fis != null && it.fis !== '') ? it.fis : (it.sbf != null ? it.sbf : '');
+    var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    try { JsBarcode(tmp, cod, { format: 'CODE128', displayValue: false, margin: 0, height: 118, width: 3 }); }
+    catch (e) { fMsg('Não foi possível gerar o código de barras para ' + cod + '.', true); return; }
+    var d = {
+      now: new Date(), cod: cod,
+      desc: String(it.desc || '').replace(/[\^~]/g, ' ').slice(0, 64),
+      qtd: String(qv).slice(0, 12), um: String(it.um || '').slice(0, 6), nf: '',
+      oper: String(($('fresp') && $('fresp').value || '').trim()).slice(0, 22),
+      bcInner: tmp.innerHTML, bcW: +tmp.getAttribute('width') || 300, bcH: +tmp.getAttribute('height') || 118
+    };
+    var svg = etqSVG(d);
+    var f = document.getElementById('etqframe');
+    if (f && f.parentNode) f.parentNode.removeChild(f);
+    f = document.createElement('iframe');
+    f.id = 'etqframe';
+    f.style.cssText = 'position:fixed;left:-10000px;top:0;width:90mm;height:60mm;border:0;';
+    document.body.appendChild(f);
+    var doc = f.contentWindow.document;
+    doc.open();
+    doc.write('<!doctype html><html><head><meta charset="utf-8"><style>@page{size:80mm 50mm;margin:0}html,body{margin:0;padding:0}svg{display:block;width:80mm;height:50mm}</style></head><body>' + svg + '</body></html>');
+    doc.close();
+    fMsg('Etiqueta de ' + cod + ' enviada. No PC escolha a “ZDesigner 170Xi4 300 dpi” (Zebra) na impressão — ou use o atalho 1-clique da Zebra.');
+    setTimeout(function () { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {} }, 180);
   }
   var CK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
   function fHist() { try { return JSON.parse(localStorage.getItem('inv_hist') || '[]'); } catch (e) { return []; } }
@@ -1275,7 +1363,7 @@
   function fDesenhar() {
     fCab();
     var tb = $('fbody'); tb.innerHTML = '';
-    if (!fItens.length) { tb.innerHTML = '<tr><td colspan="7" class="fvazio">' + ($('ff').value.trim() ? 'Nenhum item do SBF nesse endereço. Use "+ Adicionar item" se encontrou peças.' : 'Digite o endereço para carregar os itens do SBF.') + '</td></tr>'; }
+    if (!fItens.length) { tb.innerHTML = '<tr><td colspan="9" class="fvazio">' + ($('ff').value.trim() ? 'Nenhum item do SBF nesse endereço. Use "+ Adicionar item" se encontrou peças.' : 'Digite o endereço para carregar os itens do SBF.') + '</td></tr>'; }
     fItens.forEach(function (it, i) { tb.appendChild(fLinha(it, i)); });
     fResumo();
   }

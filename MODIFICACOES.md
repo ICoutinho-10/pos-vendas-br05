@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.8.0 — 12/11/2026 — Botão "Imprimir etiqueta" (Zebra, com código de barras) na Conferência
+- Nova coluna **ETIQUETA** na tabela de Conferência Kardex: um botão por item que gera a **etiqueta 80×50 mm no mesmo padrão do Robô Baixa TOTVS** (faixa data/ano/semana/FIFO · Descrição/UM/Quantidade · PN · PROCESSO-NF/Oper · código grande) **+ código de barras Code128** acima do código (como o `etiqueta_totvs.py.bkp_barras`).
+- Dados da etiqueta: **PN/código de barras = CÓDIGO SAP** do item; Quantidade = física (se preenchida) senão SBF; Oper = Conferente (`#fresp`). NF/UM/Val.Lote em branco (iguais ao robô quando vazios).
+- Técnica: a etiqueta é um **SVG** (viewBox 944×590 = 80×50 mm @300 dpi) montado em `etqSVG()`; o código de barras vem do **JsBarcode** (CDN cdnjs 3.11.6, Code128) embutido como `<svg>` aninhado; impressão isolada num **iframe** com `@page{size:80mm 50mm;margin:0}` → não conflita com a impressão do Kardex (ForkLift).
+- ⚠ **Impressora:** o robô original manda **ZPL cru** via `win32print` pra Zebra `\\h2bruno-li\ZDesigner 170Xi4 300 dpi`. Um app **web não envia ZPL direto** — então a etiqueta sai pela **impressão do navegador** (rasterizada): no diálogo, escolher a **ZDesigner 170Xi4** (ou montar um **atalho 1-clique Zebra** com `--kiosk-printing`, igual ao da ForkLift). Testado o render/geração do código de barras no navegador (SVG válido, 0 erro). **Falta testar 1 impressão real na Zebra** e, se preciso, ajustar a mídia 80×50 no driver.
+
 ## v0.7.0 — 12/11/2026 — Conciliação TOTVS × SAP (nova aba na Gestão)
 - Nova aba **TOTVS × SAP** no painel de Gestão: diferença de saldo **de cada item** entre **TOTVS (SBF)** e **SAP (MB52)**, com KPIs (SKUs comparados, TOTVS a mais, TOTVS a menos, Conferem), tabela ordenada por maior divergência, filtros (Todos / Só divergentes / a mais / a menos), busca e **Exportar CSV**.
 - **TOTVS** por item = soma do saldo por endereço (`b.p[k].l`); **SAP** por item = `b.sap[k].q` (soma da coluna "Utilização livre" do MB52). Itens só de um sistema entram com o outro lado = 0.
