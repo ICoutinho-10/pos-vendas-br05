@@ -416,15 +416,16 @@
   .ft thead th:nth-child(5) { width: 106px; }
   .ft thead th:nth-child(6) { width: 66px; }
   .ft thead th:nth-child(7) { width: 104px; }
-  .ft thead th:nth-child(8) { width: 112px; }
-  .ft thead th:nth-child(9) { width: 44px; }
+  .ft thead th:nth-child(8) { width: 150px; }
+  .ft thead th:nth-child(9) { width: 52px; }
   .ft th { padding: 5px 5px; font-size: 11px; white-space: normal; line-height: 1.12; }
   .ft td { padding: 1px 6px; font-size: 13px; }
   .ft td.dsc { max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ft td.sku { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ft td.seg { font-size: 11px; white-space: nowrap; padding: 2px 4px; }
   .ft td.sbf { font-size: 14.5px; }
-  .ft td.st { white-space: nowrap; overflow: hidden; }
+  .ft td.st { white-space: nowrap; overflow: visible; }
+  .ft td.st .chip { white-space: nowrap; }
   .ft input.fq { height: 26px; width: 94px; font-size: 14px; border-radius: 7px; }
   .ft input.fc { height: 28px; width: 100%; font-size: 13px; }
   .chip { padding: 2px 7px; font-size: 11px; }
@@ -525,7 +526,7 @@
     <div class="ftit" id="ftit"></div>
     <div class="fhead"><div><img alt="BYD" id="flogo" src="img/byd.png"></div><div>KARDEX - MP / MERCADORIA</div><div id="fconf">Conferido Por:</div><div>FILIAL&nbsp;&nbsp;&nbsp;PÓS VENDAS</div></div>
     <div class="fscroll"><table class="ft">
-      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="seg">SEGUIMENTO</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th><th class="etq">ETIQUETA</th></tr></thead>
+      <thead><tr><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRIÇÃO</th><th>LOCAL</th><th class="seg">SEGUIMENTO</th><th>QTDE SBF</th><th>QTDE KARDEX FÍSICO</th><th>SITUAÇÃO</th><th class="etq" title="Imprimir etiqueta"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></th></tr></thead>
       <tbody id="fbody"><tr><td colspan="9" class="fvazio">Digite o endereço para carregar os itens do SBF.</td></tr></tbody>
     </table></div>
     <button type="button" class="fadd" id="fadd">+ Adicionar item encontrado fora da lista</button>
