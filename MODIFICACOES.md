@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.11 — 13/11/2026 — Etiqueta "INVENTARIADO" a cada posição lançada
+- Na **Conferência Kardex**, ao clicar **LANÇAR CONFERÊNCIA** e concluir com sucesso (`fConcluir()`), dispara a **impressão de uma etiqueta** no modelo da que a BYD já usa: marca BYD, **data/hora do lançamento**, **endereço da posição** (pedido do Ivan), **INVENTARIADO** e **RESPONSÁVEL: <conferentes>**.
+- Impressão via **iframe isolado** (`imprimirEtiqueta()`) pra não conflitar com o `@media print` do Kardex; nunca quebra o lançamento (try/catch). Logo BYD = `img/byd.png` (fallback em texto se não carregar). Responsável formatado "A, B e C".
+- **Tamanho:** `60 × 40 mm` numa constante `ETQ` no topo do bloco — trocar 1 linha se o rolo for outro. O navegador abre o diálogo de impressão a cada lançamento (p/ sair direto, usar impressora de etiqueta como padrão + Chrome `--kiosk-printing`).
+- Bump geral 0.9.10→**0.9.11** (contagem + gestão + transferência + `version.json`).
+
 ## v0.9.10 — 13/11/2026 — Botão Transferência no app de contagem
 - **FAB flutuante "⇄ Transferência"** no app de contagem (`index.html`), fixo no canto inferior direito, apontando para `transferencia/`. Posto **fora do `.app`** de propósito: o app tem 3 views (contagem / `v-k` Kardex / `v-f` Conferência) e `body.v-k .app`/`body.v-f .app` ficam `display:none` — um botão no header só apareceria na contagem. Como FAB `position:fixed`, aparece nas **3 views**. Escondido no `@media print`. Testado visível em contagem/Kardex/conferência e clicável. Bump 0.9.9→0.9.10.
 

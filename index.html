@@ -683,7 +683,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.9.10';
+  var APP_VERSION = '0.9.11';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1601,12 +1601,54 @@
     fDesenhar();
     var ins = $('fbody').querySelectorAll('input.fc'); if (ins.length) ins[ins.length - 1].focus();
   });
+  // ---- Etiqueta "INVENTARIADO" (sai a cada posição lançada) ----
+  // Tamanho da etiqueta em mm — ajuste aqui se o rolo for diferente:
+  var ETQ = { w: 60, h: 40 };
+  function fmtResp(resp) {
+    var ns = String(resp || '').split('/').map(function (s) { return s.trim(); }).filter(Boolean)
+      .map(function (s) { return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); });
+    if (ns.length <= 1) return ns[0] || '';
+    return ns.slice(0, -1).join(', ') + ' e ' + ns[ns.length - 1];
+  }
+  function imprimirEtiqueta(end, resp, dh) {
+    try {
+      var logo = '';
+      try { logo = new URL('img/byd.png', location.href).href; } catch (e) {}
+      var css = '*{margin:0;padding:0;box-sizing:border-box}'
+        + '@page{size:' + ETQ.w + 'mm ' + ETQ.h + 'mm;margin:0}'
+        + 'html,body{width:' + ETQ.w + 'mm;height:' + ETQ.h + 'mm}'
+        + 'body{font-family:Arial,Helvetica,sans-serif;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+        + '.lab{width:' + ETQ.w + 'mm;height:' + ETQ.h + 'mm;padding:3mm 4mm;display:flex;flex-direction:column}'
+        + '.top{display:flex;align-items:center;justify-content:space-between}'
+        + '.top img{height:6mm}.bl{font-weight:900;font-size:5mm;border:1.5px solid #000;border-radius:50%/60%;padding:.4mm 2mm}'
+        + '.dt{font-size:3.6mm;font-weight:700}'
+        + '.end{text-align:center;font-size:5.2mm;font-weight:800;margin-top:1.5mm;letter-spacing:.3px;word-break:break-word}'
+        + '.inv{text-align:center;font-size:8.5mm;font-weight:900;letter-spacing:.5px;margin:auto 0}'
+        + '.rp{text-align:center;font-size:3.6mm;font-weight:700}';
+      var marca = logo ? '<img src="' + logo + '" alt="BYD" onerror="this.outerHTML=\'<span class=bl>BYD</span>\'">' : '<span class="bl">BYD</span>';
+      var html = '<!doctype html><html><head><meta charset="utf-8"><style>' + css + '</style></head><body>'
+        + '<div class="lab"><div class="top">' + marca + '<span class="dt">' + esc(dh) + '</span></div>'
+        + '<div class="end">' + esc(end) + '</div>'
+        + '<div class="inv">INVENTARIADO</div>'
+        + '<div class="rp">RESPONSÁVEL: ' + esc(fmtResp(resp)) + '</div></div></body></html>';
+      var ifr = document.createElement('iframe');
+      ifr.setAttribute('aria-hidden', 'true');
+      ifr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+      document.body.appendChild(ifr);
+      var doc = ifr.contentWindow.document; doc.open(); doc.write(html); doc.close();
+      setTimeout(function () {
+        try { ifr.contentWindow.focus(); ifr.contentWindow.print(); } catch (e) {}
+        setTimeout(function () { try { ifr.parentNode.removeChild(ifr); } catch (e) {} }, 1500);
+      }, 350);
+    } catch (e) {}
+  }
   function fConcluir() {
     var end = $('ff').value.trim().toUpperCase(), div = 0;
     fItens.forEach(function (it) { var f = fNum(it.fis); if (f !== null && !isNaN(f) && f !== it.sbf) div++; });
     var d = new Date(), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
-    fHistAdd({ end: end, n: fItens.length, div: div, seg: $('fseg').checked, conf: estado.resp,
-               dh: p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) });
+    var dh = p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+    fHistAdd({ end: end, n: fItens.length, div: div, seg: $('fseg').checked, conf: estado.resp, dh: dh });
+    imprimirEtiqueta(end, estado.resp, dh);
     fItens = []; $('ff').value = ''; $('fseg').checked = false; $('fsw').classList.remove('on');
     fDesenhar();
     fMsg('Endereço ' + end + ' lançado na planilha ✓  Digite o próximo endereço.');
