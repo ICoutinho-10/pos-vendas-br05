@@ -469,11 +469,45 @@
   .locps { display: flex; flex-wrap: wrap; gap: 4px; }
   .locp { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: rgba(99,102,241,.22); color: #C7D2FE; white-space: nowrap; }
   .locp.cur { background: #10B981; color: #fff; }
+
+  /* ===== Aba Etiquetas (lote) ===== */
+  .eview { display: none; padding: 22px 26px 40px; color: #EEF1FF; }
+  body.v-e .app { display: none; }
+  body.v-e .eview { display: block; }
+  .ewrap { max-width: 900px; margin: 0 auto; }
+  .ehd { display: flex; align-items: center; gap: 10px; font-family: "Oxanium", var(--font); font-weight: 800; font-size: 20px; letter-spacing: .4px; margin: 2px 2px 4px; }
+  .ehs { margin: 0 2px 18px; color: var(--tx2); font-size: 13.5px; }
+  .eadd { display: grid; grid-template-columns: 1.5fr .8fr .8fr auto; gap: 12px; align-items: end; background: var(--pan); border: 1px solid var(--pbr); border-radius: 16px; padding: 16px; }
+  .eadd label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #EEF1FF; }
+  .eadd input { height: 46px; border-radius: 10px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); color: #fff; font-size: 16px; font-weight: 700; padding: 0 12px; font-family: inherit; }
+  .eadd input:focus { outline: 0; border-color: #6366F1; background: rgba(255,255,255,.12); }
+  .eaddb { height: 46px; padding: 0 20px; border: 0; border-radius: 12px; background: var(--green); color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; white-space: nowrap; font-family: inherit; }
+  .eaddb:hover { filter: brightness(1.06); }
+  .etbl { width: 100%; border-collapse: collapse; margin-top: 18px; background: rgba(10,12,40,.4); border: 1px solid var(--pbr); border-radius: 14px; overflow: hidden; }
+  .etbl th, .etbl td { padding: 11px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 14px; }
+  .etbl tr:last-child td { border-bottom: 0; }
+  .etbl th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .4px; color: var(--tx2); font-weight: 800; }
+  .etbl td.cod { font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 700; }
+  .etbl td.c, .etbl th.c { text-align: center; }
+  .exb { border: 0; background: rgba(239,68,68,.18); color: #FCA5A5; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 14px; line-height: 1; }
+  .exb:hover { background: rgba(239,68,68,.3); }
+  .evz { color: var(--tx2); font-size: 13.5px; padding: 18px; text-align: center; }
+  .ebar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+  .eres { color: var(--tx2); font-size: 14px; font-weight: 700; }
+  .ebtns { display: flex; gap: 10px; }
+  .eprint { height: 50px; padding: 0 24px; border: 0; border-radius: 13px; background: var(--green); color: #fff; font-weight: 800; font-size: 14.5px; letter-spacing: .4px; cursor: pointer; display: inline-flex; align-items: center; gap: 9px; box-shadow: 0 10px 24px rgba(16,185,129,.35); font-family: inherit; }
+  .eprint:hover { filter: brightness(1.06); }
+  .eprint:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+  .eclr { background: rgba(255,255,255,.1); box-shadow: none; }
+  .emsg { margin-top: 12px; font-size: 13.5px; min-height: 18px; font-weight: 600; }
+  .emsg.err { color: #FCA5A5; }
+  .emsg.ok { color: #86EFAC; }
+  @media (max-width: 700px) { .eadd { grid-template-columns: 1fr 1fr; } .eview { padding: 16px 12px 40px; } }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js" defer></script>
 </head>
 <body>
-<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="loc" id="locBox"><div class="mt">LOCALIZAR ITEM</div><div class="locf"><input id="locFiltro" placeholder="Código ou descrição" autocomplete="off" autocapitalize="characters"><button type="button" id="locLimpar">Limpar</button></div><div class="locList" id="locList"><div class="locvz">Carregue um endereço para ver as posições no SBF.</div></div></div><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div></nav>
+<nav class="side"><div class="mt">MENU</div><button type="button" class="on" data-v="f"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Conferência Kardex</button><button type="button" data-v="c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Contagem avulsa</button><button type="button" data-v="k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>Imprimir Kardex</button><button type="button" data-v="e"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Etiquetas</button><button type="button" id="btnRobo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>Robô</button><div class="loc" id="locBox"><div class="mt">LOCALIZAR ITEM</div><div class="locf"><input id="locFiltro" placeholder="Código ou descrição" autocomplete="off" autocapitalize="characters"><button type="button" id="locLimpar">Limpar</button></div><div class="locList" id="locList"><div class="locvz">Carregue um endereço para ver as posições no SBF.</div></div></div><div class="tema"><div class="mt">TEMA</div><div class="sws"><button type="button" class="tw" data-t="roxo" title="Roxo"></button><button type="button" class="tw" data-t="marinho" title="Azul-marinho"></button><button type="button" class="tw" data-t="grafite" title="Grafite"></button><button type="button" class="tw" data-t="petroleo" title="Verde petróleo"></button></div></div></nav>
 <div class="app">
 <div class="top"><div class="topin">
   <div class="logo"><img alt="BYD" src="img/byd.png"></div>
@@ -611,6 +645,30 @@
   <div class="kmsg" id="kmsg"></div>
   <div class="kprev" id="kprev"><div id="kardex"><div class="kvazio">Digite um endereço (ex.: <b>T02 R33 B</b>) para ver o Kardex como ele sai na impressão.</div></div></div>
 </div>
+<div class="eview" id="eview">
+  <div class="ewrap">
+    <div class="ehd"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Etiquetas em lote</div>
+    <p class="ehs">Monte a lista de <b>código + quantidade</b> e imprima tudo de uma vez (etiqueta Zebra 80×50 com código de barras). Dá pra escolher quantas <b>cópias</b> de cada.</p>
+    <div class="eadd">
+      <label>Código SAP<input id="eCod" placeholder="Bipe ou digite o código" autocomplete="off" autocapitalize="characters"></label>
+      <label>Qtde na etiqueta<input id="eQtd" inputmode="decimal" placeholder="0" autocomplete="off"></label>
+      <label>Cópias<input id="eCopias" type="number" min="1" max="200" value="1" inputmode="numeric"></label>
+      <button type="button" class="eaddb" id="eAdd">+ Adicionar</button>
+    </div>
+    <table class="etbl">
+      <thead><tr><th>Código</th><th>Descrição</th><th class="c">Qtde</th><th class="c">Cópias</th><th class="c"></th></tr></thead>
+      <tbody id="eBody"><tr><td colspan="5" class="evz">Nenhuma etiqueta na lista. Adicione código + qtde acima.</td></tr></tbody>
+    </table>
+    <div class="ebar">
+      <div class="eres" id="eRes">0 itens · 0 etiquetas</div>
+      <div class="ebtns">
+        <button type="button" class="eprint eclr" id="eClear">Limpar lista</button>
+        <button type="button" class="eprint" id="ePrint" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Imprimir todas</button>
+      </div>
+    </div>
+    <div class="emsg" id="eMsg"></div>
+  </div>
+</div>
 
 <style>
   .robo-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 18px; background: rgba(5,8,20,.68); backdrop-filter: blur(4px); }
@@ -683,7 +741,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.9.11';
+  var APP_VERSION = '0.9.12';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1485,6 +1543,82 @@
     $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); etqImprimir(); } });
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('etqModal').classList.contains('on')) etqFechar(); });
+
+  // ---- Aba Etiquetas em lote (reaproveita etqSVG + JsBarcode) ----
+  var ETQLISTA = [];
+  var ETQMAPA = null; // cod -> {desc, um}
+  function etqCarregarMapa() {
+    if (ETQMAPA) return Promise.resolve(ETQMAPA);
+    return carregarSBF().then(function (s) {
+      var m = {};
+      if (s && s.p) for (var i = 0; i < s.p.length; i++) {
+        var c = String(s.p[i] || '').toUpperCase().trim();
+        if (c && !m[c]) m[c] = { desc: (s.d && s.d[i]) || '', um: (s.u && s.u[i]) || (s.um && s.um[i]) || '' };
+      }
+      ETQMAPA = m; return m;
+    }).catch(function () { ETQMAPA = {}; return ETQMAPA; });
+  }
+  function etqBase(cod, desc, qtd, um, oper) {
+    var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    JsBarcode(tmp, cod, { format: 'CODE128', displayValue: false, width: 4, height: 96, marginTop: 0, marginBottom: 0, marginLeft: 44, marginRight: 44 });
+    return { now: new Date(), cod: cod, desc: String(desc || '').replace(/[\^~]/g, ' ').slice(0, 64), qtd: String(qtd == null ? '' : qtd).trim().slice(0, 12), um: String(um || '').slice(0, 6), nf: '', oper: String(oper || '').slice(0, 22), bcInner: tmp.innerHTML, bcW: parseInt(tmp.getAttribute('width'), 10) || 580, bcH: parseInt(tmp.getAttribute('height'), 10) || 116 };
+  }
+  function eMsg(t, err) { var e = $('eMsg'); if (!e) return; e.textContent = t || ''; e.className = 'emsg' + (t ? (err ? ' err' : ' ok') : ''); }
+  function eRender() {
+    var tb = $('eBody'); if (!tb) return;
+    if (!ETQLISTA.length) { tb.innerHTML = '<tr><td colspan="5" class="evz">Nenhuma etiqueta na lista. Adicione código + qtde acima.</td></tr>'; }
+    else {
+      tb.innerHTML = ETQLISTA.map(function (r, i) {
+        return '<tr><td class="cod">' + etqX(r.cod) + '</td><td>' + etqX(r.desc || '—') + '</td><td class="c">' + etqX(r.qtd || '—') + '</td><td class="c">' + r.copias + '</td><td class="c"><button type="button" class="exb" data-i="' + i + '" title="Remover">✕</button></td></tr>';
+      }).join('');
+      Array.prototype.forEach.call(tb.querySelectorAll('.exb'), function (b) { b.addEventListener('click', function () { ETQLISTA.splice(+b.getAttribute('data-i'), 1); eRender(); }); });
+    }
+    var tot = ETQLISTA.reduce(function (a, r) { return a + r.copias; }, 0);
+    if ($('eRes')) $('eRes').textContent = ETQLISTA.length + ' ite' + (ETQLISTA.length === 1 ? 'm' : 'ns') + ' · ' + tot + ' etiqueta' + (tot === 1 ? '' : 's');
+    if ($('ePrint')) $('ePrint').disabled = !ETQLISTA.length;
+  }
+  function eAdd() {
+    var cod = String($('eCod').value || '').toUpperCase().replace(/[\^~]/g, '').trim().slice(0, 20);
+    if (!cod) { eMsg('Digite ou bipe o código.', true); $('eCod').focus(); return; }
+    if (typeof JsBarcode !== 'function') { eMsg('Código de barras ainda carregando — tente de novo em 1s.', true); return; }
+    var qtd = String($('eQtd').value || '').trim().slice(0, 12);
+    var copias = Math.max(1, Math.min(parseInt($('eCopias').value, 10) || 1, 200));
+    etqCarregarMapa().then(function (m) {
+      var info = m[cod] || {};
+      ETQLISTA.push({ cod: cod, desc: info.desc || '', um: info.um || '', qtd: qtd, copias: copias });
+      eRender();
+      eMsg(cod + ' adicionado' + (info.desc ? '' : ' (sem descrição no SBF — imprime só o código)') + '.', false);
+      $('eCod').value = ''; $('eQtd').value = ''; $('eCopias').value = '1'; $('eCod').focus();
+    });
+  }
+  function eImprimir() {
+    if (!ETQLISTA.length) return;
+    var oper = String((estado.resp || '').split(' / ')[0] || '').slice(0, 22);
+    var svgs = [], erros = [];
+    ETQLISTA.forEach(function (r) {
+      var base; try { base = etqBase(r.cod, r.desc, r.qtd, r.um, oper); } catch (e) { erros.push(r.cod); return; }
+      for (var i = 0; i < r.copias; i++) svgs.push(etqSVG(base));
+    });
+    if (!svgs.length) { eMsg('Não foi possível gerar as etiquetas' + (erros.length ? ' (' + erros.join(', ') + ')' : '') + '.', true); return; }
+    var pages = svgs.map(function (sv, idx) { return '<div class="pg"' + (idx < svgs.length - 1 ? ' style="page-break-after:always"' : '') + '>' + sv + '</div>'; }).join('');
+    var f = document.getElementById('etqframe');
+    if (f && f.parentNode) f.parentNode.removeChild(f);
+    f = document.createElement('iframe'); f.id = 'etqframe';
+    f.style.cssText = 'position:fixed;left:-10000px;top:0;width:90mm;height:60mm;border:0;';
+    document.body.appendChild(f);
+    var doc = f.contentWindow.document; doc.open();
+    doc.write('<!doctype html><html><head><meta charset="utf-8"><style>@page{size:80mm 50mm;margin:0}html,body{margin:0;padding:0}.pg{width:80mm;height:50mm;overflow:hidden}svg{display:block;width:80mm;height:50mm}</style></head><body>' + pages + '</body></html>');
+    doc.close();
+    eMsg(svgs.length + ' etiqueta' + (svgs.length === 1 ? '' : 's') + ' enviada' + (svgs.length === 1 ? '' : 's') + ' para impressão' + (erros.length ? ' · falharam: ' + erros.join(', ') : '') + '.', false);
+    setTimeout(function () { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {} }, 220);
+  }
+  if ($('eAdd')) {
+    $('eAdd').addEventListener('click', eAdd);
+    $('ePrint').addEventListener('click', eImprimir);
+    $('eClear').addEventListener('click', function () { ETQLISTA = []; eRender(); eMsg(''); });
+    ['eCod', 'eQtd', 'eCopias'].forEach(function (id) { $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); eAdd(); } }); });
+    eRender();
+  }
   var CK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
   function fHist() { try { return JSON.parse(localStorage.getItem('inv_hist') || '[]'); } catch (e) { return []; } }
   function fHistDesenhar() {
@@ -1610,7 +1744,7 @@
     if (ns.length <= 1) return ns[0] || '';
     return ns.slice(0, -1).join(', ') + ' e ' + ns[ns.length - 1];
   }
-  function imprimirEtiqueta(end, resp, dh) {
+  function imprimirEtiquetaInv(end, resp, dh) {
     try {
       var logo = '';
       try { logo = new URL('img/byd.png', location.href).href; } catch (e) {}
@@ -1648,7 +1782,7 @@
     var d = new Date(), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
     var dh = p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
     fHistAdd({ end: end, n: fItens.length, div: div, seg: $('fseg').checked, conf: estado.resp, dh: dh });
-    imprimirEtiqueta(end, estado.resp, dh);
+    imprimirEtiquetaInv(end, estado.resp, dh);
     fItens = []; $('ff').value = ''; $('fseg').checked = false; $('fsw').classList.remove('on');
     fDesenhar();
     fMsg('Endereço ' + end + ' lançado na planilha ✓  Digite o próximo endereço.');
@@ -1715,14 +1849,16 @@
   function abrir(v) {
     document.body.classList.toggle('v-k', v === 'k');
     document.body.classList.toggle('v-f', v === 'f');
+    document.body.classList.toggle('v-e', v === 'e');
     Array.prototype.forEach.call(document.querySelectorAll('.side button[data-v]'), function (x) { x.classList.toggle('on', x.getAttribute('data-v') === v); });
     try { localStorage.setItem('inv_aba', v); } catch (e) {}
+    if (v === 'e') { try { etqCarregarMapa(); } catch (e) {} setTimeout(function () { try { $('eCod').focus(); } catch (e) {} }, 60); }
     if (v === 'f') { $('fresp').value = ''; if ($('fturno')) $('fturno').value = estado.turno || ''; renderNomes(); fCab(); }
     if (v === 'k' && !$('kconf').value && estado.resp) $('kconf').value = estado.resp.charAt(0) + estado.resp.slice(1).toLowerCase();
     if (v === 'k') { if (!$('kf').value && estado.loc) { $('kf').value = estado.loc; visualizar(); } ajustarZoom(); }
   }
   Array.prototype.forEach.call(document.querySelectorAll('.side button[data-v]'), function (x) { x.addEventListener('click', function () { abrir(x.getAttribute('data-v')); }); });
-  (function () { var a = ''; try { a = localStorage.getItem('inv_aba') || ''; } catch (e) {} abrir(a === 'k' || a === 'c' ? a : 'f'); })();
+  (function () { var a = ''; try { a = localStorage.getItem('inv_aba') || ''; } catch (e) {} abrir(a === 'k' || a === 'c' || a === 'e' ? a : 'f'); })();
 
   // ---- Robô (modal) ----
   if ($('btnRobo')) $('btnRobo').addEventListener('click', function () { var m = $('roboModal'); if (m) m.hidden = false; });
