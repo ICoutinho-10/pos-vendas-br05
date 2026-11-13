@@ -1,5 +1,8 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.10 — 13/11/2026 — Botão Transferência no app de contagem
+- **FAB flutuante "⇄ Transferência"** no app de contagem (`index.html`), fixo no canto inferior direito, apontando para `transferencia/`. Posto **fora do `.app`** de propósito: o app tem 3 views (contagem / `v-k` Kardex / `v-f` Conferência) e `body.v-k .app`/`body.v-f .app` ficam `display:none` — um botão no header só apareceria na contagem. Como FAB `position:fixed`, aparece nas **3 views**. Escondido no `@media print`. Testado visível em contagem/Kardex/conferência e clicável. Bump 0.9.9→0.9.10.
+
 ## v0.9.9 — 13/11/2026 — Transferência OU Baixa por item (BR05 arm. 10)
 - **Entendimento do Ivan:** os materiais do inventário muitas vezes **não são baixa, e sim transferência entre endereços**. A tela/robô agora dá a **escolha por item**: **⇄ Transferir** (eu indico o endereço de destino) **ou ↓ Baixa**. (O "robô de transferência TOTVS" que ele citou é na verdade o de **Filiais, que é SAP/NF (VL02N/ZSDSOR)** — não serve de base p/ endereço→endereço no Protheus.)
 - **Página `transferencia/`:** cada item tem os botões **Transferir/Baixa** (default Transferir). Destino é exigido **só quando há item de transferência**; se tudo for baixa, dispensa destino. Botão mostra o split ("Enviar · 21 transf. + 1 baixa").
