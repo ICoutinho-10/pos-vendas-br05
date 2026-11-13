@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.7 — 13/11/2026 — MB52 (SAP) de verdade: fix no Apps Script + coluna na contagem + acuracidade real
+- **BUG DE RAIZ no Apps Script (corrigido direto no editor, Versão 3 implantada):** `CAB_MB52` esperava uma coluna **"UM básica"** que não existe na aba MB52 real → `lerMB52_` caía no modo posicional e `montarSaldoSAP` somava a coluna **F ("DEPÓSITOS SAP", vazia)** como quantidade → SAP sempre 0. Correção: `CAB_MB52` passou a `['Material','Texto breve material','Centro','Depósito','Utilização livre']` e `montarSaldoSAP` soma `r[4]` (Utilização livre). Também adicionado `m` (saldo SAP por SKU) ao retorno de `sbfSite` (feed `?api=sbf`). Base recarregada. Resultado: **5.041 SKUs com saldo SAP** (era 2). Mesma URL `/exec` (nova versão da implantação).
+- **Contagem (Conferência Kardex):** nova coluna **QTDE MB52** ao lado da QTDE SBF, lendo `m` do feed (vermelho quando 0). Cabeçalho + `fLinha` + colspans + rótulo mobile.
+- **Dashboard TOTVS × SAP:** passou a usar o **MB52 vivo** do `?api=sbf` (não o gravado no HISTÓRICO, que fica 0 no ato da contagem). Agora mostra acuracidade e divergências reais (ex. base atual: **4,3%**, 1 a mais, 21 a menos; `10163350-00` TOTVS 1035 × SAP 448).
+- Pendência menor: o **Kardex impresso** (Imprimir Kardex) ainda mostra só SBF — dá pra incluir MB52 se o Ivan quiser.
+
 ## v0.9.6 — 12/11/2026 — Dash de acuracidade TOTVS × SAP (SAP principal) + evolução por foto
 - Pedido do Ivan: acompanhar **acuracidade** do TOTVS contra o **SAP (principal)**, com **qtde de itens a mais e a menos**, e **evolução** conforme inventaria.
 - **KPIs:** Acuracidade (itens que conferem ÷ total, cor por faixa), Materiais divergentes, TOTVS a mais (sobra vs SAP), TOTVS a menos (falta vs SAP).

@@ -466,7 +466,7 @@
 
 <script>
   // === Auto-atualização (acaba o cache velho) ===
-  var APP_VERSION = '0.9.6';
+  var APP_VERSION = '0.9.7';
   (function () {
     function checar() {
       fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -982,12 +982,13 @@
       return { dia: k, skus: skus, conf: o.conf || 0, mais: o.mais || 0, menos: o.menos || 0, div: div, acc: skus ? o.conf / skus : 0 };
     });
   }
+  var SAPLIVE = null;   // mapa SKU -> saldo SAP (MB52) ao vivo do feed ?api=sbf (o HISTÓRICO grava 0 no ato da contagem)
   function buildConcil() {
     if (!D || !D.H) return null;
     var bySku = {};
     D.H.forEach(function (h) {
       var cod = h.prod; if (!cod) return;
-      var sap = h.mb52 == null ? 0 : h.mb52, totvs = h.saldo || 0;
+      var sap = (SAPLIVE && SAPLIVE[cod] != null) ? SAPLIVE[cod] : (h.mb52 == null ? 0 : h.mb52), totvs = h.saldo || 0;
       var o = bySku[cod] || (bySku[cod] = { cod: cod, desc: h.desc || '', totvs: 0, sap: 0, temSap: false });
       o.totvs = Math.max(o.totvs, totvs);      // SBF é o total do material, não por endereço → não somar
       o.sap = Math.max(o.sap, sap);            // MB52 é o total do material no SAP, não por endereço
@@ -1008,9 +1009,17 @@
     if ($('sub')) $('sub').textContent = 'Acuracidade do TOTVS (SBF) contra o SAP (MB52) — SAP é o principal. Itens a mais e a menos para resolver conforme o inventário.';
     if (!D) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Carregando dados…</td></tr></tbody>'; return; }
     if (CONCIL && !force) { renderConcil(); return; }
-    CONCIL = buildConcil();
-    if (!CONCIL) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Sem dados para conciliar.</td></tr></tbody>'; return; }
-    renderConcil();
+    if (SAPLIVE) { CONCIL = buildConcil(); if (CONCIL) renderConcil(); return; }
+    if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Carregando saldo do SAP (MB52)…</td></tr></tbody>';
+    fetch(API + '?api=sbf&t=' + Date.now()).then(function (r) { return r.json(); }).then(function (j) {
+      var d = (j && j.dados) || {}, P = d.p || [], M = d.m || [], map = {};
+      for (var i = 0; i < P.length; i++) map[P[i]] = (M[i] == null ? 0 : M[i]);
+      SAPLIVE = map;
+    }).catch(function () { SAPLIVE = {}; }).then(function () {
+      CONCIL = buildConcil();
+      if (!CONCIL) { if ($('cTab')) $('cTab').innerHTML = '<tbody><tr><td class="vazio">Sem dados para conciliar.</td></tr></tbody>'; return; }
+      renderConcil();
+    });
   }
   function concilFiltrado() {
     if (!CONCIL) return [];
