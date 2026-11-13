@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.13 — 13/11/2026 — SEGUIMENTO (6000/3000) automático em item fora da lista
+- Na **Conferência Kardex**, ao **inserir um item novo** (fora da lista) e digitar o código, a coluna **SEGUIMENTO** agora preenche **6000 · FORKLIFT** ou **3000 · BUS/TRUCK** automaticamente (antes mostrava "—"). O valor vem do **SBF**, que já deriva o seguimento do **MB52/depósito** por produto; a coluna **MB52** e a **descrição** também são preenchidas na hora.
+- Novas funções `fSBFcod` (índice código→produto no SBF), `fPreencherSBF` (puxa seg/MB52/desc) e `fAtualizarSegMb` (re-renderiza as células). O handler do campo de código chama `fPreencherSBF` ao digitar e de novo quando o `buscarProduto` normaliza o código. Código fora do SBF continua "—".
+- Bump geral 0.9.12→**0.9.13** (contagem + gestão + transferência + `version.json`).
+
 ## v0.9.12 — 13/11/2026 — Aba "Etiquetas" (lote) + correção de bug da 0.9.11
 - **Nova aba "Etiquetas"** no menu lateral: monta uma **lista de código + qtde** e imprime **tudo de uma vez**, com **nº de cópias por item**. Reaproveita a **etiqueta Zebra 80×50 mm (Code128)** que já existia por item (`etqSVG` + JsBarcode). A **descrição** é puxada automática do SBF pelo código (código fora do SBF imprime só o código). Validado local: 2 itens (7×2 + 4×3) → 5 etiquetas/5 páginas com código de barras ok.
 - **🐛 Correção importante:** na v0.9.11 a função nova da etiqueta INVENTARIADO foi criada com o **mesmo nome** (`imprimirEtiqueta`) da função Zebra já existente, **sobrescrevendo-a** — isso quebrou o **botão de etiqueta por item** na Conferência. Renomeada para `imprimirEtiquetaInv`; botão por item voltou a funcionar.

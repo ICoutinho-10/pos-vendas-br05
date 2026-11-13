@@ -741,7 +741,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.9.12';
+  var APP_VERSION = '0.9.13';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1384,6 +1384,30 @@
     if (s === '3000') return '<td class="seg s3000" title="Depósito 3000 · BUS/TRUCK">3000 · BUS/TRUCK</td>';
     return '<td class="seg">' + (s ? esc(s) : '—') + '</td>';
   }
+  // Item fora da lista: ao digitar o código, puxa SEGUIMENTO (6000/3000, que no SBF já vem do MB52) + MB52 + descrição.
+  var SBFCOD = null, SBFCODSRC = null;
+  function fSBFcod(s) {
+    if (SBFCOD && SBFCODSRC === s) return SBFCOD;
+    var m = {}, p = (s && s.p) || [];
+    for (var i = 0; i < p.length; i++) { var c = String(p[i] == null ? '' : p[i]).toUpperCase().trim(); if (c && m[c] == null) m[c] = i; }
+    SBFCOD = m; SBFCODSRC = s; return m;
+  }
+  function fAtualizarSegMb(tr, it) {
+    var sg = tr.querySelector('td.seg'); if (sg) sg.outerHTML = fSeg(it.seg);
+    var mb = tr.querySelector('td.mb52'); if (mb) { mb.className = 'mb52' + (it.mb52 === 0 ? ' z0' : ''); mb.textContent = (it.mb52 != null && it.mb52 !== '' ? it.mb52 : '—'); }
+  }
+  function fPreencherSBF(it, tr) {
+    return carregarSBF().then(function (s) {
+      var idx = fSBFcod(s)[String(it.sku || '').toUpperCase().trim()];
+      if (idx == null) { fAtualizarSegMb(tr, it); return; }
+      var sg = (s.seg || [])[idx];
+      it.seg = (sg == null || sg === '') ? '' : String(sg);
+      var mb = (s.m || [])[idx];
+      it.mb52 = (mb == null || mb === '') ? null : Number(mb);
+      if (!it.desc) { var d = (s.d || [])[idx]; if (d) { it.desc = d; var dc = tr.querySelector('td.dsc'); if (dc) dc.textContent = d; } }
+      fAtualizarSegMb(tr, it);
+    }).catch(function () {});
+  }
   function fSituacao(it) {
     if (it.estado === 'feito') return '<span class="chip feito">Lançado ✓</span>';
     if (it.estado === 'erro') return '<span class="chip erro" title="' + esc(it.erro || '') + '">Erro — tente de novo</span>';
@@ -1435,13 +1459,14 @@
     var c = tr.querySelector('input.fc');
     if (c) c.addEventListener('change', function () {
       it.sku = c.value.trim().toUpperCase(); c.value = it.sku;
-      if (!it.sku) return;
+      if (!it.sku) { it.seg = ''; it.mb52 = null; fAtualizarSegMb(tr, it); return; }
       tr.querySelector('td.dsc').textContent = 'Buscando…';
+      fPreencherSBF(it, tr);  // SEGUIMENTO (6000/3000 via MB52) + MB52 + desc, do SBF
       google.script.run.withSuccessHandler(function (r) {
-        it.desc = r && r.encontrado ? r.descricao : 'Código não encontrado na base';
-        if (r && r.produto) { it.sku = r.produto; c.value = r.produto; }
+        it.desc = r && r.encontrado ? r.descricao : (it.desc || 'Código não encontrado na base');
+        if (r && r.produto && String(r.produto).toUpperCase() !== it.sku) { it.sku = String(r.produto).toUpperCase(); c.value = it.sku; fPreencherSBF(it, tr); }
         tr.querySelector('td.dsc').textContent = it.desc;
-      }).withFailureHandler(function () { tr.querySelector('td.dsc').textContent = ''; }).buscarProduto(it.sku, it.local);
+      }).withFailureHandler(function () { tr.querySelector('td.dsc').textContent = it.desc || ''; }).buscarProduto(it.sku, it.local);
     });
     return tr;
   }
