@@ -1,5 +1,12 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.9 — 13/11/2026 — Transferência OU Baixa por item (BR05 arm. 10)
+- **Entendimento do Ivan:** os materiais do inventário muitas vezes **não são baixa, e sim transferência entre endereços**. A tela/robô agora dá a **escolha por item**: **⇄ Transferir** (eu indico o endereço de destino) **ou ↓ Baixa**. (O "robô de transferência TOTVS" que ele citou é na verdade o de **Filiais, que é SAP/NF (VL02N/ZSDSOR)** — não serve de base p/ endereço→endereço no Protheus.)
+- **Página `transferencia/`:** cada item tem os botões **Transferir/Baixa** (default Transferir). Destino é exigido **só quando há item de transferência**; se tudo for baixa, dispensa destino. Botão mostra o split ("Enviar · 21 transf. + 1 baixa").
+- **Backend (Apps Script Versão 5, mesma URL):** aba **ROBÔ TRANSFERÊNCIA** ganhou colunas **Tipo** e **Armazém** (cab agora: Data, Tipo, Origem, Destino, Produto, Descrição, Quantidade, Armazém, Solicitante, Doc, Status, Erro); `sheetTransfer_` reescreve o cabeçalho (idempotente, cobre a aba criada antes). `transferAdd_` aceita `tipo` por item (BAIXA dispensa destino), grava **Armazém 10 fixo** (`ARMAZEM_BR05`), devolve `{transferencias, baixas}`. `robo_fila_transfer` devolve `tipo` por item. Testado: 1 transf (arm10, A→B) + 1 baixa (arm10) no mesmo envio.
+- Sobraram linhas **TESTE** (status `TESTE-REMOVER`, incl. 1 linha antiga desalinhada) na aba — pode apagar.
+- **Fase B (pendente, precisa do TOTVS):** robô ler `robo_fila_transfer` e executar — **baixa** reaproveita o motor atual (TM 602); **transferência** endereço→endereço precisa da rotina/TM do Protheus (a identificar junto). Bump 0.9.8→0.9.9.
+
 ## v0.9.8 — 13/11/2026 — Transferência Múltipla pública (origem→ticar itens→destino) + fila do robô
 - **Nova página pública** `transferencia/` (link próprio): digito o **endereço de origem** → aparecem **todos os itens com saldo** (lidos do `?api=sbf`) com **checkbox** pra ticar quais transferir e **qtde editável** (default = saldo); digito o **endereço de destino**; **Enviar** manda tudo pra fila do robô. Sem login. Visual do app (indigo), mobile-first, auto-update via version.json.
 - **Backend (Apps Script Versão 4, mesma URL `/exec`):** 3 ações novas no `responder_`:

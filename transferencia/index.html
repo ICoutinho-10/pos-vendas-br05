@@ -40,9 +40,13 @@
   .it:first-child { border-top:0; }
   .it.off { opacity:.5; }
   .it .cb { width:22px; height:22px; flex:0 0 auto; accent-color:var(--indigo); cursor:pointer; }
-  .it .mid { flex:1; min-width:0; cursor:pointer; }
-  .it .sku { font-weight:800; font-size:15px; }
-  .it .ds { font-size:12.5px; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .it .mid { flex:1; min-width:0; }
+  .it .sku { font-weight:800; font-size:15px; cursor:pointer; }
+  .it .ds { font-size:12.5px; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+  .mode { display:flex; gap:6px; margin-top:7px; }
+  .mb { border:1px solid var(--line2); background:#fff; color:var(--dim); border-radius:999px; padding:3px 10px; font-size:11.5px; font-weight:800; cursor:pointer; font-family:var(--font); line-height:1.3; }
+  .mb.on { border-color:var(--indigo); background:#EEF2FF; color:#3730A3; }
+  .mb.on.bx { border-color:var(--warn); background:var(--warnbg); color:var(--warn); }
   .it .qt { width:76px; flex:0 0 auto; text-align:right; }
   .it .qt .cap { font-size:9.5px; font-weight:800; color:var(--dim); letter-spacing:.5px; text-align:right; }
   .it .qt input { width:76px; height:34px; text-align:right; border:1px solid var(--line2); border-radius:10px; font-size:16px; font-weight:800; padding:0 8px; color:var(--ink); }
@@ -70,7 +74,7 @@
     <div class="ic">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/></svg>
     </div>
-    <div class="tt"><b>Transferência</b><small>Pós-Vendas BR05 · robô executa no TOTVS</small></div>
+    <div class="tt"><b>Transferência</b><small>BR05 · arm. 10 · transfere p/ outro endereço ou dá baixa</small></div>
   </div></div>
 
   <div class="wrap">
@@ -86,7 +90,7 @@
       </div>
       <div class="box">
         <div class="k">Destino · vai para</div>
-        <input id="dest" placeholder="ex.: T02 R10 B" inputmode="text" autocomplete="off">
+        <input id="dest" placeholder="só p/ transferência" inputmode="text" autocomplete="off">
       </div>
     </div>
 
@@ -104,7 +108,7 @@
 </div>
 
 <script>
-  var APP_VERSION = '0.9.8';
+  var APP_VERSION = '0.9.9';
   var API = 'https://script.google.com/macros/s/AKfycby4HhAM6hrwjv-714oUBcbWcikzc7dS7hNtiqNZJMABYOeRMQY88rjTyuu81ehwYNE/exec';
   function $(id){ return document.getElementById(id); }
   function norm(s){ return String(s||'').trim().toUpperCase().replace(/\s+/g,' '); }
@@ -137,7 +141,7 @@
       Object.keys(s.e).forEach(function(end){
         if (norm(end) === f) s.e[end].forEach(function(x){
           var q = qnum(x[1]);
-          if (q !== 0) arr.push({ sku:s.p[x[0]], desc:s.d[x[0]], saldo:q, qtd:q, on:true });
+          if (q !== 0) arr.push({ sku:s.p[x[0]], desc:s.d[x[0]], saldo:q, qtd:q, on:true, tipo:'TRANSF' });
         });
       });
       arr.sort(function(a,b){ return a.sku.localeCompare(b.sku,'pt-BR',{numeric:true}); });
@@ -157,7 +161,14 @@
     ITENS.forEach(function(it, i){
       h += '<div class="it' + (it.on?'':' off') + '" data-i="' + i + '">' +
              '<input type="checkbox" class="cb" ' + (it.on?'checked':'') + '>' +
-             '<div class="mid"><div class="sku">' + it.sku + '</div><div class="ds">' + (it.desc||'') + '</div></div>' +
+             '<div class="mid">' +
+               '<div class="sku">' + it.sku + '</div>' +
+               '<div class="ds">' + (it.desc||'') + '</div>' +
+               '<div class="mode">' +
+                 '<button type="button" class="mb' + (it.tipo==='TRANSF'?' on':'') + '" data-m="TRANSF">⇄ Transferir</button>' +
+                 '<button type="button" class="mb' + (it.tipo==='BAIXA'?' on bx':'') + '" data-m="BAIXA">↓ Baixa</button>' +
+               '</div>' +
+             '</div>' +
              '<div class="qt"><div class="cap">QTDE</div><input type="text" inputmode="decimal" value="' + fmt(it.qtd) + '"><div class="sld">de ' + fmt(it.saldo) + '</div></div>' +
            '</div>';
     });
@@ -165,7 +176,19 @@
     Array.prototype.forEach.call($('list').querySelectorAll('.it'), function(row){
       var i = +row.getAttribute('data-i');
       row.querySelector('.cb').addEventListener('change', function(){ ITENS[i].on = this.checked; row.classList.toggle('off', !this.checked); atualizar(); });
-      row.querySelector('.mid').addEventListener('click', function(){ var cb = row.querySelector('.cb'); cb.checked = !cb.checked; ITENS[i].on = cb.checked; row.classList.toggle('off', !cb.checked); atualizar(); });
+      function toggleSel(){ var cb = row.querySelector('.cb'); cb.checked = !cb.checked; ITENS[i].on = cb.checked; row.classList.toggle('off', !cb.checked); atualizar(); }
+      row.querySelector('.sku').addEventListener('click', toggleSel);
+      row.querySelector('.ds').addEventListener('click', toggleSel);
+      Array.prototype.forEach.call(row.querySelectorAll('.mb'), function(btn){
+        btn.addEventListener('click', function(){
+          ITENS[i].tipo = btn.getAttribute('data-m');
+          Array.prototype.forEach.call(row.querySelectorAll('.mb'), function(b){
+            var on = b.getAttribute('data-m') === ITENS[i].tipo;
+            b.className = 'mb' + (on ? (ITENS[i].tipo==='BAIXA' ? ' on bx' : ' on') : '');
+          });
+          atualizar();
+        });
+      });
       row.querySelector('.qt input').addEventListener('input', function(){ ITENS[i].qtd = qnum(this.value); atualizar(); });
     });
     atualizar();
@@ -175,8 +198,13 @@
   function selecionados(){ return ITENS.filter(function(it){ return it.on && qnum(it.qtd) > 0; }); }
   function atualizar(){
     var sel = selecionados(), temDest = !!norm($('dest').value), temOrig = !!norm($('orig').value);
-    $('send').disabled = !(sel.length && temDest && temOrig);
-    $('send').textContent = sel.length ? 'Enviar transferência · ' + sel.length + (sel.length>1?' itens':' item') : 'Enviar transferência';
+    var nt = sel.filter(function(it){ return it.tipo === 'TRANSF'; }).length, nb = sel.length - nt;
+    var precisaDest = nt > 0;
+    $('send').disabled = !(sel.length && temOrig && (!precisaDest || temDest));
+    var box = $('dest').closest('.box'); if (box) box.style.opacity = precisaDest ? 1 : .5;
+    var txt = 'Enviar';
+    if (sel.length){ var p = []; if (nt) p.push(nt + ' transf.'); if (nb) p.push(nb + ' baixa' + (nb>1?'s':'')); txt = 'Enviar · ' + p.join(' + '); }
+    $('send').textContent = txt;
   }
   function msg(t, cls){ var e = $('msg'); e.textContent = t || ''; e.className = 'msg' + (cls ? ' ' + cls : ''); }
 
@@ -191,22 +219,28 @@
 
   $('send').addEventListener('click', function(){
     var sel = selecionados(), orig = norm($('orig').value), dest = norm($('dest').value);
-    if (!sel.length || !orig || !dest) return;
-    if (orig === dest){ msg('Origem e destino são iguais.', 'err'); return; }
+    if (!sel.length || !orig) return;
+    var temTransf = sel.some(function(it){ return it.tipo === 'TRANSF'; });
+    if (temTransf && !dest){ msg('Informe o endereço de destino (há itens para transferir).', 'err'); return; }
+    if (temTransf && dest === orig){ msg('Origem e destino são iguais.', 'err'); return; }
     $('send').disabled = true; msg('Enviando para a fila do robô…');
     var corpo = {
       acao: 'transfer_add',
       origem: orig, destino: dest,
       usuario: $('user').value.trim(),
-      itens: sel.map(function(it){ return { codigo: it.sku, descricao: it.desc, quantidade: String(it.qtd) }; })
+      itens: sel.map(function(it){
+        return { codigo: it.sku, descricao: it.desc, quantidade: String(it.qtd), tipo: it.tipo, destino: it.tipo==='TRANSF' ? dest : '' };
+      })
     };
     fetch(API, { method:'POST', body: JSON.stringify(corpo), redirect:'follow' })
       .then(function(r){ return r.json(); })
       .then(function(j){
         if (!j || !j.ok) throw new Error((j && (j.erro||j.msg)) || 'falha ao enviar');
-        msg('✔ ' + sel.length + (sel.length>1?' itens enviados':' item enviado') + ' para a fila. O robô vai transferir de ' + orig + ' para ' + dest + '.', 'ok');
+        var nt = (j.dados&&j.dados.transferencias)||0, nb = (j.dados&&j.dados.baixas)||0;
+        var p = []; if (nt) p.push(nt + ' transferência' + (nt>1?'s':'') + ' p/ ' + dest); if (nb) p.push(nb + ' baixa' + (nb>1?'s':''));
+        msg('✔ Enviado para a fila: ' + p.join(' e ') + '.', 'ok');
         $('filaBox').className = 'fila';
-        $('filaBox').innerHTML = 'Pedido na fila' + (j.doc ? ' · <b>' + j.doc + '</b>' : '') + '. Acompanhe no robô (TOTVS). Você pode montar outro.';
+        $('filaBox').innerHTML = 'Pedido na fila' + (j.doc ? ' · <b>' + j.doc + '</b>' : '') + '. O robô executa no TOTVS. Você pode montar outro.';
         ITENS = []; $('list').innerHTML = '<div class="empty">Enviado. Digite outro endereço de origem para continuar.</div>';
         $('orig').value = ''; $('all').style.display = 'none'; atualizar();
       })
