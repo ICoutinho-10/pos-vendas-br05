@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pós-Vendas BR05 · Transferência</title>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Oxanium:wght@600;700;800&display=swap">
+<style>
+  :root {
+    --bg:#F4F5FA; --card:#FFFFFF; --ink:#0F172A; --dim:#64748B; --line:#E6E8F0; --line2:#D5D9E5;
+    --indigo:#6366F1; --ok:#047857; --okbg:#ECFDF5; --warn:#B45309; --warnbg:#FFFBEB; --err:#BE123C; --errbg:#FFF1F2;
+    --font:"DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body { background: radial-gradient(1100px 650px at 82% -14%, #0C3358 0%, transparent 60%), radial-gradient(800px 600px at -10% 110%, rgba(99,102,241,.20) 0%, transparent 55%), #03101F;
+         background-attachment:fixed; color:var(--ink); font-family:var(--font); -webkit-font-smoothing:antialiased; }
+  .app { max-width:560px; margin:24px auto; min-height:calc(100dvh - 48px); display:flex; flex-direction:column;
+         background:var(--bg); border-radius:28px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); }
+  .top { background:linear-gradient(135deg,#1E1B4B 0%,#6366F1 55%,#06B6D4 125%); color:#fff; }
+  .topin { padding:18px 22px; display:flex; align-items:center; gap:14px; }
+  .tt b { display:block; font-family:"Oxanium",var(--font); font-weight:800; font-size:20px; letter-spacing:.3px; line-height:1.1; }
+  .tt small { color:rgba(255,255,255,.72); font-size:12.5px; font-weight:600; }
+  .ic { width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .wrap { flex:1; padding:18px 20px 24px; }
+  .row2 { display:flex; gap:10px; }
+  .box { flex:1; min-width:0; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:10px 14px 8px; box-shadow:0 1px 2px rgba(15,23,42,.04); transition:border-color .15s, box-shadow .15s; }
+  .box:focus-within { border-color:var(--indigo); box-shadow:0 0 0 4px rgba(79,70,229,.12); }
+  .box .k { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; color:var(--dim); letter-spacing:.6px; text-transform:uppercase; }
+  .box input { width:100%; height:36px; padding:0; border:0; border-radius:0; box-shadow:none; font-size:17px; background:transparent; font-weight:700; letter-spacing:.3px; text-transform:uppercase; }
+  .box input:focus { outline:none; }
+  .box input::placeholder { font-size:14px; font-weight:500; text-transform:none; letter-spacing:0; color:#94A3B8; }
+  .box.user input { text-transform:none; font-weight:600; letter-spacing:0; }
+  .lbl { margin:16px 2px 7px; font-size:12px; font-weight:800; color:var(--dim); letter-spacing:.5px; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .lbl .cta { color:var(--indigo); cursor:pointer; font-size:12px; font-weight:800; }
+  .list { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+  .it { display:flex; align-items:center; gap:12px; padding:11px 14px; border-top:1px solid var(--line); }
+  .it:first-child { border-top:0; }
+  .it.off { opacity:.5; }
+  .it .cb { width:22px; height:22px; flex:0 0 auto; accent-color:var(--indigo); cursor:pointer; }
+  .it .mid { flex:1; min-width:0; cursor:pointer; }
+  .it .sku { font-weight:800; font-size:15px; }
+  .it .ds { font-size:12.5px; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .it .qt { width:76px; flex:0 0 auto; text-align:right; }
+  .it .qt .cap { font-size:9.5px; font-weight:800; color:var(--dim); letter-spacing:.5px; text-align:right; }
+  .it .qt input { width:76px; height:34px; text-align:right; border:1px solid var(--line2); border-radius:10px; font-size:16px; font-weight:800; padding:0 8px; color:var(--ink); }
+  .it .qt input:focus { outline:none; border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,.14); }
+  .it .sld { font-size:10px; color:#94A3B8; font-weight:700; text-align:right; margin-top:2px; }
+  .msg { margin:12px 2px 0; font-size:13.5px; font-weight:600; color:var(--dim); }
+  .msg.err { color:var(--err); }
+  .msg.ok { color:var(--ok); }
+  .empty { padding:26px 16px; text-align:center; color:var(--dim); font-size:14px; }
+  .bar { position:sticky; bottom:0; margin-top:18px; }
+  .send { width:100%; height:54px; border:0; border-radius:16px; color:#fff; font-size:17px; font-weight:800; font-family:var(--font); letter-spacing:.3px; cursor:pointer;
+          background:linear-gradient(135deg,#6366F1 0%,#06B6D4 120%); box-shadow:0 12px 26px rgba(79,70,229,.32); transition:filter .15s, transform .05s; }
+  .send:disabled { opacity:.45; cursor:default; box-shadow:none; }
+  .send:not(:disabled):active { transform:translateY(1px); }
+  .count { font-size:12px; font-weight:800; color:var(--indigo); }
+  .ver { text-align:center; font-size:11px; color:#94A3B8; padding:10px; font-weight:700; }
+  .fila { margin-top:14px; background:#EEF2FF; border:1px solid #C7D2FE; border-radius:14px; padding:12px 14px; font-size:13px; color:#3730A3; font-weight:600; }
+  .fila b { font-weight:800; }
+  .fila.hide { display:none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="topin">
+    <div class="ic">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/></svg>
+    </div>
+    <div class="tt"><b>Transferência</b><small>Pós-Vendas BR05 · robô executa no TOTVS</small></div>
+  </div></div>
+
+  <div class="wrap">
+    <div class="box user" style="margin-bottom:12px">
+      <div class="k">Quem está transferindo</div>
+      <input id="user" placeholder="seu nome (opcional)" autocomplete="name">
+    </div>
+
+    <div class="row2">
+      <div class="box">
+        <div class="k">Origem · sai de</div>
+        <input id="orig" placeholder="ex.: R01 A 01 A" inputmode="text" autocomplete="off">
+      </div>
+      <div class="box">
+        <div class="k">Destino · vai para</div>
+        <input id="dest" placeholder="ex.: T02 R10 B" inputmode="text" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="lbl"><span id="lblList">Itens no endereço de origem</span><span class="cta" id="all" style="display:none">Marcar todos</span></div>
+    <div class="list" id="list"><div class="empty">Digite o <b>endereço de origem</b> para ver os itens.</div></div>
+    <div class="msg" id="msg"></div>
+
+    <div class="fila hide" id="filaBox"></div>
+
+    <div class="bar">
+      <button class="send" id="send" disabled>Enviar transferência</button>
+    </div>
+  </div>
+  <div class="ver" id="ver"></div>
+</div>
+
+<script>
+  var APP_VERSION = '0.9.8';
+  var API = 'https://script.google.com/macros/s/AKfycby4HhAM6hrwjv-714oUBcbWcikzc7dS7hNtiqNZJMABYOeRMQY88rjTyuu81ehwYNE/exec';
+  function $(id){ return document.getElementById(id); }
+  function norm(s){ return String(s||'').trim().toUpperCase().replace(/\s+/g,' '); }
+  $('ver').textContent = 'v' + APP_VERSION;
+
+  // auto-update
+  fetch('../version.json?t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); })
+    .then(function(j){ if (j && j.v && j.v !== APP_VERSION) location.replace(location.pathname + '?v=' + j.v); }).catch(function(){});
+
+  var SBF = null, carregando = null;
+  function carregarSBF(){
+    if (SBF) return Promise.resolve(SBF);
+    if (!carregando) carregando = fetch(API + '?api=sbf&t=' + Date.now()).then(function(r){ return r.json(); })
+      .then(function(j){ if (!j || !j.ok) throw new Error('sbf'); return j.dados; })
+      .then(function(j){ SBF = j; setTimeout(function(){ SBF = null; carregando = null; }, 10*60*1000); return j; });
+    return carregando;
+  }
+
+  var ITENS = [], tmr = null, pedido = 0;
+  function qnum(v){ v = String(v==null?'':v).replace(',','.').replace(/[^0-9.\-]/g,''); var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+
+  function buscar(){
+    var f = norm($('orig').value), n = ++pedido;
+    ITENS = []; $('all').style.display = 'none'; atualizar();
+    if (!f){ $('list').innerHTML = '<div class="empty">Digite o <b>endereço de origem</b> para ver os itens.</div>'; msg(''); return; }
+    msg('Carregando ' + f + '…');
+    carregarSBF().then(function(s){
+      if (n !== pedido) return;
+      var arr = [];
+      Object.keys(s.e).forEach(function(end){
+        if (norm(end) === f) s.e[end].forEach(function(x){
+          var q = qnum(x[1]);
+          if (q !== 0) arr.push({ sku:s.p[x[0]], desc:s.d[x[0]], saldo:q, qtd:q, on:true });
+        });
+      });
+      arr.sort(function(a,b){ return a.sku.localeCompare(b.sku,'pt-BR',{numeric:true}); });
+      ITENS = arr;
+      render();
+      msg(arr.length ? arr.length + (arr.length>1?' itens':' item') + ' em ' + f + (s.gerado ? ' · SBF de ' + s.gerado : '') : 'Nenhum item com saldo em ' + f + '.', arr.length?'':'warn');
+      $('all').style.display = arr.length ? '' : 'none';
+    }).catch(function(e){
+      if (n !== pedido) return;
+      msg('Não carregou os itens: ' + (e && e.message || e), 'err');
+    });
+  }
+
+  function render(){
+    if (!ITENS.length){ $('list').innerHTML = '<div class="empty">Nenhum item com saldo nesse endereço.</div>'; atualizar(); return; }
+    var h = '';
+    ITENS.forEach(function(it, i){
+      h += '<div class="it' + (it.on?'':' off') + '" data-i="' + i + '">' +
+             '<input type="checkbox" class="cb" ' + (it.on?'checked':'') + '>' +
+             '<div class="mid"><div class="sku">' + it.sku + '</div><div class="ds">' + (it.desc||'') + '</div></div>' +
+             '<div class="qt"><div class="cap">QTDE</div><input type="text" inputmode="decimal" value="' + fmt(it.qtd) + '"><div class="sld">de ' + fmt(it.saldo) + '</div></div>' +
+           '</div>';
+    });
+    $('list').innerHTML = h;
+    Array.prototype.forEach.call($('list').querySelectorAll('.it'), function(row){
+      var i = +row.getAttribute('data-i');
+      row.querySelector('.cb').addEventListener('change', function(){ ITENS[i].on = this.checked; row.classList.toggle('off', !this.checked); atualizar(); });
+      row.querySelector('.mid').addEventListener('click', function(){ var cb = row.querySelector('.cb'); cb.checked = !cb.checked; ITENS[i].on = cb.checked; row.classList.toggle('off', !cb.checked); atualizar(); });
+      row.querySelector('.qt input').addEventListener('input', function(){ ITENS[i].qtd = qnum(this.value); atualizar(); });
+    });
+    atualizar();
+  }
+  function fmt(n){ n = qnum(n); return (Math.round(n*1000)/1000).toString().replace('.',','); }
+
+  function selecionados(){ return ITENS.filter(function(it){ return it.on && qnum(it.qtd) > 0; }); }
+  function atualizar(){
+    var sel = selecionados(), temDest = !!norm($('dest').value), temOrig = !!norm($('orig').value);
+    $('send').disabled = !(sel.length && temDest && temOrig);
+    $('send').textContent = sel.length ? 'Enviar transferência · ' + sel.length + (sel.length>1?' itens':' item') : 'Enviar transferência';
+  }
+  function msg(t, cls){ var e = $('msg'); e.textContent = t || ''; e.className = 'msg' + (cls ? ' ' + cls : ''); }
+
+  $('orig').addEventListener('input', function(){ clearTimeout(tmr); tmr = setTimeout(buscar, 450); });
+  $('orig').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ clearTimeout(tmr); buscar(); } });
+  $('dest').addEventListener('input', atualizar);
+  $('all').addEventListener('click', function(){
+    var algumOff = ITENS.some(function(it){ return !it.on; });
+    ITENS.forEach(function(it){ it.on = algumOff; });
+    render();
+  });
+
+  $('send').addEventListener('click', function(){
+    var sel = selecionados(), orig = norm($('orig').value), dest = norm($('dest').value);
+    if (!sel.length || !orig || !dest) return;
+    if (orig === dest){ msg('Origem e destino são iguais.', 'err'); return; }
+    $('send').disabled = true; msg('Enviando para a fila do robô…');
+    var corpo = {
+      acao: 'transfer_add',
+      origem: orig, destino: dest,
+      usuario: $('user').value.trim(),
+      itens: sel.map(function(it){ return { codigo: it.sku, descricao: it.desc, quantidade: String(it.qtd) }; })
+    };
+    fetch(API, { method:'POST', body: JSON.stringify(corpo), redirect:'follow' })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (!j || !j.ok) throw new Error((j && (j.erro||j.msg)) || 'falha ao enviar');
+        msg('✔ ' + sel.length + (sel.length>1?' itens enviados':' item enviado') + ' para a fila. O robô vai transferir de ' + orig + ' para ' + dest + '.', 'ok');
+        $('filaBox').className = 'fila';
+        $('filaBox').innerHTML = 'Pedido na fila' + (j.doc ? ' · <b>' + j.doc + '</b>' : '') + '. Acompanhe no robô (TOTVS). Você pode montar outro.';
+        ITENS = []; $('list').innerHTML = '<div class="empty">Enviado. Digite outro endereço de origem para continuar.</div>';
+        $('orig').value = ''; $('all').style.display = 'none'; atualizar();
+      })
+      .catch(function(e){
+        msg('Não enviou: ' + (e && e.message || e) + '. Tente de novo.', 'err');
+        $('send').disabled = false;
+      });
+  });
+
+  atualizar();
+</script>
+</body>
+</html>

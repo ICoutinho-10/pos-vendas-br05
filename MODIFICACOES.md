@@ -1,5 +1,16 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.8 — 13/11/2026 — Transferência Múltipla pública (origem→ticar itens→destino) + fila do robô
+- **Nova página pública** `transferencia/` (link próprio): digito o **endereço de origem** → aparecem **todos os itens com saldo** (lidos do `?api=sbf`) com **checkbox** pra ticar quais transferir e **qtde editável** (default = saldo); digito o **endereço de destino**; **Enviar** manda tudo pra fila do robô. Sem login. Visual do app (indigo), mobile-first, auto-update via version.json.
+- **Backend (Apps Script Versão 4, mesma URL `/exec`):** 3 ações novas no `responder_`:
+  - `transfer_add` (POST): cria/usa a aba **ROBÔ TRANSFERÊNCIA** (cab: Data, Origem, Destino, Produto, Descrição, Quantidade, Solicitante, Doc, Status, Erro) e grava 1 linha por item; devolve `{doc, itens}`.
+  - `robo_fila_transfer` (GET): devolve as linhas **sem Status** (fila pendente) — mesmo padrão da fila 602/202.
+  - `transfer_resultado` (POST): o robô marca Status/Doc/Erro por linha (sai da fila).
+  - Testado ponta a ponta: grava → fila lê → baixa da fila (sobrou 1 linha de **TESTE** marcada `TESTE-REMOVER`, pode apagar).
+- **"Público" do robô:** a execução no TOTVS roda numa máquina só (pilota a tela do Protheus); o que virou público é o **pedido** (app web monta, robô consome a fila) — mesmo modelo das baixas.
+- **PENDENTE (Fase B, precisa do TOTVS aberto com o Ivan):** fazer o **robô ler a fila de transferência e executar o movimento no TOTVS**. A rotina/TM de transferência endereço→endereço da Pós-Vendas ainda não foi identificada (decisão do Ivan: "descobrir junto"). Até lá os pedidos ficam na fila, sem executar.
+- Bump 0.9.7→0.9.8 nos 3 apps (contagem, gestão, transferência) + version.json (o esquema exige APP_VERSION == version.json).
+
 ## v0.9.7 — 13/11/2026 — MB52 (SAP) de verdade: fix no Apps Script + coluna na contagem + acuracidade real
 - **BUG DE RAIZ no Apps Script (corrigido direto no editor, Versão 3 implantada):** `CAB_MB52` esperava uma coluna **"UM básica"** que não existe na aba MB52 real → `lerMB52_` caía no modo posicional e `montarSaldoSAP` somava a coluna **F ("DEPÓSITOS SAP", vazia)** como quantidade → SAP sempre 0. Correção: `CAB_MB52` passou a `['Material','Texto breve material','Centro','Depósito','Utilização livre']` e `montarSaldoSAP` soma `r[4]` (Utilização livre). Também adicionado `m` (saldo SAP por SKU) ao retorno de `sbfSite` (feed `?api=sbf`). Base recarregada. Resultado: **5.041 SKUs com saldo SAP** (era 2). Mesma URL `/exec` (nova versão da implantação).
 - **Contagem (Conferência Kardex):** nova coluna **QTDE MB52** ao lado da QTDE SBF, lendo `m` do feed (vermelho quando 0). Cabeçalho + `fLinha` + colspans + rótulo mobile.
