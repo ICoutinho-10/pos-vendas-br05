@@ -741,7 +741,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.9.13';
+  var APP_VERSION = '0.9.14';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1237,23 +1237,44 @@
   var kFonte = 'sbf';
   var kOcultarZero = true;   // Filtros: esconde itens com quantidade 0
   function kNome(id) { var v = $(id).value.trim(); return v ? v.charAt(0).toUpperCase() + v.slice(1) : ''; }
-  function montarKardex(k) {
+  function kardexPaginasHTML(titulo, itens) {
     var cols = [38, 143, 297, 106, 67, 55, 55, 55, 56, 55];
-    var POR = 28, pags = Math.max(1, Math.ceil(k.itens.length / POR)), h = '';
+    var POR = 28, pags = Math.max(1, Math.ceil(itens.length / POR)), h = '';
     for (var p = 0; p < pags; p++) {
-      h += '<div class="kpg"><div class="ktit">' + esc(k.titulo) + '</div><div class="kwrap"><table class="kx"><colgroup>' +
+      h += '<div class="kpg"><div class="ktit">' + esc(titulo) + '</div><div class="kwrap"><table class="kx"><colgroup>' +
            cols.map(function (w) { return '<col style="width:' + w + 'px">'; }).join('') + '</colgroup>';
       h += '<tr class="r1"><td></td><td class="klogo"><img alt="BYD" src="img/byd.png"></td><td>KARDEX - MP / MERCADORIA</td>' +
            '<td colspan="4" class="kcp">Conferido Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kconf">' + esc(kNome('kconf')) + '</span> / Criado Por: <span class="ked" contenteditable="true" spellcheck="false" data-k="kcria">' + esc(kNome('kcria')) + '</span></td><td colspan="3">FILIAL&nbsp;&nbsp;&nbsp;&nbsp;PÓS VENDAS</td></tr>';
       h += '<tr class="r2"><th>SEQ</th><th>CÓDIGO SAP</th><th>DESCRICÃO</th><th>LOCAL</th><th colspan="6">QUANT.</th></tr>';
       for (var i = 0; i < POR; i++) {
-        var ix = p * POR + i, it = k.itens[ix] || { sku: '', desc: '', local: '', qtd: '' };
-        h += '<tr class="b' + (i === POR - 1 ? ' ult' : '') + '"><td>' + (k.itens[ix] ? ix + 1 : '') + '</td><td>' + esc(it.sku) + '</td><td class="l">' + esc(it.desc) + '</td><td>' + esc(it.local) + '</td>' +
+        var ix = p * POR + i, it = itens[ix] || { sku: '', desc: '', local: '', qtd: '' };
+        h += '<tr class="b' + (i === POR - 1 ? ' ult' : '') + '"><td>' + (itens[ix] ? ix + 1 : '') + '</td><td>' + esc(it.sku) + '</td><td class="l">' + esc(it.desc) + '</td><td>' + esc(it.local) + '</td>' +
              '<td class="q q1">' + esc(it.qtd) + '</td><td class="q"></td><td class="q"></td><td class="q"></td><td class="q"></td><td class="q q6"></td></tr>';
       }
       h += '</table><div class="kfo"><b>FO.SC.A.026</b>Rev.00 - Set/25</div></div></div>';
     }
-    $('kardex').innerHTML = h;
+    return h;
+  }
+  function montarKardex(k) { $('kardex').innerHTML = kardexPaginasHTML(k.titulo, k.itens); }
+  function montarKardexMulti(blocos) { $('kardex').innerHTML = blocos.map(function (b) { return kardexPaginasHTML(b.titulo, b.itens); }).join(''); }
+  function rerenderKardex() { if (!kAtual) return; if (kAtual.multi) montarKardexMulti(kAtual.multi); else if (kAtual.k) montarKardex(kAtual.k); }
+  // Rua/bloco: agrupa os endereços do SBF que começam com o prefixo em 1 Kardex por BLOCO (2 primeiros termos). Ex.: "R01" -> R01 A, R01 B...
+  function agruparBlocos(s, f) {
+    var map = {};
+    Object.keys(s.e).forEach(function (end) {
+      var E = String(end).toUpperCase().replace(/\s+/g, ' ');
+      if (E === f || E.indexOf(f + ' ') === 0) {
+        var bloco = E.split(' ').slice(0, 2).join(' ');
+        (map[bloco] = map[bloco] || []);
+        s.e[end].forEach(function (x) { map[bloco].push({ sku: s.p[x[0]], desc: s.d[x[0]], local: E, qtd: x[1], seg: (s.seg || [])[x[0]], mb52: (s.m || [])[x[0]] }); });
+      }
+    });
+    return Object.keys(map).sort(function (a, b) { return a.localeCompare(b, 'pt-BR', { numeric: true }); }).map(function (b) {
+      var it = map[b];
+      if (kOcultarZero) it = it.filter(function (item) { var q = numeroQuantidade(item.qtd); return q === null || q !== 0; });
+      it.sort(function (a, c) { return a.local.localeCompare(c.local, 'pt-BR', { numeric: true }) || a.sku.localeCompare(c.sku, 'pt-BR', { numeric: true }); });
+      return { titulo: b, itens: it };
+    }).filter(function (bl) { return bl.itens.length; });
   }
   function montarKfl() {
     var dl = $('kfl');
@@ -1311,7 +1332,7 @@
   }
   function visualizar(depois) {
     var p = kParams();
-    if (!p.filtro) { kAtual = null; $('kardex').innerHTML = '<div class="kvazio">Digite um endereço (ex.: <b>T02 R33 B</b>) para ver o Kardex como ele sai na impressão.</div>'; kMsg(''); return; }
+    if (!p.filtro) { kAtual = null; $('kardex').innerHTML = '<div class="kvazio">Digite um endereço (ex.: <b>T02 R33 B</b>) ou uma <b>rua</b> inteira (ex.: <b>R01</b> &rarr; sai 1 Kardex por bloco: R01 A, R01 B&hellip;) para ver como sai na impressão.</div>'; kMsg(''); return; }
     var n = ++kPedido;
     kMsg('Carregando ' + p.filtro.toUpperCase() + '…');
     var ok = function (k) {
@@ -1337,7 +1358,22 @@
       var m = e && e.message ? e.message : String(e);
       kMsg(/inválida/i.test(m) ? 'Inventariados ainda não liberado na planilha — use SBF por enquanto.' : 'Não gerou o Kardex: ' + m, true);
     };
-    if (p.fonte === 'sbf') kardexSBF(p.filtro).then(ok, falha);
+    if (p.fonte === 'sbf') {
+      carregarSBF().then(function (s) {
+        if (n !== kPedido) return;
+        var f = p.filtro.trim().toUpperCase().replace(/\s+/g, ' ');
+        if (s && s.e && s.e[f]) { kardexSBF(p.filtro).then(ok, falha); return; }   // endereço exato: Kardex único (como hoje)
+        var blocos = agruparBlocos(s, f);                                          // rua/bloco: 1 Kardex por bloco
+        if (!blocos.length) { kAtual = null; $('kardex').innerHTML = ''; kMsg('Nenhum item no SBF em ' + f + '.'); return; }
+        var tot = 0, folhas = 0;
+        blocos.forEach(function (b) { tot += b.itens.length; folhas += Math.max(1, Math.ceil(b.itens.length / 28)); });
+        kAtual = { chave: f + '|sbf-rua', multi: blocos };
+        montarKardexMulti(blocos);
+        ajustarZoom();
+        kMsg('RUA ' + f + ' · ' + blocos.length + ' bloco' + (blocos.length > 1 ? 's' : '') + ' (' + blocos.map(function (b) { return b.titulo; }).join(', ') + ') · ' + tot + ' itens · ' + folhas + ' folhas' + (s.gerado ? ' · SBF de ' + s.gerado : ''));
+        if (depois) depois({ multi: blocos });
+      }, falha);
+    }
     else google.script.run.withSuccessHandler(ok).withFailureHandler(falha).kardex(p.filtro, p.fonte);
   }
   function agendar() { clearTimeout(kTimer); kTimer = setTimeout(function () { visualizar(); }, 600); }
@@ -1357,7 +1393,7 @@
   $('kardex').addEventListener('keydown', function (e) { if (e.target.classList && e.target.classList.contains('ked') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
   ['kconf', 'kcria'].forEach(function (id) {
     $(id).value = ler('inv_' + id);
-    $(id).addEventListener('input', function () { gravar('inv_' + id, $(id).value.trim()); if (kAtual) { montarKardex(kAtual.k); ajustarZoom(); } });
+    $(id).addEventListener('input', function () { gravar('inv_' + id, $(id).value.trim()); if (kAtual) { rerenderKardex(); ajustarZoom(); } });
   });
   function imprimirAgora() {
     var img = $('kardex').querySelector('img');

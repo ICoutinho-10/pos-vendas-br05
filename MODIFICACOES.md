@@ -1,5 +1,11 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.14 — 26/11/2026 — Imprimir Kardex por RUA/BLOCO (vários endereços de uma vez)
+- Na **Imprimir Kardex**, além do endereço completo (Kardex único, como antes), agora dá pra digitar uma **rua** (ex.: `R01`) ou um **bloco** (`R01 A`) e sai **1 Kardex por bloco** (2 primeiros termos do endereço), com todas as posições daquele bloco numa **sequência contínua** — aproveita as 28 linhas/página e vira a folha até acabar o bloco. A coluna **LOCAL** mostra a posição exata de cada item; SEQ reinicia por bloco.
+- Detecção automática: se o texto digitado **é um endereço exato** no SBF → Kardex único (comportamento atual); senão, trata como **prefixo** e agrupa por bloco (`fonte = SBF`). Ordenação por local e depois código; respeita "Ocultar zerados". Imprime tudo de uma vez (todas as folhas na mesma impressão).
+- Refatoração: `montarKardex` → `kardexPaginasHTML` (reaproveitada por `montarKardex` e pelo novo `montarKardexMulti`); `agruparBlocos`, `rerenderKardex`. Validado no app real com SBF de 26/11 08:59: **R01 → 5 blocos (A–E), 293 itens, 13 folhas**; endereço `R01 A 01 A` → 1 Kardex (19 itens).
+- Bump geral 0.9.13→**0.9.14** (contagem + gestão + transferência + `version.json`).
+
 ## v0.9.13 — 13/11/2026 — SEGUIMENTO (6000/3000) automático em item fora da lista
 - Na **Conferência Kardex**, ao **inserir um item novo** (fora da lista) e digitar o código, a coluna **SEGUIMENTO** agora preenche **6000 · FORKLIFT** ou **3000 · BUS/TRUCK** automaticamente (antes mostrava "—"). O valor vem do **SBF**, que já deriva o seguimento do **MB52/depósito** por produto; a coluna **MB52** e a **descrição** também são preenchidas na hora.
 - Novas funções `fSBFcod` (índice código→produto no SBF), `fPreencherSBF` (puxa seg/MB52/desc) e `fAtualizarSegMb` (re-renderiza as células). O handler do campo de código chama `fPreencherSBF` ao digitar e de novo quando o `buscarProduto` normaliza o código. Código fora do SBF continua "—".
