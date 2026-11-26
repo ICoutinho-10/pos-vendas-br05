@@ -1,5 +1,10 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.16 — 26/11/2026 — Intervalo de endereços no Kardex ("R02 até R08 E")
+- Na **Imprimir Kardex**, o campo agora aceita **intervalo**: `R02 até R08 E` (ou `R02 - R08 E`, `R02 .. R08 E`) emite **todos os blocos** de R02 A até R08 E, 1 Kardex por bloco. Limites podem ser **rua** (ex.: `R02` = a partir do bloco A) ou **rua+bloco** (ex.: `R08 E` = até aquele bloco, inclusive). Comparação por rua (numérica) e depois por bloco.
+- Funções `pBound`, `cmpTok`, `blocoNoIntervalo`; `agruparBlocos` ganhou predicado opcional; `visualizar` detecta o intervalo via regex `AT[ÉE]|-|—|..`. Validado no app: `R02 até R08 E` → 35 blocos (R02 A…R08 E), 1768 itens, 80 folhas; `R02 até R03 C` → 8 blocos (para no R03 C).
+- Bump 0.9.15→**0.9.16**.
+
 ## v0.9.15 — 26/11/2026 — 🐛 Botão Imprimir não funcionava no modo RUA/BLOCO
 - Na v0.9.14 o botão **Imprimir** (`#kgo`) só tratava Kardex único (`kAtual.k.itens`); no modo rua/bloco o `kAtual` tem `.multi`, então o clique estourava erro e **não imprimia**. Reescrito: se já há Kardex na tela (qualquer modo), imprime direto; senão renderiza e imprime. Validado no app: R01 → 13 folhas, clique dispara `window.print()` sem erro.
 - Bump 0.9.14→**0.9.15**.
