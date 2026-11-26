@@ -741,7 +741,7 @@
 
 <script>
   // === Auto-atualização: recarrega sozinho quando sai versão nova (evita cache velho do atalho kiosk) ===
-  var APP_VERSION = '0.9.14';
+  var APP_VERSION = '0.9.15';
   (function () {
     function checar() {
       fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1403,10 +1403,11 @@
   }
   $('kgo').addEventListener('click', function () {
     var p = kParams();
-    if (!p.filtro) { kMsg('Digite o endereço do Kardex (ex.: T02 R33 B).', true); $('kf').focus(); return; }
-    if (kAtual && kAtual.chave === p.filtro.toUpperCase() + '|' + p.fonte) { if (kAtual.k.itens.length) imprimirAgora(); return; }
+    if (!p.filtro) { kMsg('Digite o endereço do Kardex (ex.: T02 R33 B) ou uma rua (ex.: R01).', true); $('kf').focus(); return; }
+    var temPaginas = function () { return !!$('kardex').querySelector('.kpg'); };
+    if (temPaginas()) { imprimirAgora(); return; }                 // já tem Kardex na tela (único ou por bloco) -> imprime
     var b = $('kgo'); b.disabled = true;
-    visualizar(function (k) { b.disabled = false; if (k.itens.length) imprimirAgora(); });
+    visualizar(function () { b.disabled = false; if (temPaginas()) imprimirAgora(); else kMsg('Nada para imprimir em ' + p.filtro.toUpperCase() + '.', true); });
     setTimeout(function () { b.disabled = false; }, 15000);
   });
   // ---- CONFERÊNCIA KARDEX: SBF x físico, lança na planilha ----

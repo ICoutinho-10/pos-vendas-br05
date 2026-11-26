@@ -1,5 +1,9 @@
 # Modificações — Pós-Vendas BR05
 
+## v0.9.15 — 26/11/2026 — 🐛 Botão Imprimir não funcionava no modo RUA/BLOCO
+- Na v0.9.14 o botão **Imprimir** (`#kgo`) só tratava Kardex único (`kAtual.k.itens`); no modo rua/bloco o `kAtual` tem `.multi`, então o clique estourava erro e **não imprimia**. Reescrito: se já há Kardex na tela (qualquer modo), imprime direto; senão renderiza e imprime. Validado no app: R01 → 13 folhas, clique dispara `window.print()` sem erro.
+- Bump 0.9.14→**0.9.15**.
+
 ## v0.9.14 — 26/11/2026 — Imprimir Kardex por RUA/BLOCO (vários endereços de uma vez)
 - Na **Imprimir Kardex**, além do endereço completo (Kardex único, como antes), agora dá pra digitar uma **rua** (ex.: `R01`) ou um **bloco** (`R01 A`) e sai **1 Kardex por bloco** (2 primeiros termos do endereço), com todas as posições daquele bloco numa **sequência contínua** — aproveita as 28 linhas/página e vira a folha até acabar o bloco. A coluna **LOCAL** mostra a posição exata de cada item; SEQ reinicia por bloco.
 - Detecção automática: se o texto digitado **é um endereço exato** no SBF → Kardex único (comportamento atual); senão, trata como **prefixo** e agrupa por bloco (`fonte = SBF`). Ordenação por local e depois código; respeita "Ocultar zerados". Imprime tudo de uma vez (todas as folhas na mesma impressão).
